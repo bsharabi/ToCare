@@ -161,13 +161,14 @@
         android:id="@+id/tv_backLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="15dp"
         android:text="@string/back_to_login"
         android:textColor="@color/gray_200"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linlay_inputs_rgister"
 
         />
 

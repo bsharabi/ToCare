@@ -11,7 +11,8 @@ public class Activity_Splash_Register extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_splash_register);
+        System.out.println("Hello Register");
         TextView tv = findViewById(R.id.tv_backLogin);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override

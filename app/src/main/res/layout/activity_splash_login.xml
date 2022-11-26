@@ -12,56 +12,56 @@
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_marginTop="80dp"
+        android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500"
-        tools:ignore="ImageContrastCheck"
-        android:contentDescription="@string/todo" />
+        app:tint="@color/orange_500"
+        tools:ignore="ImageContrastCheck" />
 
     <ImageView
         android:id="@+id/imgView_hands"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_marginTop="80dp"
+        android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hands"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500"
-        tools:ignore="ImageContrastCheck"
-        android:contentDescription="@string/todo" />
+        app:tint="@color/orange_500"
+        tools:ignore="ImageContrastCheck" />
 
     <ImageView
         android:id="@+id/imgView_left_hand"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_left"
         android:translationX="-40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500"
-        tools:ignore="ImageContrastCheck"
-        android:contentDescription="@string/todo" />
+        app:tint="@color/orange_500"
+        tools:ignore="ImageContrastCheck" />
 
     <ImageView
         android:id="@+id/imgView_right_hand"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_marginTop="120dp"
+        android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_right"
         android:translationX="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500"
-        tools:ignore="ImageContrastCheck"
-        android:contentDescription="@string/todo" />
+        app:tint="@color/orange_500"
+        tools:ignore="ImageContrastCheck" />
 
     <LinearLayout
         android:id="@+id/linlay_inputs"
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:text="@string/welcome_to_care"
-            android:textColor="@color/teal_200"
+            android:textColor="@color/gray_200"
             android:textSize="20sp" />
 
         <TextView
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:text="@string/sing_in_to_continue"
-            android:textColor="@color/teal_200"
+            android:textColor="@color/gray_200"
             android:textSize="14sp" />
 
         <EditText
@@ -100,19 +100,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
+            android:autofillHints=""
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_email_24"
             android:drawablePadding="16dp"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:padding="16dp"
-            android:textSize="14sp"
-            android:autofillHints="" />
+            android:textSize="14sp" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:autofillHints=""
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
@@ -120,8 +121,7 @@
             android:hint="@string/Password"
             android:inputType="textPassword"
             android:padding="16dp"
-            android:textSize="14sp"
-            android:autofillHints="" />
+            android:textSize="14sp" />
 
         <Button
             android:layout_width="match_parent"
@@ -141,7 +141,7 @@
         android:layout_marginEnd="32dp"
         android:alpha="1"
         android:text="@string/forget_password"
-        android:textColor="@color/teal_700"
+        android:textColor="@color/gray_700"
         android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linlay_inputs" />
@@ -152,7 +152,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
         android:text="@string/register_button"
-        android:textColor="@color/teal_200"
+        android:textColor="@color/gray_200"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

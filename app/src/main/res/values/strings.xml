@@ -2,5 +2,18 @@
     <string name="app_name">ToCare</string>
     <string name="register_button">Don\'t have an account? <b>Register Here</b> </string>
     <string name="back_to_login"><b>Back to Login</b></string>
+    <string name="Password"><b>Password</b></string>
+    <string name="login">Login</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="email">Email</string>
+    <string name="sing_in_to_continue">Sing in to continue</string>
+    <string name="welcome_to_care">Welcome To Care</string>
+    <string name="todo">TODO</string>
+    <string name="register_now_to_continue">Register now to continue</string>
+    <string name="name">Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="phone">Phone</string>
+    <string name="register_now">Register Now</string>
+    <string name="valid_passowrd">Valid Passowrd</string>
 
 </resources>

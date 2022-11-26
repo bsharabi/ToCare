@@ -18,20 +18,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500" />
+        app:tint="@color/purple_500"
+        tools:ignore="ImageContrastCheck"
+        android:contentDescription="@string/todo" />
 
     <ImageView
-        android:rotation="180"
         android:id="@+id/imgView_hands"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="20dp"
+        android:rotation="180"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hands"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500" />
+        app:tint="@color/purple_500"
+        tools:ignore="ImageContrastCheck"
+        android:contentDescription="@string/todo"  />
 
 
     <LinearLayout
@@ -54,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="Welcome To Care"
+            android:text="@string/welcome_to_care"
             android:textColor="@color/teal_200"
             android:textSize="20sp" />
 
@@ -62,9 +66,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
-            android:text="Register now to continue"
+            android:text="@string/register_now_to_continue"
             android:textColor="@color/teal_200"
             android:textSize="14sp" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,10 +77,13 @@
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_person_24"
             android:drawablePadding="16dp"
-            android:hint="Name"
+            android:hint="@string/name"
             android:inputType="text"
+            android:minHeight="48dp"
             android:padding="10dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:autofillHints="" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,10 +91,13 @@
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_family_restroom_24"
             android:drawablePadding="16dp"
-            android:hint="Last Name"
+            android:hint="@string/last_name"
             android:inputType="text"
+            android:minHeight="48dp"
             android:padding="10dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:autofillHints="" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,10 +105,13 @@
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_phone_android_24"
             android:drawablePadding="16dp"
-            android:hint="Phone"
+            android:hint="@string/phone"
             android:inputType="phone"
+            android:minHeight="48dp"
             android:padding="10dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:autofillHints="" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,10 +119,12 @@
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_email_24"
             android:drawablePadding="16dp"
-            android:hint="Email"
+            android:hint="@string/email"
             android:inputType="textEmailAddress"
+            android:minHeight="48dp"
             android:padding="10dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:autofillHints="" />
 
         <EditText
             android:layout_width="match_parent"
@@ -116,34 +132,37 @@
             android:layout_marginTop="15dp"
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_lock_24"
-            android:drawableLeft="@drawable/ic_baseline_lock_24"
-            android:drawableRight="@drawable/ic_baseline_visibility_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
             android:drawablePadding="16dp"
-            android:hint="Password"
+            android:hint="@string/Password"
             android:inputType="textPassword"
+            android:minHeight="48dp"
             android:padding="10dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:autofillHints="" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_lock_24"
-            android:drawableLeft="@drawable/ic_baseline_lock_24"
-            android:drawableRight="@drawable/ic_baseline_visibility_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
             android:drawablePadding="16dp"
-            android:hint="Valid Passowrd"
+            android:hint="@string/valid_passowrd"
             android:inputType="textPassword"
+            android:minHeight="48dp"
             android:padding="10dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:autofillHints="" />
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:text="@string/register_now"
             android:textColor="@color/white"
-            android:text="Register Now"/>
+            tools:ignore="TextContrastCheck" />
 
     </LinearLayout>
 

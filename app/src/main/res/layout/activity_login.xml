@@ -17,20 +17,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500"/>
+        app:tint="@color/purple_500"
+        tools:ignore="ImageContrastCheck"
+        android:contentDescription="@string/todo" />
 
     <ImageView
-        android:rotation="180"
         android:id="@+id/imgView_hands"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_marginTop="80dp"
+        android:rotation="180"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hands"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500"/>
+        app:tint="@color/purple_500"
+        tools:ignore="ImageContrastCheck"
+        android:contentDescription="@string/todo" />
 
     <ImageView
         android:id="@+id/imgView_left_hand"
@@ -42,7 +46,9 @@
         android:translationX="-40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500" />
+        app:tint="@color/purple_500"
+        tools:ignore="ImageContrastCheck"
+        android:contentDescription="@string/todo" />
 
     <ImageView
         android:id="@+id/imgView_right_hand"
@@ -54,7 +60,9 @@
         android:translationX="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/purple_500" />
+        app:tint="@color/purple_500"
+        tools:ignore="ImageContrastCheck"
+        android:contentDescription="@string/todo" />
 
     <LinearLayout
         android:alpha="1"
@@ -76,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="Welcome To Care"
+            android:text="@string/welcome_to_care"
             android:textColor="@color/teal_200"
             android:textSize="20sp" />
 
@@ -84,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
-            android:text="Sing in to continue"
+            android:text="@string/sing_in_to_continue"
             android:textColor="@color/teal_200"
             android:textSize="14sp" />
 
@@ -96,10 +104,11 @@
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_email_24"
             android:drawablePadding="16dp"
-            android:hint="Email"
+            android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:padding="16dp"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:autofillHints="" />
 
         <EditText
             android:layout_width="match_parent"
@@ -107,20 +116,21 @@
             android:layout_marginTop="20dp"
             android:background="@drawable/edittext_bg"
             android:drawableStart="@drawable/ic_baseline_lock_24"
-            android:drawableLeft="@drawable/ic_baseline_lock_24"
-            android:drawableRight="@drawable/ic_baseline_visibility_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
             android:drawablePadding="16dp"
-            android:hint="Password"
+            android:hint="@string/Password"
             android:inputType="textPassword"
             android:padding="16dp"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:autofillHints="" />
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
+            android:text="@string/login"
             android:textColor="@color/white"
-            android:text="Login"/>
+            tools:ignore="TextContrastCheck" />
 
 
 
@@ -130,14 +140,13 @@
         android:id="@+id/tv_forgetPassword"
         android:layout_width="wrap_content"
         android:layout_marginEnd="32dp"
-        android:layout_marginRight="30dp"
         android:textSize="13sp"
         android:textColor="@color/teal_700"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linlay_inputs"
         android:layout_height="wrap_content"
-        android:text="Forget Password"/>
+        android:text="@string/forget_password"/>
 
     <TextView
         android:id="@+id/tv_register"

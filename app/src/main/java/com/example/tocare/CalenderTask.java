@@ -1,2 +1,4 @@
-package com.example.tocare;public class CalenderTask {
+package com.example.tocare;
+
+public class CalenderTask {
 }

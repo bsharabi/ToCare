@@ -1,2 +1,4 @@
-package com.example.tocare;public class Manager {
+package com.example.tocare;
+
+public class Manager {
 }

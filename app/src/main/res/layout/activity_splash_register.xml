@@ -69,6 +69,7 @@
             android:textSize="14sp" />
 
         <EditText
+            android:id="@+id/et_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -82,6 +83,7 @@
             android:textSize="15sp" />
 
         <EditText
+            android:id="@+id/et_last_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -95,6 +97,8 @@
             android:textSize="15sp" />
 
         <EditText
+            android:id="@+id/et_phone"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -108,6 +112,7 @@
             android:textSize="15sp" />
 
         <EditText
+            android:id="@+id/et_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -121,6 +126,7 @@
             android:textSize="15sp" />
 
         <EditText
+            android:id="@+id/et_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -135,6 +141,8 @@
             android:textSize="15sp" />
 
         <EditText
+            android:id="@+id/et_c_password"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -143,12 +151,13 @@
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
             android:drawablePadding="16dp"
-            android:hint="@string/valid_passowrd"
+            android:hint="@string/conform_passoword"
             android:inputType="textPassword"
             android:padding="10dp"
             android:textSize="15sp" />
 
         <Button
+            android:id="@+id/bt_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -168,7 +177,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linlay_inputs_rgister"
 
         />
 

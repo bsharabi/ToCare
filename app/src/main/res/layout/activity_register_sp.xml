@@ -146,7 +146,7 @@
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
             android:drawablePadding="16dp"
-            android:hint="@string/valid_passowrd"
+            android:hint="@string/conform_passoword"
             android:inputType="textPassword"
             android:padding="10dp"
             android:textSize="15sp" />

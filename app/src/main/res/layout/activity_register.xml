@@ -149,7 +149,7 @@
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:drawableEnd="@drawable/ic_baseline_visibility_24"
             android:drawablePadding="16dp"
-            android:hint="@string/valid_passowrd"
+            android:hint="@string/conform_passoword"
             android:inputType="textPassword"
             android:minHeight="48dp"
             android:padding="10dp"
@@ -176,7 +176,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linlay_inputs_rgister"
 
 
         />

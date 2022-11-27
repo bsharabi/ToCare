@@ -5,7 +5,7 @@
         motion:autoTransition="animateToEnd"
         motion:constraintSetEnd="@layout/activity_login"
         motion:constraintSetStart="@layout/activity_splash"
-        motion:duration="5000"
+        motion:duration="4000"
 
         >
         <KeyFrameSet>
@@ -133,4 +133,10 @@
                 />
         </KeyFrameSet>
     </Transition>
+<!--    <ConstraintSet android:id="@layout/activity_splash">-->
+<!--    </ConstraintSet>-->
+
+<!--    <ConstraintSet android:id="@layout/activity_login">-->
+<!--    </ConstraintSet>-->
+
 </MotionScene>

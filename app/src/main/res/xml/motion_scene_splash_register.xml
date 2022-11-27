@@ -55,14 +55,12 @@
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="75"
-                motion:motionTarget="@+id/linlay_inputs_rgister"
-                />
+                motion:motionTarget="@+id/linlay_inputs_rgister" />
 
             <KeyAttribute
                 android:alpha="1"
                 motion:framePosition="85"
-                motion:motionTarget="@+id/linlay_inputs_rgister"
-                />
+                motion:motionTarget="@+id/linlay_inputs_rgister" />
 
 
             <KeyPosition
@@ -84,4 +82,7 @@
                 />
         </KeyFrameSet>
     </Transition>
+<!--    <ConstraintSet android:id="@layout/activity_register_sp"></ConstraintSet>-->
+
+<!--    <ConstraintSet android:id="@layout/activity_register"></ConstraintSet>-->
 </MotionScene>

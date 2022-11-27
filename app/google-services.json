@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1050245229040",
+    "project_id": "tocare-5b2eb",
+    "storage_bucket": "tocare-5b2eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050245229040:android:1c09e4b54f273fb5541535",
+        "android_client_info": {
+          "package_name": "com.example.tocare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1050245229040-s75v8fgh5i43l1se02qjbdis35ja8r01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP3AnidV-acMhpkHJSBcvIIEZcYoNJDQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1050245229040-s75v8fgh5i43l1se02qjbdis35ja8r01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

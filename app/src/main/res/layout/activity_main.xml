@@ -6,4 +6,95 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/imgView_hart"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="80dp"
+        android:contentDescription="@string/todo"
+        android:scaleType="centerInside"
+        android:src="@drawable/logo_hart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black"
+        tools:ignore="ImageContrastCheck" />
+
+    <ImageView
+        android:id="@+id/imgView_hands"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="80dp"
+        android:contentDescription="@string/todo"
+        android:rotation="180"
+        android:scaleType="centerInside"
+        android:src="@drawable/logo_hands"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black"
+        tools:ignore="ImageContrastCheck" />
+
+    <ImageView
+        android:id="@+id/imgView_left_hand"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="@string/todo"
+        android:scaleType="centerInside"
+        android:src="@drawable/logo_left"
+        android:translationX="-40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black"
+        tools:ignore="ImageContrastCheck" />
+
+    <ImageView
+        android:id="@+id/imgView_right_hand"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="120dp"
+        android:contentDescription="@string/todo"
+        android:scaleType="centerInside"
+        android:src="@drawable/logo_right"
+        android:translationX="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black"
+        tools:ignore="ImageContrastCheck" />
+
+    <LinearLayout
+        android:id="@+id/linear_option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgView_right_hand">
+
+
+        <TextView
+            android:id="@+id/tv_manager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:text="@string/manager"
+            android:textColor="@color/gray_200"
+            android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/tv_employee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:fontFamily="sans-serif"
+            android:text="@string/employee"
+            android:textColor="@color/gray_200"
+            android:textSize="19sp" />
+
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

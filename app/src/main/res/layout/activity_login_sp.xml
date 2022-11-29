@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutDescription="@xml/motion_scene_splash"
-    tools:context=".Activity_Splash_Login">
+    tools:context=".login.Activity_Splash_Login">
 
     <ImageView
         android:id="@+id/imgView_hart"
@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/orange_500"
+        app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
     <ImageView
@@ -35,7 +35,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/orange_500"
+        app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
     <ImageView
@@ -48,7 +48,7 @@
         android:src="@drawable/logo_left"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/orange_500" />
+        app:tint="@color/black" />
 
     <ImageView
         android:id="@+id/imgView_right_hand"
@@ -60,10 +60,10 @@
         android:src="@drawable/logo_right"
         app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/orange_500" />
+        app:tint="@color/black" />
 
     <LinearLayout
-        android:id="@+id/linlay_inputs"
+        android:id="@+id/linear_inputs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -143,7 +143,7 @@
         android:textColor="@color/gray_700"
         android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linlay_inputs" />
+        app:layout_constraintTop_toBottomOf="@id/linear_inputs" />
 
     <TextView
         android:id="@+id/tv_register"
@@ -157,5 +157,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
 
+
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

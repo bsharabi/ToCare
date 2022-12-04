@@ -4,14 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutDescription="@xml/motion_scene_splash"
-    tools:context=".ActivityLogin">
+    tools:context=".LoginActivity">
+
 
     <ImageView
-        android:id="@+id/imgView_hart"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="80dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".34"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/vie_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".71"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent=".7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tab_layout"
+            app:layout_constraintVertical_bias="0" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/vie_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_google"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/google_logo_png"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_pager" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/icons8_facebook_500"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/fab_google"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_pager" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_instagram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/icons8_instagram_500"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/fab_google"
+            app:layout_constraintTop_toBottomOf="@+id/view_pager" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/imgView_heart"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="50dp"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hart"
@@ -23,11 +111,10 @@
 
     <ImageView
         android:id="@+id/imgView_hands"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="50dp"
         android:contentDescription="@string/todo"
-        android:rotation="180"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hands"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +127,7 @@
         android:id="@+id/imgView_left_hand"
         android:layout_width="130dp"
         android:layout_height="130dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_left"
@@ -54,7 +141,7 @@
         android:id="@+id/imgView_right_hand"
         android:layout_width="130dp"
         android:layout_height="130dp"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="80dp"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_right"
@@ -64,153 +151,18 @@
         app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
-    <LinearLayout
-        android:id="@+id/linear_inputs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="30dp"
-        android:alpha="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgView_right_hand">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/welcome_to_care"
-            android:textColor="@color/gray_200"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:text="@string/sing_in_to_continue"
-            android:textColor="@color/gray_200"
-            android:textSize="14sp" />
-
-        <EditText
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:autofillHints=""
-            android:background="@drawable/edittext_bg"
-            android:drawableStart="@drawable/ic_baseline_email_24"
-            android:drawablePadding="16dp"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:padding="16dp"
-            android:textSize="14sp" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:autofillHints=""
-            android:background="@drawable/edittext_bg"
-            android:drawableStart="@drawable/ic_baseline_lock_24"
-            android:drawableEnd="@drawable/ic_baseline_visibility_24"
-            android:drawablePadding="16dp"
-            android:hint="@string/Password"
-            android:inputType="textPassword"
-            android:padding="16dp"
-            android:textSize="14sp" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="@string/login"
-            android:textColor="@color/white"
-            tools:ignore="TextContrastCheck" />
-
-    </LinearLayout>
-
     <TextView
-        android:id="@+id/tv_forgetPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="32dp"
-        android:alpha="1"
-        android:text="@string/forget_password"
-        android:textColor="@color/gray_700"
-        android:textSize="13sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear_inputs" />
-
-    <LinearLayout
-        android:id="@+id/linear_icons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="30dp"
-        android:alpha="1"
-        android:gravity="center"
-        android:orientation="horizontal"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintVertical_bias=".2"
+        android:text="@string/welcome_to_care"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_forgetPassword">
-
-        <ImageView
-            android:id="@+id/iv_google"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:contentDescription="@string/todo"
-            android:scaleType="centerInside"
-            android:src="@drawable/icons8_google_500"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imgView_heart" />
 
 
-        <ImageView
-            android:id="@+id/iv_facebook"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:contentDescription="@string/todo"
-            android:scaleType="centerInside"
-            android:src="@drawable/icons8_facebook_500"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_instagram"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:contentDescription="@string/todo"
-            android:scaleType="centerInside"
-            android:src="@drawable/icons8_instagram_500"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/tv_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:text="@string/register_button"
-        android:textColor="@color/gray_200"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-
-
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -42,5 +42,6 @@
     <string name="title_profile">Profile</string>
     <string name="title_task">Task</string>
     <string name="title_calender">Calender</string>
+    <string name="title_feed">Feed</string>
 
 </resources>

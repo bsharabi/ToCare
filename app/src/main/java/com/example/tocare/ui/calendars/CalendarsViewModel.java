@@ -1,16 +1,16 @@
-package com.example.tocare.ui.task;
+package com.example.tocare.ui.calendars;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class TaskViewModel extends ViewModel {
+public class CalendarsViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public TaskViewModel() {
+    public CalendarsViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is task fragment");
+        mText.setValue("This is calenders fragment");
     }
 
     public LiveData<String> getText() {

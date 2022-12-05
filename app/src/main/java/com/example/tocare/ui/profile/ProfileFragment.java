@@ -12,14 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.tocare.LoginAdapter;
-import com.example.tocare.ProfileAdapter;
+import com.example.tocare.Adapters.ProfileAdapter;
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentProfileBinding;
 import com.google.android.material.tabs.TabLayout;
 
 public class ProfileFragment extends Fragment {
-
+    private static ProfileFragment single_instance = null;
     private FragmentProfileBinding binding;
     TabLayout tabLayout;
     ViewPager2 viewPager;
@@ -32,7 +31,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
+        final TextView textView = binding.textProfile;
 
 
 
@@ -86,5 +85,15 @@ public class ProfileFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public ProfileFragment() {
+    }
+
+    public static ProfileFragment getInstance() {
+        if (single_instance == null)
+            single_instance = new ProfileFragment();
+
+        return single_instance;
     }
 }

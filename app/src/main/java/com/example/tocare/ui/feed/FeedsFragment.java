@@ -1,4 +1,4 @@
-package com.example.tocare.ui.task;
+package com.example.tocare.ui.feed;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,23 +10,24 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.tocare.databinding.FragmentTaskBinding;
+import com.example.tocare.databinding.FragmentFeedBinding;
 import com.example.tocare.ui.login.LoginFragment;
 
-public class TaskFragment extends Fragment {
 
-    private FragmentTaskBinding binding;
-    private static TaskFragment single_instance = null;
+public class FeedsFragment extends Fragment {
+    private static FeedsFragment single_instance = null;
+    private FragmentFeedBinding binding;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        TaskViewModel homeViewModel =
-                new ViewModelProvider(this).get(TaskViewModel.class);
+        FeedsViewModel notificationsViewModel =
+                new ViewModelProvider(this).get(FeedsViewModel.class);
 
-        binding = FragmentTaskBinding.inflate(inflater, container, false);
+        binding = FragmentFeedBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textFeeds;
+        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
@@ -35,12 +36,13 @@ public class TaskFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-    public TaskFragment() {
+
+    public FeedsFragment() {
     }
 
-    public static TaskFragment getInstance() {
+    public static FeedsFragment getInstance() {
         if (single_instance == null)
-            single_instance = new TaskFragment();
+            single_instance = new FeedsFragment();
 
         return single_instance;
     }

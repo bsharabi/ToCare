@@ -1,7 +1,8 @@
-package com.example.tocare;
+package com.example.tocare.Activities;
 
 import android.os.Bundle;
 
+import com.example.tocare.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+        BottomNavigationView navView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_profile, R.id.navigation_task, R.id.navigation_notifications).build();
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_profile, R.id.navigation_task, R.id.navigation_feed,
+                R.id.navigation_notifications, R.id.navigation_calender)
+                .build();
 
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);

@@ -1,23 +1,23 @@
-package com.example.tocare;
+package com.example.tocare.Adapters;
+
+
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-import com.example.tocare.ui.profile.tabs.ProfileAdvanceTabFragment;
-import com.example.tocare.ui.profile.tabs.ProfileBasicTabFragment;
-
-public class ProfileAdapter extends FragmentStateAdapter {
-
-    ProfileAdvanceTabFragment profileAdvanceTabFragment;
-    ProfileBasicTabFragment profileBasicTabFragment;
+import com.example.tocare.ui.forgot.ForgotFragment;
+import com.example.tocare.ui.login.*;
+import com.example.tocare.ui.signup.SignupFragment;
 
 
-    public ProfileAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+public class LoginAdapter extends FragmentStateAdapter {
+
+    public LoginAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
+
 
     @NonNull
     @Override
@@ -25,17 +25,19 @@ public class ProfileAdapter extends FragmentStateAdapter {
         System.out.println(position);
         switch (position) {
             case 0:
-                return new ProfileBasicTabFragment();
+                return LoginFragment.getInstance();
             case 1:
-                return new ProfileAdvanceTabFragment();
-
+                return SignupFragment.getInstance();
+            case 2:
+                return ForgotFragment.getInstance();
             default:
                 return null;
         }
     }
 
+
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }

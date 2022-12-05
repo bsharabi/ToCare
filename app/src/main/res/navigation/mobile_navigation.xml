@@ -18,8 +18,20 @@
         tools:layout="@layout/fragment_task" />
 
     <fragment
+        android:id="@+id/navigation_feed"
+        android:name="com.example.tocare.ui.feed.FeedsFragment"
+        android:label="@string/title_feed"
+        tools:layout="@layout/fragment_feed" />
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.tocare.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_calender"
+        android:name="com.example.tocare.ui.calendars.CalendarsFragment"
+        android:label="@string/title_calender"
+        tools:layout="@layout/fragment_calendars" />
 </navigation>

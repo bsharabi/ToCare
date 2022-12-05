@@ -100,7 +100,7 @@ public class LoginFragment extends Fragment {
 
         if (!email.matches(emailPattern)) {
             inputEmail.setError("Error");
-        } else if (password.isEmpty() || password.length() < 8) {
+        } else if (password.isEmpty() || password.length() < 1) {
             inputPassword.setError("Error");
         } else {
             dialog.setMessage("Please wait while Login");
@@ -120,6 +120,7 @@ public class LoginFragment extends Fragment {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    dialog.dismiss();
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });

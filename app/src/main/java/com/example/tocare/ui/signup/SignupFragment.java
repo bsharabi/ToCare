@@ -9,24 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
-
-import com.example.tocare.Activities.LoginActivity;
 import com.example.tocare.Departments.UserModel;
-import com.example.tocare.R;
 import com.example.tocare.databinding.ActivityLoginBinding;
 import com.example.tocare.databinding.FragmentSignupBinding;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignupFragment extends Fragment {
 
-    private EditText inputFullName,inputPhone,inputEmail, inputPassword, inputConformPassword;
+    private EditText inputFullName, inputPhone, inputEmail, inputPassword, inputConformPassword;
     private Button btSignup;
     private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     private FirebaseAuth mAuth;
@@ -54,9 +46,9 @@ public class SignupFragment extends Fragment {
         binding = FragmentSignupBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        viewPager2= ActivityLoginBinding.inflate(inflater, container, false).viewPager;
+        viewPager2 = ActivityLoginBinding.inflate(inflater, container, false).viewPager;
 
-        inputFullName=binding.etFullName;
+        inputFullName = binding.etFullName;
         inputPhone = binding.etPhone;
         inputEmail = binding.etEmail;
         inputPassword = binding.etPassword;
@@ -105,7 +97,7 @@ public class SignupFragment extends Fragment {
     }
 
     private void valid() {
-        String fullName =inputFullName.getText().toString();
+        String fullName = inputFullName.getText().toString();
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
         String cPassword = inputConformPassword.getText().toString();
@@ -123,16 +115,16 @@ public class SignupFragment extends Fragment {
             dialog.setCanceledOnTouchOutside(false);
             dialog.show();
 
-            mAuth.createUserWithEmailAndPassword(email,password)
+            mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 firebaseFirestore.collection("User")
-                                .document(mAuth.getUid())
-                                .set(new UserModel(fullName,phone,email,password));
+                                        .document(mAuth.getUid())
+                                        .set(new UserModel(fullName, phone, email, password));
                                 viewPager2.setCurrentItem(0);
-                                Toast.makeText(binding.getRoot().getContext(),"Registration successful",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(binding.getRoot().getContext(), "Registration successful", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                             }
                         }
@@ -141,10 +133,13 @@ public class SignupFragment extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             dialog.dismiss();
-                            Toast.makeText(binding.getRoot().getContext(),"Registration failed "+e.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(binding.getRoot().getContext(), "Registration failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
                         }
                     });
+
+            mUser.sendEmailVerification();
+
 
         }
     }

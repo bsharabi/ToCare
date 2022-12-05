@@ -7,7 +7,7 @@
     tools:context=".ui.profile.ProfileFragment">
 
     <TextView
-        android:id="@+id/text_dashboard"
+        android:id="@+id/text_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -30,7 +30,8 @@
         app:layout_constraintHeight_percent=".34"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintVertical_bias="0"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -58,6 +59,7 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout_profile"
             android:layout_width="match_parent"
+            app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
             android:layout_height="wrap_content"
             android:background="@drawable/vie_bg"
             app:layout_constraintBottom_toBottomOf="parent"

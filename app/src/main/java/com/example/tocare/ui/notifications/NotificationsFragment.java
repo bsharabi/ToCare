@@ -11,9 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.databinding.FragmentNotificationsBinding;
+import com.example.tocare.ui.login.LoginFragment;
 
 public class NotificationsFragment extends Fragment {
-
+    private static NotificationsFragment single_instance = null;
     private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -33,5 +34,14 @@ public class NotificationsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+    public NotificationsFragment() {
+    }
+
+    public static NotificationsFragment getInstance() {
+        if (single_instance == null)
+            single_instance = new NotificationsFragment();
+
+        return single_instance;
     }
 }

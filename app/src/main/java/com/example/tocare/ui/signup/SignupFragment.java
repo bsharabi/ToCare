@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,22 +123,28 @@ public class SignupFragment extends Fragment {
             dialog.setCanceledOnTouchOutside(false);
             dialog.show();
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(authResult -> {
-//                        viewPager2.setCurrentItem(0);
-                        dialog.cancel();
-                        firebaseFirestore.collection("User")
+            mAuth.createUserWithEmailAndPassword(email,password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                firebaseFirestore.collection("User")
                                 .document(mAuth.getUid())
                                 .set(new UserModel(fullName,phone,email,password));
+                                viewPager2.setCurrentItem(0);
+                                Toast.makeText(binding.getRoot().getContext(),"Registration successful",Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            dialog.dismiss();
+                            Toast.makeText(binding.getRoot().getContext(),"Registration failed "+e.getMessage(),Toast.LENGTH_SHORT).show();
 
                         }
                     });
-            mUser.sendEmailVerification();
-
 
         }
     }

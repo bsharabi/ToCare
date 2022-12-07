@@ -48,7 +48,6 @@
     <string name="title_signout">Log Out</string>
 
 
-
     <string name="remind_to_take_a_break">Remind me to take a break</string>
     <string name="key_upload_quality">key_upload_quality</string>
     <string name="remind_me">Remind me to take a break</string>
@@ -68,6 +67,7 @@
     <string name="restricated_mode_description">Restricted Mode</string>
     <string name="prefs_enable_stats">prefs_enable_stats</string>
     <string name="enable_stats">Enable stats for nerds</string>
+    <string name="notification_title">None</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

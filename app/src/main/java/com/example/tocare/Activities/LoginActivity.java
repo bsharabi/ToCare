@@ -1,6 +1,7 @@
 package com.example.tocare.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
@@ -9,31 +10,35 @@ import android.widget.ImageView;
 
 import com.example.tocare.Adapters.LoginAdapter;
 import com.example.tocare.R;
+import com.example.tocare.databinding.ActivityLoginBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 public class LoginActivity extends AppCompatActivity {
-    TabLayout tabLayout;
-    ViewPager2 viewPager;
-    FloatingActionButton facebook, google, apple,twitter;
-    float alpha = 0;
-    ImageView heart, handLeft, handRight;
+    private ActivityLoginBinding binding;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
+    private FloatingActionButton facebook, google, apple, twitter;
+    private ImageView heart, handLeft, handRight;
+    ConstraintLayout constraintLayout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding= ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        tabLayout = findViewById(R.id.tab_layout);
-        viewPager = findViewById(R.id.view_pager);
-        facebook = findViewById(R.id.fab_google);
-        google = findViewById(R.id.fab_facebook);
-        apple = findViewById(R.id.fab_apple);
-        twitter = findViewById(R.id.fab_twitter);
-        heart = findViewById(R.id.imgView_heart);
-        handLeft = findViewById(R.id.imgView_left_hand);
-        handRight = findViewById(R.id.imgView_right_hand);
+        constraintLayout = binding.constraintLayout;
+        tabLayout = binding.tabLayout;
+        viewPager = binding.viewPager;
+        facebook = binding.fabFacebook;
+        google = binding.fabGoogle;
+        apple = binding.fabApple;
+        twitter = binding.fabTwitter;
+        heart = binding.imgViewHeart;
+        handLeft = binding.imgViewLeftHand;
+        handRight = binding.imgViewRightHand;
 
 
         tabLayout.addTab(tabLayout.newTab().setText("Login"));
@@ -74,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         twitter.setTranslationY(300);
         tabLayout.setTranslationY(300);
         apple.setTranslationY(300);
-
+        float alpha = 0;
         facebook.setAlpha(alpha);
         google.setAlpha(alpha);
         twitter.setAlpha(alpha);
@@ -88,6 +93,43 @@ public class LoginActivity extends AppCompatActivity {
 
         tabLayout.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(100).start();
 
-
     }
+
+//    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+//
+//        facebook.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+//
+//
+//        google.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+//
+//
+//        apple.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+//
+//
+//        twitter.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+//
+//        return super.onCreateView(name, context, attrs);
+//    }
 }

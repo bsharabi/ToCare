@@ -71,11 +71,39 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+    <!--    <ImageView-->
+<!--        android:id="@+id/imgView_left_hand"-->
+<!--        android:layout_width="130dp"-->
+<!--        android:layout_height="130dp"-->
+<!--        android:layout_marginTop="0dp"-->
+<!--        android:contentDescription="@string/todo"-->
+<!--        android:scaleType="centerInside"-->
+<!--        android:src="@drawable/logo_left"-->
+<!--        android:translationX="-40dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:tint="@color/black"-->
+<!--        tools:ignore="ImageContrastCheck" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/imgView_right_hand"-->
+<!--        android:layout_width="130dp"-->
+<!--        android:layout_height="130dp"-->
+<!--        android:layout_marginTop="80dp"-->
+<!--        android:contentDescription="@string/todo"-->
+<!--        android:scaleType="centerInside"-->
+<!--        android:src="@drawable/logo_right"-->
+<!--        android:translationX="40dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:tint="@color/black"-->
+<!--        tools:ignore="ImageContrastCheck" />-->
+
     <ImageView
         android:id="@+id/imgView_profile"
         android:layout_width="153dp"
         android:layout_height="130dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/demo_profile"
@@ -84,36 +112,8 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ImageContrastCheck" />
 
-
-    <ImageView
-        android:id="@+id/imgView_left_hand"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="0dp"
-        android:contentDescription="@string/todo"
-        android:scaleType="centerInside"
-        android:src="@drawable/logo_left"
-        android:translationX="-40dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black"
-        tools:ignore="ImageContrastCheck" />
-
-    <ImageView
-        android:id="@+id/imgView_right_hand"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="80dp"
-        android:contentDescription="@string/todo"
-        android:scaleType="centerInside"
-        android:src="@drawable/logo_right"
-        android:translationX="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black"
-        tools:ignore="ImageContrastCheck" />
-
     <TextView
+        android:id="@+id/tv_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"

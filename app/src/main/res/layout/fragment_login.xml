@@ -34,7 +34,7 @@
         android:drawableStart="@drawable/ic_baseline_email_24"
         android:drawablePadding="16dp"
         android:hint="@string/email"
-        android:text="tocareapp@gmail.com"
+        android:text="b@b.com"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
@@ -81,11 +81,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-
         app:layout_constraintTop_toBottomOf="@+id/tv_forgetPassword"
-        app:layout_constraintVertical_bias=".7"
+        app:layout_constraintVertical_bias="0.15"
         app:layout_constraintWidth_percent=".8" />
-
 
     <TextView
         android:id="@+id/tv_forgetPassword"

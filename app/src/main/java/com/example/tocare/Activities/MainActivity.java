@@ -1,17 +1,25 @@
 package com.example.tocare.Activities;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.tocare.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
 import com.example.tocare.databinding.ActivityMainBinding;
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +33,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         MaterialToolbar materialToolbar = binding.topAppBar;
         BottomNavigationView navView = binding.navView;
+
+        navView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                System.out.println("-----------------------------------------");
+                System.out.println(item);
+                if (item.toString().equals("Profile"))
+                    binding.topAppBar.setVisibility(View.VISIBLE);
+                else
+                    binding.topAppBar.setVisibility(View.INVISIBLE);
+                return false;
+            }
+        });
+        materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.toString().equals("Log Out")) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    FirebaseAuth.getInstance().signOut();
+                    finish();
+                    return true;
+                }
+                if (item.toString().equals("Setting")) {
+                    System.out.println("Hello Setting");
+                }
+                return false;
+            }
+        });
 
         materialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

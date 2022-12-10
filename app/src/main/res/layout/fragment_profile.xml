@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
-        android:contentDescription="@string/root_yellow"
+        android:contentDescription="@string/root_background"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -105,6 +105,7 @@
         android:layout_width="153dp"
         android:layout_height="130dp"
         android:layout_marginTop="10dp"
+        android:background="@drawable/circle_image"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/demo_profile"

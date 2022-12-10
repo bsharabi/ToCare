@@ -7,10 +7,14 @@ import androidx.lifecycle.ViewModel;
 public class ForgotViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
+    private final MutableLiveData<String> mReset;
 
     public ForgotViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is forgot fragment");
+        mText.setValue("Rest your password...");
+
+        mReset = new MutableLiveData<>();
+        mReset.setValue("your code sent...");
     }
 
     public LiveData<String> getText() {

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,11 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.tocare.Adapters.ProfileAdapter;
+import com.example.tocare.Departments.UserModel;
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentProfileBinding;
 import com.google.android.material.tabs.TabLayout;
+import com.squareup.picasso.Picasso;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     private static ProfileFragment single_instance = null;
     private FragmentProfileBinding binding;
     TabLayout tabLayout;
@@ -25,17 +28,21 @@ public class ProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        ProfileViewModel dashboardViewModel =
+        ProfileViewModel profileViewModel =
                 new ViewModelProvider(this).get(ProfileViewModel.class);
 
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textProfile;
+        binding.tvUserName.setText("Welcome " + UserModel.getInstance().getUsername());
+        ImageView imageView = binding.imgViewProfile;
 
+        String imageURL = ("https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a");
+        Picasso.get().load(imageURL).into(imageView);
 
+        profileViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
@@ -51,23 +58,7 @@ public class ProfileFragment extends Fragment {
         final ProfileAdapter adapter = new ProfileAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
         viewPager.setAdapter(adapter);
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-
-
-        });
-
+        tabLayout.addOnTabSelectedListener(this);
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -75,8 +66,6 @@ public class ProfileFragment extends Fragment {
                 tabLayout.selectTab(tabLayout.getTabAt(position));
             }
         });
-
-
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -95,5 +84,20 @@ public class ProfileFragment extends Fragment {
             single_instance = new ProfileFragment();
 
         return single_instance;
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }

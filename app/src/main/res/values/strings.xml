@@ -47,6 +47,10 @@
     <string name="title_setting">Setting</string>
     <string name="title_signout">Log Out</string>
 
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id" translatable="false">ToCare</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
+
 
     <string name="remind_to_take_a_break">Remind me to take a break</string>
     <string name="key_upload_quality">key_upload_quality</string>
@@ -70,6 +74,8 @@
     <string name="notification_title">None</string>
     <string name="username">User name</string>
     <string name="root_background">root yellow background profile</string>
+    <string name="emailOrPhone">Email or Phone number</string>
+    <string name="title_manage_users">Manage users</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

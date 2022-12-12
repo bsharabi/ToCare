@@ -1,4 +1,4 @@
-package com.example.tocare.ui.notifications;
+package com.example.tocare.UIL.ui.notifications;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.databinding.FragmentNotificationsBinding;
-import com.example.tocare.ui.login.LoginFragment;
 
 public class NotificationsFragment extends Fragment {
     private static NotificationsFragment single_instance = null;

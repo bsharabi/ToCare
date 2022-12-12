@@ -1,4 +1,4 @@
-package com.example.tocare.ui.feed;
+package com.example.tocare.UIL.ui.feed;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.databinding.FragmentFeedBinding;
-import com.example.tocare.ui.login.LoginFragment;
 
 
 public class FeedsFragment extends Fragment {

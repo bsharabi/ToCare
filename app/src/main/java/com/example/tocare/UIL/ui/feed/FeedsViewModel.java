@@ -1,4 +1,4 @@
-package com.example.tocare.ui.feed;
+package com.example.tocare.UIL.ui.feed;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

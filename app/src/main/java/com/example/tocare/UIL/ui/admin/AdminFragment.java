@@ -1,4 +1,4 @@
-package com.example.tocare.ui.admin;
+package com.example.tocare.UIL.ui.admin;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.databinding.FragmentAdminBinding;
 import com.example.tocare.databinding.FragmentNotificationsBinding;
-import com.example.tocare.ui.login.LoginFragment;
 
 public class AdminFragment extends Fragment {
     private static AdminFragment single_instance = null;

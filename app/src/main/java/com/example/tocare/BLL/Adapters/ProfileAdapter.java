@@ -1,4 +1,4 @@
-package com.example.tocare.Adapters;
+package com.example.tocare.BLL.Adapters;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.tocare.ui.profile.tabs.profileAdvance.ProfileAdvanceFragment;
-import com.example.tocare.ui.profile.tabs.profileBasic.ProfileBasicFragment;
+import com.example.tocare.UIL.ui.profile.tabs.profileAdvance.ProfileAdvanceFragment;
+import com.example.tocare.UIL.ui.profile.tabs.profileBasic.ProfileBasicFragment;
 
 public class ProfileAdapter extends FragmentStateAdapter {
 

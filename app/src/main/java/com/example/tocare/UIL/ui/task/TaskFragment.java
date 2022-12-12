@@ -1,4 +1,4 @@
-package com.example.tocare.ui.task;
+package com.example.tocare.UIL.ui.task;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.databinding.FragmentTaskBinding;
-import com.example.tocare.ui.login.LoginFragment;
 
 public class TaskFragment extends Fragment {
 

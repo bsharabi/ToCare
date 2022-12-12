@@ -1,16 +1,16 @@
-package com.example.tocare.ui.admin;
+package com.example.tocare.UIL.ui.profile;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class AdminViewModel extends ViewModel {
+public class ProfileViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public AdminViewModel() {
+    public ProfileViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is admin fragment");
+        mText.setValue("This is profile fragment");
     }
 
     public LiveData<String> getText() {

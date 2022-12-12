@@ -1,16 +1,16 @@
-package com.example.tocare.ui.profile.tabs.profileAdvance;
+package com.example.tocare.UIL.ui.admin;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class ProfileAdvanceViewModel extends ViewModel {
+public class AdminViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public ProfileAdvanceViewModel() {
+    public AdminViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is advance fragment");
+        mText.setValue("This is admin fragment");
     }
 
     public LiveData<String> getText() {

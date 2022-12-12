@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.signup.SignupFragment">
+    tools:context=".UIL.ui.signup.SignupFragment">
 
 
     <EditText
@@ -19,7 +19,7 @@
         android:background="@drawable/edittext_bg"
         android:drawablePadding="16dp"
         android:hint="@string/username"
-        android:text="barak"
+        android:text="tapoh11"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
@@ -34,7 +34,7 @@
         android:id="@+id/et_full_name"
         android:layout_width="0dp"
         android:layout_marginTop="10dp"
-        android:text="sharabi"
+        android:text="Barak Sharabi"
         android:layout_height="wrap_content"
         app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintVertical_bias="0"
@@ -81,7 +81,7 @@
     <EditText
         android:id="@+id/et_email"
         android:layout_width="0dp"
-        android:text="b@bb.com"
+        android:text="bsharabi95@gmail.com"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:layout_constraintHorizontal_bias=".5"
@@ -105,7 +105,7 @@
     <EditText
         android:id="@+id/et_password"
         android:layout_width="0dp"
-        android:text="123456"
+        android:text="12s@sjJSD54"
         android:layout_height="wrap_content"
         android:hint="@string/Password"
         android:paddingLeft="20dp"
@@ -130,7 +130,7 @@
     <EditText
         android:id="@+id/et_c_password"
         android:layout_width="0dp"
-        android:text="123456"
+        android:text="12s@sjJSD54"
         android:layout_height="wrap_content"
         android:hint="@string/conform_passoword"
         android:paddingLeft="20dp"

@@ -13,32 +13,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.example.tocare.BLL.Departments.Admin;
-import com.example.tocare.BLL.Departments.UserModel;
 import com.example.tocare.BLL.Validation.UserValidation;
 import com.example.tocare.DLL.Auth;
-import com.example.tocare.DLL.DataBase;
 import com.example.tocare.UIL.ui.Activities.LoginActivity;
 import com.example.tocare.UIL.ui.Activities.MainActivity;
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentLoginBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.firestore.DocumentReference;
 
 import java.util.concurrent.TimeUnit;
 
@@ -245,8 +235,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Text
                 });
     }
 
-    private void resendVerificationCode(String phoneNumber,
-                                        PhoneAuthProvider.ForceResendingToken token) {
+    private void resendVerificationCode(String phoneNumber,PhoneAuthProvider.ForceResendingToken token) {
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(mAuth)
                         .setPhoneNumber(phoneNumber)       // Phone number to verify
@@ -277,19 +266,19 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Text
 
     }
 
-
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+        System.out.println("beforeTextChanged");
     }
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+        System.out.println("onTextChanged");
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
-
+        System.out.println("afterTextChanged");
     }
 }

@@ -1,4 +1,4 @@
-package com.example.tocare.ui.notifications;
+package com.example.tocare.UIL.ui.notifications;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

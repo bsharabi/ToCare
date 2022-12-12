@@ -1,4 +1,4 @@
-package com.example.tocare.ui.setting;
+package com.example.tocare.UIL.ui.setting;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

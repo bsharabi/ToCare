@@ -1,4 +1,4 @@
-package com.example.tocare.Adapters;
+package com.example.tocare.BLL.Adapters;
 
 
 
@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import com.example.tocare.ui.forgot.ForgotFragment;
-import com.example.tocare.ui.login.*;
-import com.example.tocare.ui.signup.SignupFragment;
+import com.example.tocare.UIL.ui.forgot.ForgotFragment;
+import com.example.tocare.UIL.ui.login.LoginFragment;
+import com.example.tocare.UIL.ui.signup.SignupFragment;
 
 
 public class LoginAdapter extends FragmentStateAdapter {

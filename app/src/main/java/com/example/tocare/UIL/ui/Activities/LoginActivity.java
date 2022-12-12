@@ -1,18 +1,20 @@
-package com.example.tocare.Activities;
+package com.example.tocare.UIL.ui.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
-
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.example.tocare.Adapters.LoginAdapter;
+import com.example.tocare.BLL.Adapters.LoginAdapter;
 import com.example.tocare.R;
 import com.example.tocare.databinding.ActivityLoginBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,30 +22,42 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, View.OnClickListener {
 
+
+public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
+
+    private static final String TAG = "LoginActivity";
     private static LoginActivity single_instance = null;
-
     private ActivityLoginBinding binding;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private FloatingActionButton facebook, google, apple, twitter;
-    private ImageView heart, handLeft, handRight;
+    private ImageView heart, handLeft, handRight, hands;
+    private LinearLayout linearLayoutFabButtons;
     private ConstraintLayout constraintLayout;
-    private FirebaseUser firebaseUser;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            reload();
+        }
+    }
+
+    private void reload() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            finish();
-        }
 
         constraintLayout = binding.constraintLayout;
         tabLayout = binding.tabLayout;
@@ -55,23 +69,9 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         heart = binding.imgViewHeart;
         handLeft = binding.imgViewLeftHand;
         handRight = binding.imgViewRightHand;
+        linearLayoutFabButtons = binding.fabButtons;
+        hands = binding.imgViewHands;
 
-        final View activityRootView = findViewById(R.id.root);
-        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect rect = new Rect();
-
-                activityRootView.getWindowVisibleDisplayFrame(rect);
-
-                int heightDiff = binding.getRoot().getHeight() - (rect.bottom - rect.top);
-                if (heightDiff > 100) {
-                    constraintLayout.setTranslationY(-500);
-                } else {
-                    constraintLayout.setTranslationY(0);
-                }
-            }
-        });
 
         tabLayout.addTab(tabLayout.newTab().setText("Login"));
         tabLayout.addTab(tabLayout.newTab().setText("Signup"));
@@ -79,8 +79,6 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
 
         final LoginAdapter adapter = new LoginAdapter(getSupportFragmentManager(), getLifecycle());
         viewPager.setAdapter(adapter);
-
-        tabLayout.addOnTabSelectedListener(this);
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -94,15 +92,27 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         twitter.setTranslationY(300);
         tabLayout.setTranslationY(300);
         apple.setTranslationY(300);
+        handLeft.setTranslationY(-300);
+        handRight.setTranslationX(300);
+        heart.setRotation(360);
+        hands.setRotation(-360);
 
         final float alpha = 0;
 
+        hands.setAlpha(alpha);
+        heart.setAlpha(alpha);
         facebook.setAlpha(alpha);
         google.setAlpha(alpha);
         twitter.setAlpha(alpha);
         tabLayout.setAlpha(alpha);
         apple.setAlpha(alpha);
+        handLeft.setAlpha(alpha);
+        handRight.setAlpha(alpha);
 
+        hands.animate().rotation(0).alpha(1).setDuration(1000).setStartDelay(350).start();
+        heart.animate().rotation(0).alpha(1).setDuration(1000).setStartDelay(350).start();
+        handRight.animate().translationX(80).alpha(1).setDuration(1000).setStartDelay(300).start();
+        handLeft.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(300).start();
         facebook.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
         google.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(600).start();
         apple.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(800).start();
@@ -113,12 +123,26 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         google.setOnClickListener(this);
         apple.setOnClickListener(this);
         twitter.setOnClickListener(this);
+        tabLayout.addOnTabSelectedListener(this);
+        binding.root.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
     }
 
     @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        viewPager.setCurrentItem(tab.getPosition());
+    public void onTabSelected(@NonNull TabLayout.Tab tab) {
+        int pos = tab.getPosition();
+        viewPager.setCurrentItem(pos);
+        switch (pos) {
+            case 1:
+            case 2:
+//                linearLayoutFabButtons.setTranslationY(300);
+//                linearLayoutFabButtons.setAlpha(0);
+                break;
+            default:
+                linearLayoutFabButtons.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(100).start();
+
+                break;
+        }
     }
 
     @Override
@@ -147,7 +171,7 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(@NonNull View view) {
 
         switch (view.getId()) {
             case R.id.fab_google:
@@ -167,4 +191,35 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         }
 
     }
+
+    public static void hideKeyboard(@NonNull Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        Rect rect = new Rect();
+        final View activityRootView = binding.root;
+        activityRootView.getWindowVisibleDisplayFrame(rect);
+
+        int heightDiff = binding.getRoot().getHeight() - (rect.bottom - rect.top);
+        if (heightDiff > 100) {
+            constraintLayout.setTranslationY(-370);
+        } else {
+            constraintLayout.setTranslationY(0);
+        }
+    }
+
+    public ConstraintLayout getConstraintLayout() {
+        return constraintLayout;
+    }
+
+
 }

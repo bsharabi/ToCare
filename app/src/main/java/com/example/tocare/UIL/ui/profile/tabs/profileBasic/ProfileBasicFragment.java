@@ -1,4 +1,4 @@
-package com.example.tocare.ui.profile.tabs.profileBasic;
+package com.example.tocare.UIL.ui.profile.tabs.profileBasic;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.databinding.FragmentNotificationsBinding;
 import com.example.tocare.databinding.FragmentProfileBasicBinding;
-import com.example.tocare.ui.profile.tabs.profileAdvance.ProfileAdvanceFragment;
 
 public class ProfileBasicFragment extends Fragment {
 
@@ -21,14 +20,17 @@ public class ProfileBasicFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        ProfileBasicViewModel notificationsViewModel =
+        ProfileBasicViewModel profileBasicViewModel =
                 new ViewModelProvider(this).get(ProfileBasicViewModel.class);
 
         binding = FragmentProfileBasicBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textProfileBasic;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textBio = binding.tvBio;
+        profileBasicViewModel.getBio().observe(getViewLifecycleOwner(), textView::setText);
+        profileBasicViewModel.getText().observe(getViewLifecycleOwner(), textBio::setText);
+
         return root;
     }
 

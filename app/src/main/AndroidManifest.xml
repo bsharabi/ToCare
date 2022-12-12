@@ -13,7 +13,15 @@
         android:theme="@style/Theme.ToCare"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.LoginActivity"
+            android:name=".UIL.ui.Activities.ManageUsersActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
+            android:name=".UIL.ui.Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +34,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".UIL.ui.Activities.MainActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

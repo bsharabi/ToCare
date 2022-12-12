@@ -5,7 +5,7 @@ import android.telephony.PhoneNumberUtils;
 import java.net.PasswordAuthentication;
 import java.util.EnumMap;
 
-public class UserValidation {
+public abstract class  UserValidation {
     public static final String userNamePattern = "^[a-zA-Z][a-zA-Z0-9_]{6,19}$";
     public static final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     public static final String passwordPattern = "^(?=(.*[a-z]){3,})(?=(.*[A-Z]){2,})(?=(.*[0-9]){2,})(?=(.*[!@#$%^&*()\\-__+.]){1,}).{8,}$";
@@ -56,9 +56,5 @@ public class UserValidation {
 
     }
 
-    private UserValidation() {
-    }
-
-    ;
 
 }

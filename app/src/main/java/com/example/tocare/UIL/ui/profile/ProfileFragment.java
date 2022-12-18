@@ -12,8 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.tocare.BLL.Adapters.ProfileAdapter;
 import com.example.tocare.R;
-import com.example.tocare.UIL.ui.Activities.LoginActivity;
-import com.example.tocare.UIL.ui.Activities.MainActivity;
+import com.example.tocare.MainActivity;
 import com.example.tocare.databinding.FragmentProfileBinding;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
@@ -23,6 +22,7 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
     private FragmentProfileBinding binding;
     TabLayout tabLayout;
     ViewPager2 viewPager;
+    private MainActivity mainActivity;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,10 +32,10 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        mainActivity = (MainActivity) getActivity();
         final TextView textView = binding.textProfile;
-        binding.tvUserName.setText("Welcome " + MainActivity.currentUser.getFullName());
+        binding.tvUserName.setText("Welcome " + mainActivity.getCurrentUser().getUserName());
         ImageView imageView = binding.imgViewProfile;
-
         String imageURL = ("https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a");
         Picasso.get().load(imageURL).into(imageView);
 

@@ -4,7 +4,7 @@
     <string name="back_to_login"><b>Back to Login</b></string>
     <string name="Password">Password</string>
     <string name="login">Login</string>
-    <string name="forget_password">Forget Password</string>
+    <string name="forget_password">Forget Password?</string>
     <string name="email">Email</string>
     <string name="sing_in_to_continue">Sing in to continue</string>
     <string name="welcome_to_care">Welcome To Care</string>
@@ -47,9 +47,10 @@
     <string name="title_setting">Setting</string>
     <string name="title_signout">Log Out</string>
 
-    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
-    <string name="facebook_application_id" translatable="false">ToCare</string>
-    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
+
+    <string name="facebook_app_id">919221845733311</string>
+    <string name="fb_login_protocol_scheme">fb919221845733311</string>
+    <string name="facebook_client_token">f767b7c592bccac93542b687780dd925</string>
 
 
     <string name="remind_to_take_a_break">Remind me to take a break</string>
@@ -76,6 +77,9 @@
     <string name="root_background">root yellow background profile</string>
     <string name="emailOrPhone">Email or Phone number</string>
     <string name="title_manage_users">Manage users</string>
+    <string name="Phone_number">Phone number</string>
+    <string name="Code_number">Code Number</string>
+    <string name="SendAgain">Resend Verification Code</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

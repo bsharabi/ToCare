@@ -5,7 +5,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UIL.ui.Activities.LoginActivity">
+    tools:context=".LoginActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -14,84 +14,106 @@
         android:src="@drawable/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".34"
+        app:layout_constraintHeight_percent=".40"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintVertical_bias="0"
+        />
 
     <ImageView
         android:id="@+id/imgView_heart"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".15"
+        app:layout_constraintWidth_percent=".30"
         android:layout_marginTop="50dp"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hart"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
     <ImageView
         android:id="@+id/imgView_hands"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".15"
+        app:layout_constraintWidth_percent=".30"
         android:layout_marginTop="50dp"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_hands"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
     <ImageView
         android:id="@+id/imgView_left_hand"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".20"
+        app:layout_constraintWidth_percent=".35"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_left"
         android:translationX="-40dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.21"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="0"
         app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
     <ImageView
         android:id="@+id/imgView_right_hand"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="80dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".20"
+        app:layout_constraintWidth_percent=".35"
         android:contentDescription="@string/todo"
         android:scaleType="centerInside"
         android:src="@drawable/logo_right"
         android:translationX="40dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.15"
+        app:layout_constraintHorizontal_bias="1"
         app:tint="@color/black"
         tools:ignore="ImageContrastCheck" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".4"
+        app:layout_constraintHeight_percent=".05"
         android:fontFamily="sans-serif-medium"
         android:text="@string/welcome_to_care"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgView_heart"
-        app:layout_constraintVertical_bias=".2" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintHorizontal_bias="0.5"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -100,21 +122,107 @@
         android:background="@drawable/vie_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".71"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHeight_percent=".70"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.97">
+        app:layout_constraintVertical_bias="1">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab_layout"
-            app:layout_constraintBottom_toTopOf="@+id/fabButtons"
-           />
+            app:layout_constraintTop_toBottomOf="@+id/tab_layout" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/facebook_circle_color_512"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:maxImageSize="50dp"
+            app:tint="@null" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_google"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/google_logo_png"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.94"
+            app:layout_constraintHorizontal_bias="0.293"
+            app:maxImageSize="40dp"
+            app:tint="@null" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/phone_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.91"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:maxImageSize="45dp"
+            app:tint="@null" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_twitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/twitter_icon_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.94"
+            app:layout_constraintHorizontal_bias="0.705"
+            app:maxImageSize="40dp"
+            app:tint="@null" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_github"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="35dp"
+            android:src="@drawable/github_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:maxImageSize="40dp"
+            app:tint="@null" />
+
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
@@ -128,67 +236,6 @@
             app:layout_constraintVertical_bias="0"
             app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget" />
 
-        <LinearLayout
-            android:id="@+id/fabButtons"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:gravity="center"
-            app:layout_constraintHeight_percent="0.13"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_pager"
-         >
-
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_facebook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                android:elevation="35dp"
-                android:src="@drawable/facebook_circle_color_512"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:tint="@null" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_google"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:backgroundTint="@color/white"
-                android:elevation="35dp"
-                android:src="@drawable/google_logo_png"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:tint="@null" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_apple"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:backgroundTint="@color/white"
-                android:elevation="35dp"
-                android:src="@drawable/apple_icon_2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:tint="@null" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_twitter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:backgroundTint="@color/white"
-                android:elevation="35dp"
-                android:src="@drawable/twitter_icon_2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:tint="@null" />
-
-
-        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             Log.d(TAG, "DocumentReference:failed");
         }
     }
-
+//where
     public UserModel getCurrentUser() {
         return currentUser;
     }

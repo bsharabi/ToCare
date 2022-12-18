@@ -2,6 +2,8 @@ package com.example.tocare.UIL.ui.forgot;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +13,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.tocare.UIL.ui.Activities.LoginActivity;
-import com.example.tocare.UIL.ui.login.LoginFragment;
-import com.example.tocare.databinding.FragmentAdminBinding;
+import com.example.tocare.BLL.Validation.UserValidation;
+import com.example.tocare.LoginActivity;
 import com.example.tocare.databinding.FragmentForgotBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotFragment extends Fragment implements View.OnClickListener {
@@ -31,6 +30,7 @@ public class ForgotFragment extends Fragment implements View.OnClickListener {
     private TextView inputEmail;
     private Button btSubmit;
     private ProgressDialog dialog;
+    private LoginActivity loginActivity;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -38,14 +38,46 @@ public class ForgotFragment extends Fragment implements View.OnClickListener {
 
         binding = FragmentForgotBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        loginActivity = (LoginActivity) getActivity();
 
         final TextView textView = binding.textForgot;
         forgotViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         inputEmail = binding.etEmail;
         btSubmit = binding.btSubmit;
+
         btSubmit.setOnClickListener(this);
         dialog = new ProgressDialog(root.getContext());
+
+
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        btSubmit.setEnabled(false);
+        inputEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (UserValidation.isValidEmail(inputEmail.getText().toString()))
+                    btSubmit.setEnabled(true);
+                else
+                    btSubmit.setEnabled(false);
+
+                System.out.println("------------------------------------------------------------");
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private void forgotPassword(String email) {
@@ -58,7 +90,9 @@ public class ForgotFragment extends Fragment implements View.OnClickListener {
             if (task.isSuccessful()) {
                 Log.d(TAG, "sendPasswordResetEmail:success");
                 Toast.makeText(getContext(), "A password reset email has been sent to you", Toast.LENGTH_LONG).show();
-                LoginActivity.getInstance().getViewPager().setCurrentItem(0);
+                if (getActivity() instanceof LoginActivity) {
+                    ((LoginActivity) getActivity()).swapFragmentByPosition(0);
+                }
                 dialog.dismiss();
             }
         }).addOnFailureListener(e -> {
@@ -89,5 +123,10 @@ public class ForgotFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         String email = inputEmail.getText().toString().trim();
         forgotPassword(email);
+
     }
+
+    //----------------------------------------------Getter&&Setter---------------------------------------
+
+
 }

@@ -1,39 +1,44 @@
 package com.example.tocare.BLL.Departments;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public abstract class UserModel {
+public class UserModel {
 
-    private String id, userName, fullName, phone, bio, imageUrl;
+    private String id, userName, name, lastName, phone, bio, imageUrl;
     private boolean isAdmin;
-    private Map<String, Object> tasks;
+    private List<String> tasks;
 
     //---------------------------- Constructor ----------------------------------
 
-    public UserModel(String id, String userName, String fullName, String phone, String bio, String imageUrl, boolean isAdmin) {
+    public UserModel(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin) {
         this.id = id;
         this.userName = userName;
-        this.fullName = fullName;
+        this.name = name;
+        this.lastName = lastName;
         this.phone = phone;
         this.bio = bio;
         this.imageUrl = imageUrl;
         this.isAdmin = isAdmin;
-        this.tasks = new HashMap<>();
+        this.tasks = new ArrayList<>();
     }
 
-    public UserModel(String id, String userName, String fullName, String phone, String bio, String imageUrl, boolean isAdmin, Map<String, Object> tasks) {
+    public UserModel(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin, List<String> tasks) {
         this.id = id;
         this.userName = userName;
-        this.fullName = fullName;
+        this.name = name;
+        this.lastName = lastName;
         this.phone = phone;
         this.bio = bio;
         this.imageUrl = imageUrl;
         this.isAdmin = isAdmin;
         this.tasks = tasks;
     }
-    public UserModel() {
 
+    public UserModel() {
+        tasks = new ArrayList<>();
     }
 
     //---------------------------- Getter&&Setter -------------------------------
@@ -54,12 +59,22 @@ public abstract class UserModel {
         this.userName = userName;
     }
 
-    public String getFullName() {
-        return fullName;
+
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPhone() {
@@ -94,11 +109,11 @@ public abstract class UserModel {
         isAdmin = admin;
     }
 
-    public Map<String, Object> getTasks() {
+    public List<String> getTasks() {
         return tasks;
     }
 
-    public void setTasks(Map<String, Object> tasks) {
+    public void setTasks(List<String> tasks) {
         this.tasks = tasks;
     }
 
@@ -113,7 +128,8 @@ public abstract class UserModel {
         return "UserModel{" +
                 "id='" + id + '\'' +
                 ", userName='" + userName + '\'' +
-                ", fullName='" + fullName + '\'' +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", bio='" + bio + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +

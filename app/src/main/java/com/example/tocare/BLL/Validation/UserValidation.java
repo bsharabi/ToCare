@@ -10,6 +10,7 @@ public abstract class  UserValidation {
     public static final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     public static final String passwordPattern = "^(?=(.*[a-z]){3,})(?=(.*[A-Z]){2,})(?=(.*[0-9]){2,})(?=(.*[!@#$%^&*()\\-__+.]){1,}).{8,}$";
     public static final String fullNamePattern = "^[a-zA-Z][a-z ]{3,19}$";
+    public static final String codePattern = "^[0-9]{6}$";
 
 
     public static String checkIsEmailOrPhoneNumber(String EmailPhone) {
@@ -26,6 +27,13 @@ public abstract class  UserValidation {
     public static boolean SignUpValidation(String email, String password, String userName, String fullName,String phone,String cPassword) {
 
         return isValidUserName(userName) && isValidFullName(fullName) && isStrongPassword(password) && isValidEmail(email);
+    }
+
+    public static boolean isValidPhone(String Phone) {
+        if (PhoneNumberUtils.isGlobalPhoneNumber(Phone))
+            return true;
+        return false;
+
     }
 
     public static boolean isValidEmail(String email) {
@@ -51,6 +59,12 @@ public abstract class  UserValidation {
 
     public static boolean isValidFullName(String fullName) {
         if (fullName.matches(fullNamePattern))
+            return true;
+        return false;
+
+    }
+    public static boolean isValidCode(String code) {
+        if (code.matches(codePattern))
             return true;
         return false;
 

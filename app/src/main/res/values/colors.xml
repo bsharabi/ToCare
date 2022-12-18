@@ -8,4 +8,5 @@
     <color name="gray_700">#686868</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="facebookBackground">#3b5998</color>
 </resources>

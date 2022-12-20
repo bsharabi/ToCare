@@ -1,4 +1,5 @@
 package com.example.tocare.UIL.ui.phone;
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.tocare.BLL.Validation.UserValidation;
+import com.example.tocare.LoginActivity;
 import com.example.tocare.PhoneLoginActivity;
 import com.example.tocare.R;
 import com.example.tocare.MainActivity;
@@ -28,10 +30,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
-
 import java.util.concurrent.TimeUnit;
 
-public class PhoneCodeFragment extends Fragment implements View.OnClickListener {
+public class PhoneCodeFragment extends Fragment implements View.OnClickListener, TextWatcher {
 
     private FragmentPhoneCodeVerificationBinding binding;
     private EditText inputPhoneCode;
@@ -41,18 +42,14 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener 
     private ProgressDialog dialog;
     private static final String TAG = "PhoneCodeFragment";
     private String mVerificationId;
-    private PhoneLoginActivity phoneLoginActivity ;
-//שינוי המקלדת בעת הזנת קוד
+    private PhoneLoginActivity phoneLoginActivity;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         @Override
         public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
             Log.d(TAG, "onVerificationCompleted:" + credential);
-            System.out.println(credential.getSmsCode());
             verifyPhoneNumberWithCode(credential.getSmsCode());
-
-//                signInWithPhoneAuthCredential(credential);
         }
 
         @Override
@@ -64,14 +61,17 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener 
             } else if (e instanceof FirebaseTooManyRequestsException) {
                 // The SMS quota for the project has been exceeded
             }
-
+            dialog.dismiss();
         }
 
         @Override
         public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
             super.onCodeSent(verificationId, token);
+
             Log.d(TAG, "onCodeSent:" + verificationId);
-            // Save verification ID and resending token so we can use them later
+            Toast.makeText(getContext(), "Code sent ", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+
             mVerificationId = verificationId;
             mResendToken = token;
         }
@@ -89,6 +89,7 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener 
         header = binding.textPhoneCode;
         sendAgain = binding.tvSendAgain;
         imageView = binding.ivPhoneIcon;
+        mVerificationId = requireArguments().getString("verificationId");
         phoneLoginActivity = (PhoneLoginActivity) getActivity();
 
         dialog = new ProgressDialog(root.getContext());
@@ -125,34 +126,26 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener 
         btSubmit.setOnClickListener(this);
         sendAgain.setOnClickListener(this);
         btSubmit.setEnabled(false);
-        inputPhoneCode.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                System.out.println(UserValidation.isValidCode(inputPhoneCode.getText().toString().trim()));
-                if (UserValidation.isValidCode(inputPhoneCode.getText().toString().trim()))
-                    btSubmit.setEnabled(true);
-                else
-                    btSubmit.setEnabled(false);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+        inputPhoneCode.addTextChangedListener(this);
 
 
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (UserValidation.isValidCode(inputPhoneCode.getText().toString().trim()))
+            btSubmit.setEnabled(true);
+        else
+            btSubmit.setEnabled(false);
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
     }
 
     @Override
@@ -160,41 +153,51 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener 
         switch (view.getId()) {
             case R.id.bt_submit:
                 String Code = inputPhoneCode.getText().toString().trim();
-                mVerificationId = requireArguments().getString("verificationId");
                 verifyPhoneNumberWithCode(Code);
                 break;
             case R.id.tv_send_again:
-                resendVerificationCode(requireArguments().getString("phone"), mResendToken);
+                String phone = "+" + requireArguments().getString("countryCode") + requireArguments().getString("phone").substring(1);
+                resendVerificationCode(phone, mResendToken);
                 Toast.makeText(getContext(), "re send Verification Code", Toast.LENGTH_LONG).show();
             default:
                 break;
         }
     }
 
-    public PhoneCodeFragment() {
-    }
-
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        dialog.dismiss();
         FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
+                        if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                            Toast.makeText(getContext(), "This phone number is not registered in the system", Toast.LENGTH_LONG).show();
+                            task.getResult().getUser().delete();
+                            phoneLoginActivity.reload(LoginActivity.class);
+                            return;
+                        }
                         Log.d(TAG, "signInWithCredential:success");
                         phoneLoginActivity.reload(MainActivity.class);
-                    } else {
-                        // Sign in failed, display a message and update the UI
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                            // The verification code entered was invalid
-                        }
                     }
+                }).addOnFailureListener(failure -> {
+                    Log.w(TAG, "signInWithCredential:failure", failure);
+                    if (failure instanceof FirebaseAuthInvalidCredentialsException) {
+                        System.out.println(failure);
+
+                    }
+
                 });
     }
 
     private void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token) {
+        dialog.setMessage("Please wait...");
+        dialog.setTitle("Resend Verification Code");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+
+
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
-                        .setPhoneNumber("+972" + phoneNumber)       // Phone number to verify
+                        .setPhoneNumber(phoneNumber)       // Phone number to verify
                         .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                         .setActivity(getActivity())                 // Activity (for callback binding)
                         .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
@@ -204,10 +207,19 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener 
     }
 
     public void verifyPhoneNumberWithCode(String code) {
+        dialog.setMessage("Please wait...");
+        dialog.setTitle("Verify Phone Number With Code");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
 
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
         signInWithPhoneAuthCredential(credential);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
 }

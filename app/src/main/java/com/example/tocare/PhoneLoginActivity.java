@@ -2,24 +2,17 @@ package com.example.tocare;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import android.content.Intent;
 import android.os.Bundle;
 import com.example.tocare.UIL.ui.phone.PhoneFragment;
 
 public class PhoneLoginActivity extends AppCompatActivity {
 
-    public PhoneLoginActivity() {
-        super(R.layout.activity_phone_login);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_login);
         if (savedInstanceState == null) {
-            Bundle bundle = new Bundle();
-            bundle.putInt("some_int", 0);
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.fragment_container_view, PhoneFragment.class, null)

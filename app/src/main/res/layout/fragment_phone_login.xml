@@ -22,6 +22,25 @@
         app:layout_constraintVertical_bias="0.135"
         app:layout_constraintWidth_percent=".3" />
 
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/country_code"
+        android:layout_width="0dp"
+        app:ccp_defaultPhoneCode="972"
+        android:layout_height="0dp"
+        android:background="@drawable/edittext_bg"
+        app:ccp_autoDetectCountry="true"
+        app:ccp_showNameCode="true"
+        android:gravity="center"
+        app:ccp_textSize="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.052"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_phone_icon"
+        app:layout_constraintVertical_bias="0.190"
+
+        app:layout_constraintWidth_percent=".8" />
+
     <TextView
         android:id="@+id/text_phone"
         android:layout_width="wrap_content"
@@ -37,7 +56,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/et_phone"
         app:layout_constraintTop_toBottomOf="@+id/iv_phone_icon"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.419"
         app:layout_constraintWidth_percent="1" />
 
     <EditText
@@ -59,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_phone_icon"
-        app:layout_constraintVertical_bias="0.196"
+        app:layout_constraintVertical_bias="0.307"
         app:layout_constraintWidth_percent=".8" />
 
     <Button

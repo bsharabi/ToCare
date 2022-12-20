@@ -25,7 +25,6 @@ public class ProfileAdapter extends FragmentStateAdapter {
                 return ProfileBasicFragment.getInstance();
             case 1:
                 return ProfileAdvanceFragment.getInstance();
-
             default:
                 return null;
         }

@@ -78,6 +78,29 @@
         app:layout_constraintVertical_bias="0.0"
         app:layout_constraintWidth_percent=".4" />
 
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/country_picker"
+        android:layout_width="0dp"
+        app:ccp_defaultPhoneCode="972"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edittext_bg"
+        android:paddingTop="0dp"
+        android:paddingBottom="4dp"
+        app:ccp_countryAutoDetectionPref="NETWORK_LOCALE"
+        app:ccp_autoDetectCountry="true"
+        app:ccp_showNameCode="true"
+        app:ccp_countryPreference="us,in"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_name"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent=".295"
+        />
+
     <EditText
         android:id="@+id/et_phone"
         android:layout_width="0dp"
@@ -96,11 +119,11 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintHorizontal_bias=".8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_name"
         app:layout_constraintVertical_bias="0"
-        app:layout_constraintWidth_percent=".8" />
+        app:layout_constraintWidth_percent=".5" />
 
     <EditText
         android:id="@+id/et_email"

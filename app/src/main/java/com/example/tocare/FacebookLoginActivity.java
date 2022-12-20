@@ -15,6 +15,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsLogger;
 import com.example.tocare.BLL.Departments.Admin;
 import com.example.tocare.BLL.Departments.UserModel;
@@ -58,15 +61,23 @@ public class FacebookLoginActivity extends AppCompatActivity {
         dialog.setTitle("Login with Facebook");
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
-        AccessToken.setCurrentAccessToken(null);
+//        AccessToken.setCurrentAccessToken(null);
 //        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
         signInWithFacebook();
+        createRegisterCallback();
 
+    }
 
+    private void signInWithFacebook() {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+    }
+
+    private void createRegisterCallback() {
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
+
                         Log.d(TAG, "facebook:onSuccess:" + loginResult);
                         handleFacebookAccessToken(loginResult.getAccessToken());
                     }
@@ -81,46 +92,54 @@ public class FacebookLoginActivity extends AppCompatActivity {
                         Log.d(TAG, "facebook:onError", exception);
                     }
                 });
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         dialog.dismiss();
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        boolean callBackResult = callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (callBackResult)
+            reload(LoginActivity.class);
 
     }
 
-
-    private void signInWithFacebook() {
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
-    }
 
     private void handleFacebookAccessToken(@NonNull AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-        dialog.dismiss();
+
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success");
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        dialog.dismiss();
+                        if (task.getResult().getAdditionalUserInfo().isNewUser())
+                            buildFacebookData(task.getResult().getUser(), token);
                         reload(MainActivity.class);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        Toast.makeText(FacebookLoginActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
-
                     }
                 }).addOnFailureListener(failure -> {
-
-
+                    Log.w(TAG, "signInWithCredential:failure", failure);
+                    dialog.dismiss();
+                    Toast.makeText(FacebookLoginActivity.this, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show();
+                    reload(LoginActivity.class);
                 });
     }
 
-    private void updateFacebookData(FirebaseUser firebaseUser) {
+    private void buildFacebookData(FirebaseUser firebaseUser, AccessToken token) {
+//        new GraphRequest(
+//                AccessToken.getCurrentAccessToken(),
+//                "/{person-id}/",
+//                null,
+//                HttpMethod.GET,
+//                new GraphRequest.Callback() {
+//                    public void onCompleted(GraphResponse response) {
+//                        /* handle the result */
+//                    }
+//                }
+//        ).executeAsync();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (account != null) {
             UserModel userModel = new Admin(

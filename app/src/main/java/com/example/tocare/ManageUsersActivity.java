@@ -1,14 +1,12 @@
-package com.example.tocare.UIL.ui.Activities;
+package com.example.tocare;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.InflateException;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.tocare.R;
 import com.example.tocare.databinding.ActivityManageUsersBinding;
 
 public class ManageUsersActivity extends AppCompatActivity {

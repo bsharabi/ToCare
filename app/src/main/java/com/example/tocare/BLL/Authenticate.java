@@ -8,16 +8,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.tocare.DLL.Auth;
-import com.example.tocare.DLL.DataBase;
 import com.example.tocare.BLL.Departments.UserModel;
 import com.example.tocare.BLL.Validation.UserValidation;
-import com.example.tocare.UIL.ui.login.LoginFragment;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Authenticate {
     private static ProgressDialog dialog;
@@ -57,11 +56,11 @@ public class Authenticate {
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
 
-        Auth.getInstance().getAuth().signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG_SIGN_IN, "signInWithEmail:success");
-                firebaseUser = Auth.getInstance().getAuth().getCurrentUser();
+                firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                 updateUI(context);
 
             }
@@ -73,12 +72,12 @@ public class Authenticate {
 
     public void createAccountWithEmail(String email, String password, String userName, String phone, @NonNull Context context) {
 
-        Auth.getInstance().getAuth().createUserWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG_SIGN_UP, "createUserWithEmail:success");
-                        firebaseUser = Auth.getInstance().getAuth().getCurrentUser();
+                        firebaseUser =  FirebaseAuth.getInstance().getCurrentUser();
                         firebaseUser.updateEmail(email);
                         firebaseUser.updatePassword(password);
                         UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
@@ -120,13 +119,13 @@ public class Authenticate {
     private void updateUI(@NonNull Context context) {
         if (firebaseUser != null) {
             System.out.println(firebaseUser.getDisplayName());
-            DocumentReference reference = DataBase.getInstance().getFireStore().collection("User")
+            DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
                     .document(firebaseUser.getUid());
             reference.addSnapshotListener((value, error) -> {
                 dialog.dismiss();
                 userModel = (UserModel) value.toObject(UserModel.class);
                 Toast.makeText(context, "Login successful", Toast.LENGTH_LONG).show();
-                LoginFragment.getInstance().nextActivity();
+
             });
         } else {
             Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show();
@@ -140,12 +139,12 @@ public class Authenticate {
 
     public void createAccountWithPhone(String email, String password, String userName, String phone, @NonNull Context context) {
 
-        Auth.getInstance().getAuth().createUserWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG_SIGN_UP, "createUserWithEmail:success");
-                        firebaseUser = Auth.getInstance().getAuth().getCurrentUser();
+                        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         firebaseUser.updateEmail(email);
                         firebaseUser.updatePassword(password);
                         UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
@@ -198,7 +197,8 @@ public class Authenticate {
     }
 
     public void ResetPassword(String EmailAddress) {
-        Auth.getInstance().getAuth().sendPasswordResetEmail(EmailAddress)
+       FirebaseAuth.getInstance()
+               .sendPasswordResetEmail(EmailAddress)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG_SIGN_IN, "Email sent.");

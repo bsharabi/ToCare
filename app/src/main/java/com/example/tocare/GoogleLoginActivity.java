@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.tocare.BLL.Departments.Admin;
 import com.example.tocare.BLL.Departments.UserModel;
 import com.facebook.AccessToken;
@@ -60,7 +58,6 @@ public class GoogleLoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         dialog.dismiss();
-//         Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
@@ -79,14 +76,13 @@ public class GoogleLoginActivity extends AppCompatActivity {
             // Google Sign In was successful, authenticate with Firebase
             GoogleSignInAccount acc = completedTsk.getResult(ApiException.class);
             Log.w(TAG, "signInWithGoogle:success");
-            Toast.makeText(this, "Signed In Successfully", Toast.LENGTH_SHORT).show();
             FirebaseGoogleAuth(acc);
 
         } catch (ApiException e) {
             // Google Sign In failed, update UI appropriately
             Log.w(TAG, "signInWithGoogle:failed", e);
             Toast.makeText(this, "Sign In Failed", Toast.LENGTH_SHORT).show();
-            FirebaseGoogleAuth(null);
+            reload(LoginActivity.class);
         }
     }
 
@@ -96,18 +92,19 @@ public class GoogleLoginActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signInWithCredential(authCredential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 Log.w(TAG, "signInWithGoogle:success");
-                Toast.makeText(GoogleLoginActivity.this, "Successful", Toast.LENGTH_SHORT).show();
-                updateGoogleData(task.getResult().getUser());
-
+                Toast.makeText(this, "Signed In Successfully", Toast.LENGTH_SHORT).show();
+                if (task.getResult().getAdditionalUserInfo().isNewUser())
+                    buildGoogleData(task.getResult().getUser());
                 reload(MainActivity.class);
             }
         }).addOnFailureListener(this, e -> {
-            Toast.makeText(GoogleLoginActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sign In Failed", Toast.LENGTH_SHORT).show();
             Log.w(TAG, "signInWithGoogle:failed", e);
+            reload(LoginActivity.class);
         });
     }
 
-    private void updateGoogleData(FirebaseUser firebaseUser) {
+    private void buildGoogleData(FirebaseUser firebaseUser) {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (account != null) {
             UserModel userModel = new Admin(
@@ -141,6 +138,12 @@ public class GoogleLoginActivity extends AppCompatActivity {
         Intent intent = new Intent(GoogleLoginActivity.this, name);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         finish();
     }
 }

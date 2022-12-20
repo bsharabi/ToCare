@@ -1,12 +1,16 @@
 package com.example.tocare.BLL.Departments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Task {
 
-    private String name, type, Description;
+    private String name, type, description;
     private String status;
     private int priority;
+    private String permission;
+    private String accessibility;
+    private  String author;
     private List<String> imagesUrl;
 
 
@@ -15,13 +19,35 @@ public class Task {
     public Task(String name, String type, String description, String status, int priority, List<String> imagesUrl) {
         this.name = name;
         this.type = type;
-        Description = description;
+        this.description = description;
         this.status = status;
         this.priority = priority;
         this.imagesUrl = imagesUrl;
     }
 
+    public Task(String name, String type, String description, String status, int priority, String author, List<String> imagesUrl) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.author = author;
+        this.imagesUrl = imagesUrl;
+    }
+
+    public Task() {
+        imagesUrl=new ArrayList<>();
+    }
     //---------------------------- Getter&&Setter -------------------------------
+
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
     public String getName() {
         return name;
@@ -40,11 +66,11 @@ public class Task {
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     public int getPriority() {
@@ -82,7 +108,7 @@ public class Task {
         return "Task{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", Description='" + Description + '\'' +
+                ", Description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", priority=" + priority +
                 ", imagesUrl=" + imagesUrl +

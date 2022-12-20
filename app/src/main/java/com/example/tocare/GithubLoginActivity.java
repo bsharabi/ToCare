@@ -1,34 +1,42 @@
 package com.example.tocare;
 
+import static com.example.tocare.BLL.Validation.UserValidation.*;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.tocare.BLL.Validation.UserValidation;
+import com.example.tocare.BLL.Departments.Admin;
+import com.example.tocare.BLL.Departments.UserModel;
+
 import com.example.tocare.databinding.ActivityGithubLoginBinding;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.OAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.hbb20.CountryCodePicker;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GithubLoginActivity extends AppCompatActivity {
+
     private ActivityGithubLoginBinding binding;
-    private EditText inputEmail;
+    private static final String TAG = "GithubLoginActivity";
+    private ProgressDialog dialog;
+    private EditText inputEmail, inputName, inputLastName, inputUserName;
+    private CountryCodePicker ccp;
     private Button btLogin;
     private FirebaseAuth mAuth;
 
@@ -39,28 +47,40 @@ public class GithubLoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         inputEmail = binding.etEmail;
+        inputName = binding.etName;
+        inputUserName = binding.etUserName;
+        inputLastName = binding.etLastName;
+        ccp = binding.countryPicker;
+        ccp.registerCarrierNumberEditText(binding.etPhone);
+
         btLogin = binding.btLogin;
         mAuth = FirebaseAuth.getInstance();
+        dialog = new ProgressDialog(this);
+        btLogin.setOnClickListener(view -> {
+            String name, lastName, phone, email, userName;
+            name = inputName.getText().toString().trim();
+            lastName = inputLastName.getText().toString().trim();
+            email = inputEmail.getText().toString().trim();
+            phone = ccp.getFullNumberWithPlus();
+            userName = inputUserName.getText().toString().trim();
+            if (isValidEmail(email) &&isValidUserName(userName))
+                SignInWithGitHub(email);
+            else {
+                inputEmail.setError("Email error");
+                Toast.makeText(GithubLoginActivity.this, "Email error", Toast.LENGTH_LONG).show();
 
-        btLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                SignInWithGitHub();
             }
         });
 
     }
 
-    private void SignInWithGitHub() {
+    private void SignInWithGitHub(String email) {
+        dialog.setMessage("Please wait..");
+        dialog.setTitle("Login with Github");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
 
-        String email = inputEmail.getText().toString().trim();
-        if (UserValidation.isValidEmail(email)) {
-            handleSignInResult(email);
-        } else {
-            Toast.makeText(GithubLoginActivity.this, "Email error", Toast.LENGTH_LONG).show();
-        }
-
+        handleSignInResult(email);
 
     }
 
@@ -76,83 +96,74 @@ public class GithubLoginActivity extends AppCompatActivity {
                 };
         provider.setScopes(scopes);
 
+
         Task<AuthResult> pendingResultTask = mAuth.getPendingAuthResult();
         if (pendingResultTask != null) {
-            // There's something already here! Finish the sign-in for your user.
             pendingResultTask
                     .addOnSuccessListener(
-                            new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    // User is signed in.
-                                    // IdP data available in
-                                    // authResult.getAdditionalUserInfo().getProfile().
-                                    // The OAuth access token can also be retrieved:
-                                    // ((OAuthCredential)authResult.getCredential()).getAccessToken().
-                                }
+                            authResult -> {
+                                Log.d(TAG, "signInWithCredential:success");
+                                if (authResult.getAdditionalUserInfo().isNewUser())
+                                    buildGithubData(authResult.getUser());
+                                reload(MainActivity.class);
+
                             })
                     .addOnFailureListener(
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Handle failure.
-                                    Toast.makeText(GithubLoginActivity.this, " error", Toast.LENGTH_LONG).show();
-                                }
+                            e -> {
+                                // Handle failure.
+                                Log.w(TAG, "signInWithCredential:failure", e);
+                                Toast.makeText(GithubLoginActivity.this, " error", Toast.LENGTH_LONG).show();
+                                reload(LoginActivity.class);
                             });
         } else {
             mAuth
                     .startActivityForSignInWithProvider(/* activity= */ GithubLoginActivity.this, provider.build())
                     .addOnSuccessListener(
-                            new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    System.out.println("-------------------------------------"+authResult.getUser().getDisplayName());
-                                    reload(MainActivity.class);
-                                    // User is signed in.
-                                    // IdP data available in
-                                    // authResult.getAdditionalUserInfo().getProfile().
-                                    // The OAuth access token can also be retrieved:
-                                    // ((OAuthCredential)authResult.getCredential()).getAccessToken().
-                                }
+                            authResult -> {
+
+                                Log.d(TAG, "signInWithCredential:success");
+                                if (authResult.getAdditionalUserInfo().isNewUser())
+                                    buildGithubData(authResult.getUser());
+                                reload(MainActivity.class);
+
                             })
                     .addOnFailureListener(
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Handle failure.
-                                    Toast.makeText(GithubLoginActivity.this, " error", Toast.LENGTH_LONG).show();
-                                }
+                            e -> {
+                                // Handle failure.
+                                Log.w(TAG, "signInWithCredential:failure", e);
+                                Toast.makeText(GithubLoginActivity.this, " error", Toast.LENGTH_LONG).show();
+                                reload(LoginActivity.class);
                             });
         }
+        dialog.dismiss();
     }
 
-    private void updateGithubData(FirebaseUser firebaseUser) {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-//        if (account != null) {
-//            UserModel userModel = new Admin(
-//                    firebaseUser.getUid(),
-//                    account.getDisplayName(),
-//                    account.getGivenName(),
-//                    account.getFamilyName(),
-//                    "",
-//                    "Hello my name is " + account.getDisplayName(),
-//                    "https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a",
-//                    true);
-//            DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
-//                    .document(firebaseUser.getUid());
-//            reference.set(userModel)
-//                    .addOnCompleteListener(task1 -> {
-//                        if (task1.isSuccessful()) {
-//                            dialog.dismiss();
-//                            Log.d(TAG, "DocumentReference:success");
-//                            Toast.makeText(this, "The details have been successfully registered", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }).addOnFailureListener(e -> {
-//                        dialog.dismiss();
-//                        Log.d(TAG, "DocumentReference:failed");
-//                        Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    });
-//        }
+    private void buildGithubData(FirebaseUser firebaseUser) {
+
+        UserModel userModel = new Admin(
+                firebaseUser.getUid(),
+                inputUserName.getText().toString().trim(),
+                inputName.getText().toString().trim(),
+                inputLastName.getText().toString().trim(),
+                ccp.getFullNumberWithPlus(),
+                "Hello my name is     " + inputUserName.getText().toString(),
+                "https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a",
+                true);
+        DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
+                .document(firebaseUser.getUid());
+        reference.set(userModel)
+                .addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        dialog.dismiss();
+                        Log.d(TAG, "DocumentReference:success");
+                        Toast.makeText(this, "The details have been successfully registered", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(e -> {
+                    dialog.dismiss();
+                    Log.d(TAG, "DocumentReference:failed");
+                    Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
 
     }
 

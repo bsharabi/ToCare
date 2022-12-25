@@ -8,10 +8,12 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 
 import com.example.tocare.BLL.Adapters.LoginAdapter;
 import com.example.tocare.databinding.ActivityLoginBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,14 +44,13 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
 
 
 
-
-
     @Override
     protected void onStart() {
         super.onStart();
     }
 
     public void reload(Class<?> name) {
+        Log.d(TAG, "Reload:nextScreen");
         Intent intent = new Intent(LoginActivity.this, name);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -228,10 +230,28 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
                 reload(TwitterLoginActivity.class);
                 break;
             case R.id.fab_phone:
-                reload(PhoneLoginActivity.class);
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("Login via phone")
+                        .setMessage("Attempting to log in using this method is only possible for the user and not for the admin.\n" +
+                                "Would you still like to continue?")
+                        .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                reload(PhoneLoginActivity.class);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .show();
+
                 break;
             default:
                 break;
+
         }
 
     }

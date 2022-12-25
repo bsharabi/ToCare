@@ -43,6 +43,12 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
     private ProgressDialog dialog;
 
 
+    //להעביר את האיימיל מהלוגין לרישום ולשחזור סיסמא
+//לשמור בזיכרון הלוקלי את המייל האחרון שהתחבר
+    //הוספת סמן טעינה בשליחת קוד חיבור וכדומה
+    //לבטל את הבדיקה של אימות אימייל בעבור אפי גוגל פייסבוק וכו.
+    //שינוי שיטת הפרגמנטים לרישום עם טלפון
+
 
     @Override
     protected void onStart() {

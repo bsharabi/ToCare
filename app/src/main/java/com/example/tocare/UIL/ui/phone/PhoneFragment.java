@@ -38,7 +38,6 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
     private ImageView imageView;
     private ProgressDialog dialog;
     private String Phone;
-    private static PhoneFragment single_instance = null;
     private static final String TAG = "PhoneFragment";
     private String mVerificationId;
     private String countryCode;

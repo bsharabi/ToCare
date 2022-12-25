@@ -1,6 +1,7 @@
 package com.example.tocare.BLL.Departments;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Task {
@@ -10,11 +11,27 @@ public class Task {
     private int priority;
     private String permission;
     private String accessibility;
+    private Date created;
+    private Date done;
     private  String author;
     private List<String> imagesUrl;
 
 
     //---------------------------- Constructor ----------------------------------
+
+    public Task(String name, String type, String description, String status, int priority, String permission, String accessibility, Date created, Date done, String author, List<String> imagesUrl) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.permission = permission;
+        this.accessibility = accessibility;
+        this.created = created;
+        this.done = done;
+        this.author = author;
+        this.imagesUrl = imagesUrl;
+    }
 
     public Task(String name, String type, String description, String status, int priority, List<String> imagesUrl) {
         this.name = name;
@@ -40,6 +57,38 @@ public class Task {
     }
     //---------------------------- Getter&&Setter -------------------------------
 
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
+    public String getAccessibility() {
+        return accessibility;
+    }
+
+    public void setAccessibility(String accessibility) {
+        this.accessibility = accessibility;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getDone() {
+        return done;
+    }
+
+    public void setDone(Date done) {
+        this.done = done;
+    }
 
     public String getAuthor() {
         return author;
@@ -97,21 +146,11 @@ public class Task {
         this.status = status;
     }
 
+
     //---------------------------- Methods --------------------------------------
 
 
     //---------------------------- Override --------------------------------------
 
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", Description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", priority=" + priority +
-                ", imagesUrl=" + imagesUrl +
-                '}';
-    }
 }

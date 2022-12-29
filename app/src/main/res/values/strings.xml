@@ -24,7 +24,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="reset_password">Reset your password</string>
+    <string name="reset_password">Reset your password...</string>
     <string name="submit">Submit</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -82,6 +82,7 @@
     <string name="SendAgain">Resend Verification Code</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="description">Description</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

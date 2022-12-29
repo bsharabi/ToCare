@@ -2,9 +2,6 @@ package com.example.tocare.BLL.Validation;
 
 import android.telephony.PhoneNumberUtils;
 
-import java.net.PasswordAuthentication;
-import java.util.EnumMap;
-
 public abstract class  UserValidation {
     public static final String userNamePattern = "^[a-zA-Z][a-zA-Z0-9_]{6,19}$";
     public static final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";

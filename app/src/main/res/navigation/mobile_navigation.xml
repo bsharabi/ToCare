@@ -5,33 +5,33 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_feed">
 
-    <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.example.tocare.UIL.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_task"
-        android:name="com.example.tocare.UIL.ui.task.TaskFragment"
+        android:name="com.example.tocare.UIL.task.TaskFragment"
         android:label="@string/title_task"
         tools:layout="@layout/fragment_task" />
 
     <fragment
         android:id="@+id/navigation_feed"
-        android:name="com.example.tocare.UIL.ui.feed.FeedsFragment"
+        android:name="com.example.tocare.UIL.FeedsFragment"
         android:label="@string/title_feed"
         tools:layout="@layout/fragment_feed" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.tocare.UIL.ui.notifications.NotificationsFragment"
+        android:name="com.example.tocare.UIL.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_calender"
-        android:name="com.example.tocare.UIL.ui.calendars.CalendarsFragment"
+        android:name="com.example.tocare.UIL.CalendarsFragment"
         android:label="@string/title_calender"
         tools:layout="@layout/fragment_calendars" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.tocare.UIL.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

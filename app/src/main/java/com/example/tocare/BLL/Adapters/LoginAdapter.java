@@ -1,15 +1,12 @@
 package com.example.tocare.BLL.Adapters;
-
-
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import com.example.tocare.UIL.ui.forgot.ForgotFragment;
-import com.example.tocare.UIL.ui.login.LoginFragment;
-import com.example.tocare.UIL.ui.signup.SignupFragment;
+import com.example.tocare.UIL.ForgotFragment;
+import com.example.tocare.UIL.LoginFragment;
+import com.example.tocare.UIL.signup.SignupFragment;
 
 
 public class LoginAdapter extends FragmentStateAdapter {
@@ -25,11 +22,11 @@ public class LoginAdapter extends FragmentStateAdapter {
         System.out.println(position);
         switch (position) {
             case 0:
-                return LoginFragment.getInstance();
+                return new LoginFragment();
             case 1:
-                return SignupFragment.getInstance();
+                return new  SignupFragment();
             case 2:
-                return ForgotFragment.getInstance();
+                return new ForgotFragment();
             default:
                 return null;
         }

@@ -4,7 +4,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".UIL.ui.profile.tabs.profileAdvance.ProfileAdvanceFragment">
+tools:context=".UIL.profile.tabs.profileAdvance.ProfileAdvanceFragment">
 
 <TextView
     android:id="@+id/text_profile_advance"

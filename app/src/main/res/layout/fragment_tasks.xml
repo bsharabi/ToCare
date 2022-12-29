@@ -4,28 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UIL.users.UsersFragment">
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+    tools:context=".UIL.task.TasksFragment">
+
+    <TextView
+        android:id="@+id/text_home"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/orange_500"
-        android:tint="?attr/colorControlNormal"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="This is task fragment"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-        />
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/idRVUser"
+        android:id="@+id/rv_task_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.92"
-        app:layout_constraintTop_toBottomOf="@+id/topAppBar"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.94"
+        app:layout_constraintTop_toBottomOf="@+id/text_home"
+        app:layout_constraintVertical_bias="1" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_user"
+        android:id="@+id/fab_add_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -33,7 +41,7 @@
         android:backgroundTint="@color/white"
         android:contentDescription="@string/fab_content_desc"
         app:borderWidth="0dp"
-        app:fabSize="normal"
+        app:fabSize="mini"
         app:hoveredFocusedTranslationZ="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,5 +49,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_baseline_add_24"
         app:tint="@color/orange_500" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

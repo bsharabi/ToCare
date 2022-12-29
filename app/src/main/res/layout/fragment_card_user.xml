@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UIL.ui.users.UserCardFragment">
+    tools:context=".UIL.users.UserCardFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
@@ -24,10 +24,10 @@
         android:src="@drawable/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".34"
+        app:layout_constraintHeight_percent=".40"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.111" />
+        app:layout_constraintVertical_bias="0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -41,108 +41,28 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1">
 
-        <EditText
-            android:id="@+id/et_user_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
-            android:drawableStart="@drawable/ic_baseline_person_24"
-            android:drawablePadding="16dp"
-            android:hint="@string/username"
-            android:inputType="text"
-            android:padding="10dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="tapoh11"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/constraintLayout"
-            app:layout_constraintVertical_bias="0.221"
-            app:layout_constraintWidth_percent=".8" />
-
-        <EditText
-            android:id="@+id/et_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edittext_bg"
-            android:drawableStart="@drawable/ic_baseline_person_24"
-            android:drawablePadding="16dp"
-            android:hint="@string/name"
-            android:inputType="text"
-            android:padding="10dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="Barak"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.166"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_user_name"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent=".4" />
-
-        <EditText
-            android:id="@+id/et_last_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edittext_bg"
-            android:drawableStart="@drawable/ic_baseline_person_24"
-            android:drawablePadding="16dp"
-            android:hint="@string/last_name"
-            android:inputType="text"
-            android:padding="10dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="Sharabi"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.837"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_user_name"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent=".4" />
-
-
-        <EditText
-            android:id="@+id/ttv_bio"
-            android:layout_width="0dp"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager_profile"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/edittext_bg"
-            android:hint="Bio"
-            android:gravity="left"
-            android:padding="5dp"
-            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintHeight_percent=".905"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_last_name"
-            app:layout_constraintWidth_percent="0.8" />
+            app:layout_constraintTop_toBottomOf="@+id/tab_layout_profile"
+            app:layout_constraintVertical_bias="0" />
 
-        <Button
-            android:id="@+id/bt_submit"
-            android:layout_width="0dp"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout_profile"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_bg"
-            android:padding="0dp"
-            android:text="@string/submit"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:background="@drawable/vie_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ttv_bio"
-            app:layout_constraintVertical_bias="0.185"
-            app:layout_constraintWidth_percent=".8" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView

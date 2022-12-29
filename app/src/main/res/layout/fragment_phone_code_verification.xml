@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UIL.ui.phone.PhoneCodeFragment">
+    tools:context=".UIL.phone.PhoneCodeFragment">
 
 
     <ImageView
@@ -28,7 +28,7 @@
         android:layout_margin="10dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:text="Verification Code"
+        android:text="Code verification"
         android:textAlignment="center"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/et_phone_code"

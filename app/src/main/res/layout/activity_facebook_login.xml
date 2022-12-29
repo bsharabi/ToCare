@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/facebookBackground"
-    tools:context=".FacebookLoginActivity">
+    tools:context=".Controller.FacebookLoginActivity">
 
     <ImageView
         android:id="@+id/imageView2"

@@ -1,16 +1,12 @@
-package com.example.tocare;
+package com.example.tocare.Controller;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +15,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
+import com.example.tocare.R;
 import com.example.tocare.BLL.Adapters.LoginAdapter;
 import com.example.tocare.databinding.ActivityLoginBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -38,22 +35,6 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
     private FloatingActionButton facebook, google, github, twitter, phone;
     private ImageView heart, handLeft, handRight, hands;
     private ConstraintLayout constraintLayout;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
-    private ProgressDialog dialog;
-
-
-    //להעביר את האיימיל מהלוגין לרישום ולשחזור סיסמא
-//לשמור בזיכרון הלוקלי את המייל האחרון שהתחבר
-    //הוספת סמן טעינה בשליחת קוד חיבור וכדומה
-    //לבטל את הבדיקה של אימות אימייל בעבור אפי גוגל פייסבוק וכו.
-    //שינוי שיטת הפרגמנטים לרישום עם טלפון
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
     public void reload(Class<?> name) {
         Log.d(TAG, "Reload:nextScreen");
@@ -62,6 +43,7 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         startActivity(intent);
         finish();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +73,6 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         handRight = binding.imgViewRightHand;
         hands = binding.imgViewHands;
         phone = binding.fabPhone;
-        dialog = new ProgressDialog(this);
 
         tabLayout.addTab(tabLayout.newTab().setText("Login"));
         tabLayout.addTab(tabLayout.newTab().setText("Signup"));
@@ -141,8 +122,6 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         binding.root.getViewTreeObserver().addOnGlobalLayoutListener(this);
         phone.setOnClickListener(this);
 
-        sharedPreferences = getSharedPreferences("Auth", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
     }
 
     public void swapFragmentByPosition(int position) {
@@ -278,13 +257,4 @@ public class LoginActivity extends AppCompatActivity implements TabLayout.OnTabS
         }
     }
 
-    //------------------------------------------------Getter&&Setter--------------------------------------------
-
-    public SharedPreferences.Editor getEditor() {
-        return editor;
-    }
-
-    public SharedPreferences getSharedPreferences() {
-        return sharedPreferences;
-    }
 }

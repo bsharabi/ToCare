@@ -1,4 +1,4 @@
-package com.example.tocare.BLL.Departments;
+package com.example.tocare.BLL.Model;
 
 import java.io.Serializable;
 
@@ -41,17 +41,7 @@ public abstract class  UserModel implements Serializable {
 
     }
 
-    public UserModel(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin, Tasks tasks) {
-        this.id = id;
-        this.userName = userName;
-        this.name = name;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.bio = bio;
-        this.imageUrl = imageUrl;
-        this.isAdmin = isAdmin;
 
-    }
 
     public UserModel() {
 
@@ -131,17 +121,17 @@ public abstract class  UserModel implements Serializable {
     //---------------------------- Override --------------------------------------
 
 
-//    @Override
-//    public String toString() {
-//        return "UserModel{" +
-//                "id='" + id + '\'' +
-//                ", userName='" + userName + '\'' +
-//                ", name='" + name + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                ", phone='" + phone + '\'' +
-//                ", bio='" + bio + '\'' +
-//                ", imageUrl='" + imageUrl + '\'' +
-//                ", isAdmin=" + isAdmin +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "id='" + id + '\'' +
+                ", userName='" + userName + '\'' +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", bio='" + bio + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", isAdmin=" + isAdmin +
+                '}';
+    }
 }

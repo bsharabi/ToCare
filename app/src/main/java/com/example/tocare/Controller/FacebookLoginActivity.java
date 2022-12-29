@@ -1,26 +1,21 @@
-package com.example.tocare;
+package com.example.tocare.Controller;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.appevents.AppEventsLogger;
-import com.example.tocare.BLL.Departments.Admin;
-import com.example.tocare.BLL.Departments.UserModel;
+import com.example.tocare.DAL.Login;
+import com.example.tocare.R;
+import com.example.tocare.BLL.Model.Admin;
+import com.example.tocare.DAL.Data;
+import com.example.tocare.BLL.Listener.FirebaseCallback;
+import com.example.tocare.BLL.Model.UserModel;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,16 +28,15 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 
-public class FacebookLoginActivity extends AppCompatActivity {
+public class FacebookLoginActivity extends AppCompatActivity implements FirebaseCallback {
 
     private CallbackManager callbackManager;
     private static final String TAG = "FacebookLoginActivity";
     private ProgressDialog dialog;
+    private Login login;
 
 
     @Override
@@ -56,7 +50,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
         callbackManager = CallbackManager.Factory.create();
-
+        login = Login.getInstance();
         dialog.setMessage("Please wait..");
         dialog.setTitle("Login with Facebook");
         dialog.setCanceledOnTouchOutside(false);
@@ -77,7 +71,6 @@ public class FacebookLoginActivity extends AppCompatActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-
                         Log.d(TAG, "facebook:onSuccess:" + loginResult);
                         handleFacebookAccessToken(loginResult.getAccessToken());
                     }
@@ -116,8 +109,8 @@ public class FacebookLoginActivity extends AppCompatActivity {
                         Log.d(TAG, "signInWithCredential:success");
                         dialog.dismiss();
                         if (task.getResult().getAdditionalUserInfo().isNewUser())
-                            buildFacebookData(task.getResult().getUser(), token);
-                        reload(MainActivity.class);
+//                            buildFacebookData(task.getResult().getUser(), token);
+                            reload(MainActivity.class);
                     }
                 }).addOnFailureListener(failure -> {
                     Log.w(TAG, "signInWithCredential:failure", failure);
@@ -129,17 +122,6 @@ public class FacebookLoginActivity extends AppCompatActivity {
     }
 
     private void buildFacebookData(FirebaseUser firebaseUser, AccessToken token) {
-//        new GraphRequest(
-//                AccessToken.getCurrentAccessToken(),
-//                "/{person-id}/",
-//                null,
-//                HttpMethod.GET,
-//                new GraphRequest.Callback() {
-//                    public void onCompleted(GraphResponse response) {
-//                        /* handle the result */
-//                    }
-//                }
-//        ).executeAsync();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (account != null) {
             UserModel userModel = new Admin(
@@ -151,20 +133,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
                     "Hello my name is " + account.getDisplayName(),
                     "https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a",
                     true);
-            DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
-                    .document(firebaseUser.getUid());
-            reference.set(userModel)
-                    .addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            dialog.dismiss();
-                            Log.d(TAG, "DocumentReference:success");
-                            Toast.makeText(this, "The details have been successfully registered", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(e -> {
-                        dialog.dismiss();
-                        Log.d(TAG, "DocumentReference:failed");
-                        Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            login.createUserData(firebaseUser, userModel, this);
         }
 
     }
@@ -174,5 +143,27 @@ public class FacebookLoginActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onCallback(boolean success, Exception e, FirebaseUser user) {
+        if (success) {
+            Log.d(TAG, "DocumentReference:success");
+            Toast.makeText(this, "The details have been successfully registered", Toast.LENGTH_SHORT).show();
+        } else {
+            dialog.dismiss();
+            Log.d(TAG, "DocumentReference:failed");
+            Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onSuccess(boolean success, Exception e) {
+
+    }
+
+    @Override
+    public void onComplete(boolean success, Exception e) {
+
     }
 }

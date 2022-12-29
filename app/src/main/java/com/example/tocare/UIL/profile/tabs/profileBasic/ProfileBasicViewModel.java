@@ -1,4 +1,4 @@
-package com.example.tocare.UIL.ui.profile.tabs.profileBasic;
+package com.example.tocare.UIL.profile.tabs.profileBasic;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,7 +12,7 @@ public class ProfileBasicViewModel extends ViewModel {
     public ProfileBasicViewModel() {
         mText = new MutableLiveData<>();
         bio = new MutableLiveData<>();
-        mText.setValue("This is basic fragment");
+        mText.setValue("This is basic Profile");
     }
 
     public MutableLiveData<String> getBio() {

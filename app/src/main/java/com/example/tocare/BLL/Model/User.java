@@ -1,8 +1,7 @@
-package com.example.tocare.BLL.Departments;
+package com.example.tocare.BLL.Model;
 
-import java.io.Serializable;
 
-public class User extends UserModel implements Serializable {
+public class User extends UserModel  {
 
 
     public User(String id, String userName, String name,String lastName, String phone, String bio, String imageUrl, boolean isAdmin) {
@@ -15,6 +14,6 @@ public class User extends UserModel implements Serializable {
 
     @Override
     public String toString() {
-        return "User{}";
+        return super.toString();
     }
 }

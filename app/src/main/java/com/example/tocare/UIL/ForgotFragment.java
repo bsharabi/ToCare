@@ -1,4 +1,4 @@
-package com.example.tocare.UIL.ui.forgot;
+package com.example.tocare.UIL;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -15,17 +15,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tocare.BLL.Validation.UserValidation;
-import com.example.tocare.LoginActivity;
+import com.example.tocare.Controller.LoginActivity;
 import com.example.tocare.databinding.FragmentForgotBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotFragment extends Fragment implements View.OnClickListener {
 
     private FragmentForgotBinding binding;
-    private static ForgotFragment single_instance = null;
     private static final String TAG = "ForgotFragment";
     private TextView inputEmail;
     private Button btSubmit;
@@ -34,14 +32,12 @@ public class ForgotFragment extends Fragment implements View.OnClickListener {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        ForgotViewModel forgotViewModel = new ViewModelProvider(this).get(ForgotViewModel.class);
 
         binding = FragmentForgotBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         loginActivity = (LoginActivity) getActivity();
 
         final TextView textView = binding.textForgot;
-        forgotViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         inputEmail = binding.etEmail;
         btSubmit = binding.btSubmit;
@@ -107,16 +103,6 @@ public class ForgotFragment extends Fragment implements View.OnClickListener {
         super.onDestroyView();
         binding = null;
         System.out.println("onDestroyView Function");
-    }
-
-    private ForgotFragment() {
-
-    }
-
-    public static ForgotFragment getInstance() {
-        if (single_instance == null)
-            single_instance = new ForgotFragment();
-        return single_instance;
     }
 
     @Override

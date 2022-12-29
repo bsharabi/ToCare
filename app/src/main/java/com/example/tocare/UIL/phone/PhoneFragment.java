@@ -1,4 +1,4 @@
-package com.example.tocare.UIL.ui.phone;
+package com.example.tocare.UIL.phone;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -14,22 +14,25 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import com.example.tocare.DAL.Login;
+import com.example.tocare.BLL.Listener.PhoneCallback;
 import com.example.tocare.BLL.Validation.UserValidation;
-import com.example.tocare.PhoneLoginActivity;
+import com.example.tocare.Controller.PhoneLoginActivity;
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentPhoneLoginBinding;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.hbb20.CountryCodePicker;
-import java.util.concurrent.TimeUnit;
 
-public class PhoneFragment extends Fragment implements View.OnClickListener {
+
+public class PhoneFragment extends Fragment implements View.OnClickListener, PhoneCallback {
+
+    private static final String TAG = "PhoneFragment";
 
     private TextView header;
     private FragmentPhoneLoginBinding binding;
@@ -38,65 +41,28 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
     private ImageView imageView;
     private ProgressDialog dialog;
     private String Phone;
-    private static final String TAG = "PhoneFragment";
     private String mVerificationId;
-    private String countryCode;
     private CountryCodePicker countryCodePicker;
     private PhoneLoginActivity phoneLoginActivity;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        @Override
-        public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
-            Log.d(TAG, "onVerificationCompleted:" + credential);
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            Log.w(TAG, "onVerificationFailed", e);
-            Toast.makeText(getContext(), "Verification Failed", Toast.LENGTH_SHORT).show();
-            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-            } else if (e instanceof FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-            }
-            dialog.dismiss();
-        }
-
-        @Override
-        public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            super.onCodeSent(verificationId, token);
-            Log.d(TAG, "onCodeSent:" + verificationId);
-            Toast.makeText(getContext(), "Code sent ", Toast.LENGTH_SHORT).show();
-            dialog.dismiss();
-
-            mVerificationId = verificationId;
-            Bundle bundle = new Bundle();
-            bundle.putString("verificationId", mVerificationId);
-            bundle.putString("phone", Phone);
-            bundle.putString("countryCode",countryCode);
-            phoneLoginActivity.swapFragmentByFragmentClass(PhoneCodeFragment.class, bundle);
-        }
-    };
+    private Login login;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        PhoneViewModel phoneViewModel = new ViewModelProvider(this).get(PhoneViewModel.class);
 
         binding = FragmentPhoneLoginBinding.inflate(inflater, container, false);
-
         View root = binding.getRoot();
+
         phoneLoginActivity = (PhoneLoginActivity) getActivity();
         inputPhone = binding.etPhone;
         btSubmit = binding.btSubmit;
         imageView = binding.ivPhoneIcon;
         header = binding.textPhone;
+
         countryCodePicker = binding.countryCode;
         countryCodePicker.registerCarrierNumberEditText(inputPhone);
 
         dialog = new ProgressDialog(root.getContext());
-
-        phoneViewModel.getText().observe(getViewLifecycleOwner(), header::setText);
-
+        login = Login.getInstance();
         return root;
     }
 
@@ -127,15 +93,8 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
         btSubmit.setOnClickListener(this);
         btSubmit.setEnabled(false);
         countryCodePicker.setOnCountryChangeListener(() -> {
-            countryCode = "+"+ countryCodePicker.getSelectedCountryCode();
             btSubmit.setEnabled(true);
         });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 
     @Override
@@ -150,30 +109,55 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
     public boolean SignInWithPhone(String phoneNumber) {
         if (UserValidation.isValidPhone(phoneNumber)) {
             dialog.setMessage("Please wait...");
             dialog.setTitle("Send code");
             dialog.setCanceledOnTouchOutside(false);
             dialog.show();
-            startPhoneNumberVerification(phoneNumber);
+            login.startPhoneNumberVerification(countryCodePicker.getFullNumberWithPlus(), getActivity(), this);
         } else
             inputPhone.setError("The phone format is incorrect");
         return true;
     }
 
 
-    private void startPhoneNumberVerification(String phoneNumber) {
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
-                        .setPhoneNumber(countryCode + phoneNumber.substring(1))       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(getActivity())                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
-
+    @Override
+    public void onCallback(boolean success, Exception e, Task<AuthResult> task) {
     }
+
+    @Override
+    public void onVerificationCompleted(boolean success, @NonNull PhoneAuthCredential credential) {
+        if (success)
+            Log.d(TAG, "onVerificationCompleted:" + credential);
+    }
+
+    @Override
+    public void onVerificationFailed(FirebaseException e) {
+        Log.w(TAG, "onVerificationFailed", e);
+        Toast.makeText(getContext(), "Verification Failed", Toast.LENGTH_SHORT).show();
+        if (e instanceof FirebaseAuthInvalidCredentialsException) {
+            // Invalid request
+        } else if (e instanceof FirebaseTooManyRequestsException) {
+            // The SMS quota for the project has been exceeded
+        }
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
+        Log.d(TAG, "onCodeSent:" + verificationId);
+        Toast.makeText(getContext(), "Code sent ", Toast.LENGTH_SHORT).show();
+        dialog.dismiss();
+
+        mVerificationId = verificationId;
+        Bundle bundle = new Bundle();
+        bundle.putString("verificationId", mVerificationId);
+        bundle.putString("phone", Phone);
+        bundle.putString("countryCode", countryCodePicker.getSelectedCountryCode());
+
+        phoneLoginActivity.swapFragmentByFragmentClass(PhoneCodeFragment.class, bundle);
+    }
+
 
 }

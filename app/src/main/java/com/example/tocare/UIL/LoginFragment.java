@@ -1,4 +1,4 @@
-package com.example.tocare.UIL.ui.login;
+package com.example.tocare.UIL;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -14,37 +14,32 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
+import com.example.tocare.DAL.Login;
 import com.example.tocare.BLL.Validation.UserValidation;
-
-import com.example.tocare.LoginActivity;
-import com.example.tocare.MainActivity;
+import com.example.tocare.BLL.Listener.FirebaseLoginCallback;
+import com.example.tocare.Controller.LoginActivity;
+import com.example.tocare.Controller.MainActivity;
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentLoginBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.AuthResult;
 
-public class LoginFragment extends Fragment implements View.OnClickListener {
 
+public class LoginFragment extends Fragment implements View.OnClickListener, FirebaseLoginCallback {
+
+    private static final String TAG = "LoginFragment";
+    private Login login;
     private FragmentLoginBinding binding;
     private EditText inputEmail, inputPassword;
     public TextView forgotPassword, loginHeader;
     private Button btLogin;
     private ProgressDialog dialog;
-    private static LoginFragment single_instance = null;
-    private static final String TAG = "LoginFragment";
     private LoginActivity loginActivity;
-    private FirebaseAuth mAuth;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
-
-
-        LoginViewModel loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-
 
         View root = binding.getRoot();
         loginActivity = (LoginActivity) getActivity();
@@ -54,8 +49,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         btLogin = binding.btLogin;
         loginHeader = binding.textLogin;
         dialog = new ProgressDialog(root.getContext());
-        mAuth = FirebaseAuth.getInstance();
-        loginViewModel.getText().observe(getViewLifecycleOwner(), loginHeader::setText);
+
+        login = Login.getInstance();
 
         return root;
     }
@@ -89,12 +84,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
-    @Override
     public void onClick(@NonNull View view) {
         switch (view.getId()) {
             case R.id.bt_login:
@@ -115,57 +104,38 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private LoginFragment() {
-
-    }
-
-    public static LoginFragment getInstance() {
-        if (single_instance == null)
-            single_instance = new LoginFragment();
-        return single_instance;
-    }
-
-
     private void signInWithEmail(String email, String password) {
-
         dialog.setMessage("Please wait while Login with email");
         dialog.setTitle("Login...");
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+        login.signInWithEmail(email, password, this);
+    }
 
-        mAuth
-                .signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // Sign in success, update UI with the signed-in user's information
-                if (task.getResult().getUser().isEmailVerified()) {
-                    Log.d(TAG, "signInWithEmail:success");
-                    dialog.dismiss();
-                    Toast.makeText(getContext(), "Login successful", Toast.LENGTH_LONG).show();
-                    loginActivity.reload(MainActivity.class);
-                } else {
-                    dialog.dismiss();
-                    btLogin.setEnabled(false);
-                    Toast.makeText(getContext(), "Go confirm your email", Toast.LENGTH_LONG).show();
-                    task.getResult().getUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful())
-                                btLogin.setEnabled(true);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+    @Override
+    public void onSuccess(boolean success, Exception e, Task<AuthResult> task) {
+        if (success) {
+            if (task.getResult().getUser().isEmailVerified()) {
+                dialog.dismiss();
+                Log.d(TAG, "signInWithEmail:success");
+                Toast.makeText(getContext(), "Login successful", Toast.LENGTH_LONG).show();
+                loginActivity.reload(MainActivity.class);
+            } else {
+                dialog.dismiss();
+                btLogin.setEnabled(false);
+                Toast.makeText(getContext(), "Go confirm your email", Toast.LENGTH_LONG).show();
+                task.getResult().getUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful())
                             btLogin.setEnabled(true);
-                        }
-                    });
-                }
+                    }
+                }).addOnFailureListener(err -> btLogin.setEnabled(true));
             }
-        }).addOnFailureListener(e -> {
+        } else {
             dialog.dismiss();
             Log.d(TAG, "signInWithEmail:failed");
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-        });
+        }
     }
-
-
 }

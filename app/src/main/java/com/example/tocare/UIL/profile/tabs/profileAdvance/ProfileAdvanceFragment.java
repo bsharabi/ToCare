@@ -1,4 +1,4 @@
-package com.example.tocare.UIL.ui.calendars;
+package com.example.tocare.UIL.profile.tabs.profileAdvance;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.tocare.databinding.FragmentCalendarsBinding;
-import com.example.tocare.databinding.FragmentNotificationsBinding;
+import com.example.tocare.databinding.FragmentProfileAdvanceBinding;
 
-public class CalendarsFragment extends Fragment {
-    private static CalendarsFragment single_instance = null;
-    private FragmentCalendarsBinding binding;
+public class ProfileAdvanceFragment extends Fragment {
 
+    private FragmentProfileAdvanceBinding binding;
+    private static ProfileAdvanceFragment single_instance = null;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        CalendarsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(CalendarsViewModel.class);
+        ProfileAdvanceViewModel notificationsViewModel =
+                new ViewModelProvider(this).get(ProfileAdvanceViewModel.class);
 
-        binding = FragmentCalendarsBinding.inflate(inflater, container, false);
+        binding = FragmentProfileAdvanceBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textCalendars;
+        final TextView textView = binding.textProfileAdvance;
         notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
@@ -36,12 +35,11 @@ public class CalendarsFragment extends Fragment {
         binding = null;
     }
 
-    public CalendarsFragment() {
+    public ProfileAdvanceFragment() {
     }
-
-    public static CalendarsFragment getInstance() {
+    public static ProfileAdvanceFragment getInstance() {
         if (single_instance == null)
-            single_instance = new CalendarsFragment();
+            single_instance = new ProfileAdvanceFragment();
 
         return single_instance;
     }

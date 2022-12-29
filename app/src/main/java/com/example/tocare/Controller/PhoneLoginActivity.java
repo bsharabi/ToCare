@@ -1,10 +1,12 @@
-package com.example.tocare;
+package com.example.tocare.Controller;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import com.example.tocare.UIL.ui.phone.PhoneFragment;
+
+import com.example.tocare.R;
+import com.example.tocare.UIL.phone.PhoneFragment;
 
 public class PhoneLoginActivity extends AppCompatActivity {
 

@@ -1,28 +1,28 @@
-package com.example.tocare.UIL.ui.setting;
+package com.example.tocare.UIL;
 
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
-import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentNotificationsBinding;
-import com.example.tocare.databinding.FragmentSettingBinding;
 
-public class SettingsFragment extends PreferenceFragment {
-    private static SettingsFragment single_instance = null;
-    private FragmentSettingBinding binding;
+public class NotificationsFragment extends Fragment {
+    private static NotificationsFragment single_instance = null;
+    private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentSettingBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        addPreferencesFromResource(R.xml.preferences);
 
+        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        final TextView textView = binding.textNotifications;
         return root;
     }
 
@@ -31,12 +31,12 @@ public class SettingsFragment extends PreferenceFragment {
         super.onDestroyView();
         binding = null;
     }
-    public SettingsFragment() {
+    public NotificationsFragment() {
     }
 
-    public static SettingsFragment getInstance() {
+    public static NotificationsFragment getInstance() {
         if (single_instance == null)
-            single_instance = new SettingsFragment();
+            single_instance = new NotificationsFragment();
 
         return single_instance;
     }

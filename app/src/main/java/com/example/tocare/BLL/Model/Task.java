@@ -1,4 +1,4 @@
-package com.example.tocare.BLL.Departments;
+package com.example.tocare.BLL.Model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,6 +7,7 @@ import java.util.List;
 public class Task {
 
     private String name, type, description;
+    private String userIdTask;
     private String status;
     private int priority;
     private String permission;
@@ -54,9 +55,27 @@ public class Task {
 
     public Task() {
         imagesUrl=new ArrayList<>();
+        status="Active";
+
+    }
+
+    public Task(String description,String id) {
+        imagesUrl=new ArrayList<>();
+        status="Active";
+        this.description=description;
+        userIdTask=id;
+
     }
     //---------------------------- Getter&&Setter -------------------------------
 
+
+    public String getUserIdTask() {
+        return userIdTask;
+    }
+
+    public void setUserIdTask(String userIdTask) {
+        this.userIdTask = userIdTask;
+    }
 
     public String getPermission() {
         return permission;
@@ -153,4 +172,20 @@ public class Task {
     //---------------------------- Override --------------------------------------
 
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", priority=" + priority +
+                ", permission='" + permission + '\'' +
+                ", accessibility='" + accessibility + '\'' +
+                ", created=" + created +
+                ", done=" + done +
+                ", author='" + author + '\'' +
+                ", imagesUrl=" + imagesUrl +
+                '}';
+    }
 }

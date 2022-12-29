@@ -6,13 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.tocare.BLL.Departments.Task;
-import com.example.tocare.BLL.Departments.Tasks;
+import com.example.tocare.DAL.Data;
+import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.R;
-
+import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +34,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        System.out.println(mTask.get(position));
-        Task task =mTask.get(position);
-        holder.Description.setText(task.getName());
+
+        Task task =(Task)mTask.get(position);
+        holder.Description.setText(task.getDescription());
         holder.title.setText("" + task.getStatus());
+        holder.mtDelete.setOnClickListener(v -> Data.getInstance().deleteTaskByUserId(task.getUserIdTask(),task));
 
     }
 
@@ -51,6 +51,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
         private final ImageView  taskImage;
         private final TextView Description, title;
+        private MaterialButton mtDelete;
 
 
 
@@ -59,6 +60,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
             taskImage = itemView.findViewById(R.id.img);
             Description = itemView.findViewById(R.id.description);
             title = itemView.findViewById(R.id.Title);
+            mtDelete=itemView.findViewById(R.id.mb_delete_task);
         }
     }
 }

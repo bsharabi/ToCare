@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.tocare.UIL.ui.profile.tabs.profileAdvance.ProfileAdvanceFragment;
-import com.example.tocare.UIL.ui.profile.tabs.profileBasic.ProfileBasicFragment;
+import com.example.tocare.UIL.profile.tabs.profileAdvance.ProfileAdvanceFragment;
+import com.example.tocare.UIL.profile.tabs.profileBasic.ProfileBasicFragment;
 
 public class ProfileAdapter extends FragmentStateAdapter {
 
@@ -22,9 +22,9 @@ public class ProfileAdapter extends FragmentStateAdapter {
         System.out.println(position);
         switch (position) {
             case 0:
-                return ProfileBasicFragment.getInstance();
+                return  new ProfileBasicFragment();
             case 1:
-                return ProfileAdvanceFragment.getInstance();
+                return new ProfileAdvanceFragment();
             default:
                 return null;
         }

@@ -6,22 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tocare.BLL.Departments.Admin;
-import com.example.tocare.BLL.Departments.User;
-import com.example.tocare.BLL.Departments.UserModel;
-import com.example.tocare.ManageUsersActivity;
+import com.example.tocare.DAL.Data;
+import com.example.tocare.BLL.Model.UserModel;
+import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.R;
-import com.example.tocare.UIL.ui.users.UserCardFragment;
-import com.example.tocare.databinding.FragmentCardUserBinding;
+import com.example.tocare.UIL.users.UserCardFragment;
 import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
@@ -30,12 +28,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private List<UserModel> mUser;
     private ManageUsersActivity manageUsersActivity;
 
-    public UserAdapter(Context mContext, List<UserModel> mUser, ManageUsersActivity mUA) {
+    public UserAdapter(Context mContext, ManageUsersActivity manageUsersActivity) {
         this.mContext = mContext;
-        this.mUser = (mUser == null)
-                ? new ArrayList<>()
-                : mUser;
-        manageUsersActivity=mUA;
+        this.mUser = Data.getInstance().getAllUser();
+        this.manageUsersActivity = manageUsersActivity;
     }
 
     @NonNull
@@ -47,19 +43,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if( mUser.get(position) instanceof Admin)
-            return;
+
+
         UserModel user = mUser.get(position);
         holder.bioTV.setText(user.getBio());
-        holder.tvFullName.setText(user.getName() + " " + user.getLastName());
         String imageURL = user.getImageUrl();
         Picasso.get().load(imageURL).into(holder.userImage);
+        String  fullName=user.getName() + " " + user.getLastName();
 
+
+        holder.tvFullName.setText(fullName);
         holder.edit.setOnClickListener(v -> {
-            System.out.println(user.getUserName());
-            Bundle bundle= new Bundle();
-            bundle.putSerializable("User",user);
-            manageUsersActivity.swapFragmentByFragmentClass(UserCardFragment.class,bundle);
+            Bundle bundle = new Bundle();
+            bundle.putString("userID", user.getId());
+            manageUsersActivity.swapFragmentByFragmentClass(UserCardFragment.class, bundle);
         });
         holder.delete.setOnClickListener(v -> {
             System.out.println(user.getUserName());
@@ -76,7 +73,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         private final ImageView userImage;
         private final TextView bioTV, tvFullName;
-        private MaterialButton edit,delete;
+        private MaterialButton edit, delete;
+        private RelativeLayout card;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -86,6 +84,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             tvFullName = itemView.findViewById(R.id.tv_user_name);
             edit = itemView.findViewById(R.id.bt_edit);
             delete = itemView.findViewById(R.id.bt_delete);
+            card = itemView.findViewById(R.id.rl_card);
 
 
         }

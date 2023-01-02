@@ -86,6 +86,7 @@
     <string name="delete">Delete</string>
     <string name="description">Description</string>
     <string name="post">POST</string>
+    <string name="add_a_comments">Add a Comments</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

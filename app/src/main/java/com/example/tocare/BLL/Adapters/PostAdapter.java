@@ -1,6 +1,7 @@
 package com.example.tocare.BLL.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 
+import com.example.tocare.UIL.CommentsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -88,7 +90,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         });
 
         holder.comment.setOnClickListener(v -> {
-//        holder.comments.setText(task.getDescription());
+            Intent intent = new Intent(mContext, CommentsActivity.class);
+            intent.putExtra("postId", task.getTaskId());
+            intent.putExtra("publish", task.getAuthor());
+            mContext.startActivity(intent);
+
+        });
+        holder.comments.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, CommentsActivity.class);
+            intent.putExtra("postId", task.getTaskId());
+            intent.putExtra("publish", task.getAuthor());
+            mContext.startActivity(intent);
 
         });
         holder.delete.setOnClickListener(v -> {
@@ -97,6 +109,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         localData.getLikeByPostId(holder.count_likes, task.getTaskId());
         localData.isLiked(holder.like, task.getTaskId());
         localData.isSaved(holder.save, task.getTaskId());
+        localData.getCommentByPostId(holder.comments,task.getTaskId());
+
 
     }
 

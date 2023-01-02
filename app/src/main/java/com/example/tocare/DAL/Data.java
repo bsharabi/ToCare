@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.net.Uri;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import com.example.tocare.BLL.Listener.SearchCallback;
 import com.example.tocare.BLL.Listener.UploadCallback;
 import com.example.tocare.BLL.Listener.UserCallback;
 import com.example.tocare.BLL.Model.Admin;
+import com.example.tocare.BLL.Model.Comment;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.BLL.Model.User;
 import com.example.tocare.BLL.Model.UserModel;
@@ -80,6 +82,7 @@ public final class Data implements IData {
     private final FirebaseAuth mAuth;
     private final CollectionReference userCollectionRef;
     private final CollectionReference taskCollectionRef;
+    private final CollectionReference commentsCollectionRef;
     private final CollectionReference followingCollectionRef;
     private final CollectionReference followersCollectionRef;
     private final CollectionReference ChildrenCollectionRef;
@@ -127,6 +130,7 @@ public final class Data implements IData {
         postCollectionRef = db.collection("Posts");
         ChildrenCollectionRef = db.collection("Children");
         notificationCollectionRef = db.collection("Notification");
+        commentsCollectionRef = db.collection("Comments");
 
     }
 
@@ -149,7 +153,6 @@ public final class Data implements IData {
                     callback.onCallback(false, e, null);
                 });
     }
-
 
     public void startPhoneNumberVerification(String phoneNumber, Activity activity, PhoneCallback callback) {
         phoneCallback = callback;
@@ -205,20 +208,24 @@ public final class Data implements IData {
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Listen failed.", error);
+
                         callback.onCallback(false, error, null);
                         return;
                     }
                     if (value != null && value.exists()) {
                         users.put(firebaseUser.getUid(), value.toObject(UserModel.class));
+
+                        getAllFollowingSnapShot();
+                        getAllFollowersSnapShot();
                         callback.onCallback(true, null, firebaseUser);
                         getAllFollowing(callback);
                         Log.d(TAG, "DocumentReferenceCurrentUser:success");
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:updateUserUI exists.");
                         // The document exists
 
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:updateUserUI does not exists.");
                     }
                 });
         listenerRegistrations.add(listener);
@@ -464,7 +471,7 @@ public final class Data implements IData {
     public void destroy() {
         destroyListenerRegistration();
         destroyData();
-        single_instance=null;
+        single_instance = null;
     }
 
     public Map<String, Object> getFollowing() {
@@ -555,13 +562,13 @@ public final class Data implements IData {
                     list.add(snap.toObject(UserModel.class));
                 }
                 callback.result();
-                Log.w(TAG, "document exists.");
+                Log.w(TAG, "document:searchUsers exists.");
                 // The document exists
 
             } else {
                 callback.result();
                 // The document does not exist
-                Log.w(TAG, "document does not exists.");
+                Log.w(TAG, "document:searchUsers does not exists.");
             }
 
         });
@@ -573,14 +580,13 @@ public final class Data implements IData {
                     if (task.isComplete()) {
                         if (task != null && task.getResult().exists()) {
                             followers = task.getResult().getData();
-                            System.out.println(followers);
                             callback.onSuccess(true, null);
-                            Log.w(TAG, "document exists.");
+                            Log.w(TAG, "document:AllFollowers exists.");
                             // The document exists
                         } else {
                             callback.onSuccess(true, null);
                             // The document does not exist
-                            Log.w(TAG, "document does not exists.");
+                            Log.w(TAG, "document:AllFollowers does not exists.");
                         }
                     }
                 }).addOnFailureListener(error -> {
@@ -593,18 +599,20 @@ public final class Data implements IData {
         followingCollectionRef
                 .document(firebaseUser.getUid()).get().addOnCompleteListener(task -> {
                     if (task.isComplete()) {
+
                         if (task != null && task.getResult().exists()) {
                             following = task.getResult().getData();
-                            System.out.println(following);
+
                             getAllFollowers(callback);
-                            Log.w(TAG, "document exists.");
+                            Log.w(TAG, "document:AllFollowing exists.");
                             // The document exists
 
                         } else {
                             getAllFollowers(callback);
                             // The document does not exist
-                            Log.w(TAG, "document does not exists.");
+                            Log.w(TAG, "document:AllFollowing does not exists.");
                         }
+                        following.put(firebaseUser.getUid(),true);
                     }
                 }).addOnFailureListener(error -> {
                     Log.w(TAG, "Listen failed.", error);
@@ -614,7 +622,7 @@ public final class Data implements IData {
 
     }
 
-    public void setAllFollowersSnapShot() {
+    public void getAllFollowersSnapShot() {
         ListenerRegistration listener = followersCollectionRef
                 .document(firebaseUser.getUid()).addSnapshotListener((value, error) -> {
                     if (error != null) {
@@ -624,6 +632,7 @@ public final class Data implements IData {
                     }
                     if (value != null && value.exists()) {
                         followers = value.getData();
+                        System.out.println();
                         Log.w(TAG, "document exists.");
                         // The document exists
                     } else {
@@ -637,6 +646,7 @@ public final class Data implements IData {
     }
 
     public void getAllFollowingSnapShot() {
+        System.out.println("\n\n\n\n-----------------------------------------------\n\n\n\n");
         ListenerRegistration listener = followingCollectionRef
                 .document(firebaseUser.getUid())
                 .addSnapshotListener((value, error) -> {
@@ -647,6 +657,8 @@ public final class Data implements IData {
 
                     if (value != null && value.exists()) {
                         following = value.getData();
+                        following.put(firebaseUser.getUid(),true);
+                        System.out.println(following);
                         Log.w(TAG, "document exists.");
                         // The document exists
 
@@ -805,13 +817,13 @@ public final class Data implements IData {
                     }
                     if (value != null && value.exists()) {
                         likes.setText(value.getData().size() + " likes");
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:LikeByPostId exists.");
                         // The document exists
 
                     } else {
                         // The document does not exist
                         likes.setText("0" + " likes");
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:LikeByPostId does not exists.");
 
                     }
                 });
@@ -833,12 +845,12 @@ public final class Data implements IData {
                             imageView.setImageResource(R.drawable.ic_like);
                             imageView.setTag("like");
                         }
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:Liked exists.");
                         // The document exists
 
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:Liked does not exists.");
                     }
                 });
         listenerRegistrations.add(listener);
@@ -859,12 +871,12 @@ public final class Data implements IData {
                             imageView.setImageResource(R.drawable.ic_save);
                             imageView.setTag("save");
                         }
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:Save exists.");
                         // The document exists
 
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:Save does not exists.");
                     }
 
 
@@ -949,7 +961,7 @@ public final class Data implements IData {
 
     public void getAllPost(List<Task> mTask, OnChangeCallback callback) {
         ListenerRegistration listener = db.collection("Posts")
-//                .whereIn("author", Arrays.asList(getFollowing().keySet().toArray()))
+                .whereIn("author", Arrays.asList(getFollowing().keySet().toArray()))
                 .addSnapshotListener((value, error) -> {
                     mTask.clear();
                     if (error != null) {
@@ -960,15 +972,120 @@ public final class Data implements IData {
                         for (DocumentSnapshot doc : value.getDocuments()) {
                             mTask.add(doc.toObject(Task.class));
                         }
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:Post exists.");
                         // The document exists
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:Post does not exists.");
                     }
                     callback.onChange();
 
                 });
         listenerRegistrations.add(listener);
     }
+
+    public void getAllComment(List<Comment> mComments, String postId, OnChangeCallback callback) {
+
+        ListenerRegistration listener =
+                commentsCollectionRef
+                        .document(postId)
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                mComments.clear();
+                                Map map = value.getData();
+                                for (Object obj : map.values()) {
+                                    String commentId = (String) ((Map) obj).get("commentId");
+                                    String author = (String) ((Map) obj).get("author");
+                                    String comment = (String) ((Map) obj).get("comment");
+                                    String publish = (String) ((Map) obj).get("publish");
+                                    Comment commentObj = new Comment(commentId,postId, author, comment, publish);
+                                    mComments.add(commentObj);
+
+                                }
+                                System.out.println(mComments);
+                                Log.w(TAG, "document:AllComment exists.");
+                                // The document exists
+
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:AllComment does not exists.");
+
+                            }
+                            callback.onChange();
+                        });
+        listenerRegistrations.add(listener);
+    }
+
+    public void addComment(String postId, @NonNull Comment comment, @NonNull final EditText newComment) {
+        String key = commentsCollectionRef.document().getId();
+        newComment.setEnabled(false);
+        comment.setCommentId(key);
+        commentsCollectionRef
+                .document(postId)
+                .set(new HashMap<String, Object>() {{
+                    put(key, comment);
+                }}, SetOptions.merge())
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Comment added : " + postId + " Success.");
+                                newComment.setText("");
+                                newComment.setEnabled(true);
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Comment add : " + postId + " Failed.");
+                    newComment.setEnabled(true);
+                });
+    }
+
+    public void deleteComment(String postId, String commentId) {
+        commentsCollectionRef
+                .document(postId)
+                .set(new HashMap<String, Object>() {
+                    {
+                        put(commentId, FieldValue.delete());
+                    }
+                }, SetOptions.merge()).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Like deleted : " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Task deleted : " + postId + " Failed.");
+
+                });
+    }
+
+    public void getCommentByPostId(final TextView likes, String postId) {
+        ListenerRegistration listener =
+                commentsCollectionRef
+                        .document(postId)
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                likes.setText("View All " + value.getData().size() + " Comments");
+                                Log.w(TAG, "document:CommentByPostId exists.");
+                                // The document exists
+
+                            } else {
+                                // The document does not exist
+                                likes.setText("0" + " Comments");
+                                Log.w(TAG, "document:CommentByPostId does not exists.");
+
+                            }
+                        });
+        listenerRegistrations.add(listener);
+    }
+
 }
+
+
+
+

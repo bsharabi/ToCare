@@ -2,14 +2,13 @@ package com.example.tocare.BLL.Model;
 
 import java.io.Serializable;
 
-public abstract class  UserModel implements Serializable {
+public class UserModel implements Serializable {
 
     private String id, userName, name, lastName, phone, bio, imageUrl;
     private boolean isAdmin;
     private String birthday;
     private String country;
     private String codePhone;
-
 
 
     //---------------------------- Constructor ----------------------------------
@@ -42,7 +41,6 @@ public abstract class  UserModel implements Serializable {
     }
 
 
-
     public UserModel() {
 
     }
@@ -65,6 +63,29 @@ public abstract class  UserModel implements Serializable {
         this.userName = userName;
     }
 
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCodePhone() {
+        return codePhone;
+    }
+
+    public void setCodePhone(String codePhone) {
+        this.codePhone = codePhone;
+    }
 
     public String getName() {
         return name;
@@ -113,6 +134,10 @@ public abstract class  UserModel implements Serializable {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getFullName() {
+        return name + " " + lastName;
     }
 
     //---------------------------- Methods --------------------------------------

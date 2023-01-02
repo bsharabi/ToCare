@@ -54,7 +54,7 @@ public class UserCardFragment extends Fragment implements TabLayout.OnTabSelecte
         assert getArguments() != null;
         UserID = getArguments().getString("userID");
 
-        user = localData.getUserById(UserID);
+        user = localData.getUserChildById(UserID);
         final UserEditAdapter adapter = new UserEditAdapter(getActivity().getSupportFragmentManager(), getLifecycle(), user);
         viewPager.setAdapter(adapter);
 

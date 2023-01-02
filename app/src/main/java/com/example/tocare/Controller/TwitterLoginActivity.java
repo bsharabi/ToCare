@@ -83,6 +83,7 @@ public class TwitterLoginActivity extends AppCompatActivity implements TwitterCa
         if (success) {
             dialog.dismiss();
             Log.d(TAG, "DocumentReference::User::success");
+            reload(MainActivity.class);
         } else {
             dialog.dismiss();
             Log.d(TAG, "DocumentReference::User::failed");
@@ -91,18 +92,6 @@ public class TwitterLoginActivity extends AppCompatActivity implements TwitterCa
         }
     }
 
-    @Override
-    public void onComplete(boolean success, Exception e) {
-        if(success){
-            Log.d(TAG, "DocumentReference::Task::success");
-            Toast.makeText(this, "The details have been successfully", Toast.LENGTH_SHORT).show();
-            reload(MainActivity.class);
-        }else{
-            Log.d(TAG, "DocumentReference::Task::failed");
-            Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            reload(LoginActivity.class);
-        }
-    }
 
     public void reload(Class<?> name) {
         Intent intent = new Intent(TwitterLoginActivity.this, name);

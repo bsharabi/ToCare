@@ -1,5 +1,8 @@
 package com.example.tocare.DAL.api;
 
+import androidx.annotation.NonNull;
+
+import com.example.tocare.BLL.Listener.UploadCallback;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
@@ -10,10 +13,8 @@ import java.util.List;
 public interface IData {
     // ----------------- init ---------------
 
-    /**
-     * @param callback
-     */
-    void buildUser(FirebaseCallback callback);
+
+
 
     AuthCredential createCredentialSignIn(String email, String password);
 
@@ -22,7 +23,7 @@ public interface IData {
 
     List<Task> getAllTask();
 
-    UserModel getUserById(String userId);
+    UserModel getUserChildById(String userId);
 
     List<Task> getTasksByUser(String userId);
 
@@ -34,13 +35,11 @@ public interface IData {
 
     void addUserSnapshot(String UserId);
 
-    void addTaskSnapshot(String taskId);
-
 
 
 
     //----------------- Post ------------------
-    void createNewTask();
+    void addPost(String postID, @NonNull Task task, UploadCallback callback);
 
     void createNewUserByPhone();
 
@@ -54,7 +53,6 @@ public interface IData {
 
     void updateTaskByTaskIdAndPosition(String taskId, int position);
 
-    void updateChildren(FirebaseCallback callback,String newUserId);
 
     //----------------- Delete ----------------
     void deleteAllTasks();

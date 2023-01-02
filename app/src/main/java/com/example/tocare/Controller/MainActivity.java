@@ -1,6 +1,7 @@
 package com.example.tocare.Controller;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,34 +13,38 @@ import com.example.tocare.R;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.BLL.Listener.Refresh;
-import com.google.android.material.appbar.MaterialToolbar;
+import com.example.tocare.UIL.Fragment.HomeFragment;
+import com.example.tocare.UIL.Fragment.NotificationFragment;
+import com.example.tocare.UIL.Fragment.ProfileFragment;
+import com.example.tocare.UIL.Fragment.SearchFragment;
+import com.example.tocare.UIL.PostActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
+import androidx.fragment.app.Fragment;
+
 import com.example.tocare.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, FirebaseCallback , Refresh {
+public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, FirebaseCallback, Refresh {
 
     private static final String TAG = "MainActivity";
-
     private ActivityMainBinding binding;
-    private NavController navController;
+    private BottomNavigationView bottomNavigationView;
+    private Fragment selectedFragment;
     private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
-    private BottomNavigationView navView;
     private Data localData;
     private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
@@ -48,54 +53,69 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
             Log.d(TAG, "CurrentUser:null");
             reload(LoginActivity.class);
         }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        selectedFragment = null;
 
         progressBar = binding.progressBar;
-        progressBar.setVisibility(View.VISIBLE);
-
-        MaterialToolbar materialToolbar = binding.topAppBar;
-        navView = binding.navView;
-//      setSupportActionBar(materialToolbar);
-//      navView.setOnItemSelectedListener(this);
-
-        navView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> System.out.println("layout"));
-        materialToolbar.setOnMenuItemClickListener(this);
-//      materialToolbar.setNavigationOnClickListener(this);
-//      Passing each menu ID as a set of Ids because each
-//      menu should be considered as top level destinations.
-//      AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.navigation_profile, R.id.navigation_task, R.id.navigation_feed,
-//                R.id.navigation_notifications, R.id.navigation_calender)
-//                .build();
-
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-//      NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
-
+        bottomNavigationView = binding.bottomNavigation;
+        bottomNavigationView.setVisibility(View.GONE);
     }
 
     private void initDataStructure() {
-        try {
-            localData = Data.getInstance();
-            localData.buildUser(this);
-            localData.setRefresh(this);
-        } catch (Exception e) {
+        localData = Data.getInstance();
+        localData.updateUserUI(this);
+        localData.setRefresh(this);
+    }
 
-        }
+    private void updateUi() {
+
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new HomeFragment()).commit();
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+
+            switch (item.getItemId()) {
+                case R.id.nav_home:
+                    selectedFragment = new HomeFragment();
+                    break;
+                case R.id.nav_search:
+                    selectedFragment = new SearchFragment();
+                    break;
+                case R.id.nav_heart:
+                    selectedFragment = new NotificationFragment();
+                    break;
+                case R.id.nav_add:
+                    selectedFragment = null;
+                    reload(PostActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    break;
+                case R.id.nav_profile:
+                    SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+                    editor.putString("profileId", localData.getCurrentUser().getId());
+                    editor.apply();
+                    selectedFragment = new ProfileFragment();
+                    break;
+            }
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            }
+            return true;
+        });
     }
 
     @Override
     public boolean onMenuItemClick(@NonNull MenuItem item) {
         switch (item.toString()) {
             case "Log Out":
-                localData.destroyListenerRegistration();
+                localData.destroy();
                 reload(LoginActivity.class);
                 return true;
             case "Manage users":
                 if (localData.isAdmin()) {
                     reload(ManageUsersActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 } else {
+                    item.setVisible(false);
                     Toast.makeText(this, "Just Admin", Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -117,36 +137,34 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         startActivity(intent);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.out.println("-----------------------onDestroy------------");
-        localData.destroyListenerRegistration();
-    }
+
 
     @Override
     public void onCallback(boolean success, Exception e, FirebaseUser user) {
+//        if (success) {
+//            updateUi();
+//            progressBar.setVisibility(View.GONE);
+//        } else {
+//            reload(LoginActivity.class);
+//        }
+    }
+
+    @Override
+    public void onSuccess(boolean success, Exception e) {
         if (success) {
+            updateUi();
             progressBar.setVisibility(View.GONE);
-            System.out.println(Data.getInstance());
         } else {
             reload(LoginActivity.class);
         }
     }
 
-    @Override
-    public void onSuccess(boolean success, Exception e) {
-
-    }
-
-    @Override
-    public void onComplete(boolean success, Exception e) {
-
-    }
 
     @Override
     public void refresh() {
-//        int reload = navController.getCurrentDestination().getId();
-//        navController.navigate(reload);
+        /*
+        int reload = navController.getCurrentDestination().getId();
+        navController.navigate(reload);*/
+        System.out.println("Ref main");
     }
 }

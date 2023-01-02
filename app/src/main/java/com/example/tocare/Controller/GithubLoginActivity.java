@@ -123,6 +123,7 @@ public class GithubLoginActivity extends AppCompatActivity implements Callback {
         if (success) {
             Log.d(TAG, "DocumentReference::User::success");
             Toast.makeText(this, "The details have been successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            reload(MainActivity.class);
         } else {
             Log.d(TAG, "DocumentReference::User::failed");
             Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -130,17 +131,5 @@ public class GithubLoginActivity extends AppCompatActivity implements Callback {
         }
     }
 
-    @Override
-    public void onComplete(boolean success, Exception e) {
-        if ((success)) {
-            Log.d(TAG, "DocumentReference::Task::success");
-            Toast.makeText(this, "The details have been successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            reload(MainActivity.class);
-        } else {
-            Log.d(TAG, "DocumentReference::Task::failed");
-            Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            reload(LoginActivity.class);
-        }
-        dialog.dismiss();
-    }
+
 }

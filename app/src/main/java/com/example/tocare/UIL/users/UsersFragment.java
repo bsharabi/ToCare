@@ -26,7 +26,7 @@ public class UsersFragment extends Fragment  implements Refresh {
     private FloatingActionButton addUser;
     private MaterialToolbar materialToolbar;
     private RecyclerView rvUsers;
-
+    private UserAdapter usersAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -44,9 +44,8 @@ public class UsersFragment extends Fragment  implements Refresh {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final UserAdapter usersAdapter = new UserAdapter(getContext(),manageUsersActivity);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        usersAdapter = new UserAdapter(getContext(),manageUsersActivity);
 
         Data.getInstance().setRefresh(this);
         rvUsers.setLayoutManager(linearLayoutManager);
@@ -68,6 +67,6 @@ public class UsersFragment extends Fragment  implements Refresh {
 
     @Override
     public void refresh() {
-        manageUsersActivity.swapFragmentByFragmentClass(UsersFragment.class, null);
+        usersAdapter.notifyDataSetChanged();
     }
 }

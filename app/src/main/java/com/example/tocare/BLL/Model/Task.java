@@ -1,73 +1,106 @@
 package com.example.tocare.BLL.Model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Task {
 
-    private String name, type, description;
+    private String taskId, type, description;
     private String userIdTask;
     private String status;
     private int priority;
     private String permission;
     private String accessibility;
-    private Date created;
-    private Date done;
-    private  String author;
+    private String start;
+    private String done;
+    private String author;
     private List<String> imagesUrl;
+    private Date created;
+
 
 
     //---------------------------- Constructor ----------------------------------
 
-    public Task(String name, String type, String description, String status, int priority, String permission, String accessibility, Date created, Date done, String author, List<String> imagesUrl) {
-        this.name = name;
+    public Task(String taskId, String type, String description, String userIdTask, String status, int priority, String permission, String accessibility, String start, String done, String author, List<String> imagesUrl ) {
+        this.taskId = taskId;
+        this.type = type;
+        this.description = description;
+        this.userIdTask = userIdTask;
+        this.status = status;
+        this.priority = priority;
+        this.permission = permission;
+        this.accessibility = accessibility;
+        this.start = start;
+        this.done = done;
+        this.author = author;
+        this.imagesUrl = imagesUrl;
+        this.created = new Date();
+    }
+
+    public Task(String name, String type, String description, String status, int priority, String permission, String accessibility, String start, String done, String author, List<String> imagesUrl) {
+        this.taskId = name;
         this.type = type;
         this.description = description;
         this.status = status;
         this.priority = priority;
         this.permission = permission;
         this.accessibility = accessibility;
-        this.created = created;
+        this.start = start;
         this.done = done;
         this.author = author;
         this.imagesUrl = imagesUrl;
+        this.created = new Date();
+        setStart("");
     }
 
     public Task(String name, String type, String description, String status, int priority, List<String> imagesUrl) {
-        this.name = name;
+        this.taskId = name;
         this.type = type;
         this.description = description;
         this.status = status;
         this.priority = priority;
         this.imagesUrl = imagesUrl;
+        created = new Date();
+        setStart("");
     }
 
-    public Task(String name, String type, String description, String status, int priority, String author, List<String> imagesUrl) {
-        this.name = name;
+    public Task(String taskId, String type, String description, String status, int priority, String author, List<String> imagesUrl) {
+        this.taskId = taskId;
         this.type = type;
         this.description = description;
         this.status = status;
         this.priority = priority;
         this.author = author;
         this.imagesUrl = imagesUrl;
+        created = new Date();
+        setStart("");
     }
 
     public Task() {
-        imagesUrl=new ArrayList<>();
-        status="Active";
-
+        imagesUrl = new ArrayList<>();
+        setStart("");
     }
 
-    public Task(String description,String id) {
-        imagesUrl=new ArrayList<>();
-        status="Active";
-        this.description=description;
-        userIdTask=id;
+    public Task(String description, String id) {
+        imagesUrl = new ArrayList<>();
+        setStart("");
+        this.description = description;
+        userIdTask = id;
 
     }
     //---------------------------- Getter&&Setter -------------------------------
 
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
     public String getUserIdTask() {
         return userIdTask;
@@ -93,19 +126,19 @@ public class Task {
         this.accessibility = accessibility;
     }
 
-    public Date getCreated() {
-        return created;
+    public String getStart() {
+        return start;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setStart(String start) {
+        this.start = start;
     }
 
-    public Date getDone() {
+    public String getDone() {
         return done;
     }
 
-    public void setDone(Date done) {
+    public void setDone(String done) {
         this.done = done;
     }
 
@@ -117,12 +150,12 @@ public class Task {
         this.author = author;
     }
 
-    public String getName() {
-        return name;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getType() {
@@ -162,7 +195,18 @@ public class Task {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+
+
+        try {
+            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(start);
+            Date currentDate = new Date();
+            if (currentDate.compareTo(date) < 0)
+                this.status = "Nactive";
+            else this.status = "Active";
+        } catch (ParseException e) {
+            // handle parsing exception
+        }
+
     }
 
 
@@ -175,14 +219,14 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
+                "name='" + taskId + '\'' +
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", priority=" + priority +
                 ", permission='" + permission + '\'' +
                 ", accessibility='" + accessibility + '\'' +
-                ", created=" + created +
+                ", created=" + start +
                 ", done=" + done +
                 ", author='" + author + '\'' +
                 ", imagesUrl=" + imagesUrl +

@@ -1,6 +1,5 @@
 package com.example.tocare.Controller;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,7 +12,6 @@ import android.widget.Toast;
 import com.example.tocare.DAL.Login;
 import com.example.tocare.R;
 import com.example.tocare.BLL.Model.Admin;
-import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.BLL.Model.UserModel;
 import com.facebook.AccessToken;
@@ -162,8 +160,5 @@ public class FacebookLoginActivity extends AppCompatActivity implements Firebase
 
     }
 
-    @Override
-    public void onComplete(boolean success, Exception e) {
 
-    }
 }

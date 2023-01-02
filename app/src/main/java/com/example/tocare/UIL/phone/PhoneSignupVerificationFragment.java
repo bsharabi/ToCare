@@ -203,9 +203,7 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
     @Override
     public void onCallback(boolean success, Exception e,FirebaseUser firebaseUser) {
         if(success){
-            admin.addNewUser(firebaseUser.getUid());
-
-            localData.updateChildren(this,firebaseUser.getUid());
+            localData.addChildren(this,firebaseUser.getUid());
             Log.d(TAG, "DocumentReference:success");
             Toast.makeText(getContext(), "The details have been successfully registered", Toast.LENGTH_SHORT).show();
 
@@ -220,16 +218,8 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
 
     @Override
     public void onSuccess(boolean success, Exception e) {
-        if(success){
-            Log.d(TAG, "DocumentSnapshot successfully updated!");
-        }else{
-            Log.w(TAG, "Error updating document", e);
-        }
-            ((ManageUsersActivity) getActivity()).swapFragmentByFragmentClass(UsersFragment.class, null);
-    }
-
-    @Override
-    public void onComplete(boolean success, Exception e) {
 
     }
+
+
 }

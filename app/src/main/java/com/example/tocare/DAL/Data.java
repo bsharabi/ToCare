@@ -1,9 +1,20 @@
 package com.example.tocare.DAL;
 
 import android.app.Activity;
+
+import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 
+import com.example.tocare.BLL.Listener.Callback;
+import com.example.tocare.BLL.Listener.FollowingCallback;
+import com.example.tocare.BLL.Listener.OnChangeCallback;
+import com.example.tocare.BLL.Listener.SearchCallback;
+import com.example.tocare.BLL.Listener.UploadCallback;
+import com.example.tocare.BLL.Listener.UserCallback;
 import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.BLL.Model.User;
@@ -12,6 +23,9 @@ import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.DAL.api.IData;
 import com.example.tocare.BLL.Listener.PhoneCallback;
 import com.example.tocare.BLL.Listener.Refresh;
+import com.example.tocare.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -23,11 +37,20 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.gson.Gson;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,19 +65,29 @@ public final class Data implements IData {
     private static PhoneCallback phoneCallback;
     private boolean isAdmin;
     private Map<String, UserModel> users;
+
+    private Map<String, Object> following;
+    private Map<String, Object> followers;
+    private Map<String, Object> saved;
+
+    private List<ListenerRegistration> listenerRegistrations;
     private Map<String, List<Task>> tasks;
-    private Map<String, ListenerRegistration> listenerRegistrationTasks;
-    private Map<String, ListenerRegistration> listenerRegistrationUser;
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private FirebaseUser firebaseUser;
-    private FirebaseAuth mAuth;
-    private CollectionReference userCollectionRef;
-    private CollectionReference taskCollectionRef;
-    private CollectionReference notificationCollectionRef;
+
+
+    private final FirebaseFirestore db;
+    private final FirebaseStorage storage;
+    private final FirebaseUser firebaseUser;
+    private final FirebaseAuth mAuth;
+    private final CollectionReference userCollectionRef;
+    private final CollectionReference taskCollectionRef;
+    private final CollectionReference followingCollectionRef;
+    private final CollectionReference followersCollectionRef;
+    private final CollectionReference ChildrenCollectionRef;
+    private final CollectionReference postCollectionRef;
+    private final CollectionReference notificationCollectionRef;
     private Refresh refresh;
 
-    private static PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         @Override
         public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
@@ -76,8 +109,12 @@ public final class Data implements IData {
     private Data() {
         this.users = new HashMap<>();
         this.tasks = new HashMap<>();
-        this.listenerRegistrationTasks = new HashMap<>();
-        this.listenerRegistrationUser = new HashMap<>();
+        this.following = new HashMap<>();
+        this.followers = new HashMap<>();
+        this.saved = new HashMap<>();
+
+        this.listenerRegistrations = new ArrayList<>();
+
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -85,7 +122,11 @@ public final class Data implements IData {
 
         userCollectionRef = db.collection("User");
         taskCollectionRef = db.collection("Task");
-//        notificationCollectionRef=db.collection("Notification");
+        followingCollectionRef = db.collection("Following");
+        followersCollectionRef = db.collection("Followers");
+        postCollectionRef = db.collection("Posts");
+        ChildrenCollectionRef = db.collection("Children");
+        notificationCollectionRef = db.collection("Notification");
 
     }
 
@@ -95,36 +136,22 @@ public final class Data implements IData {
         return single_instance;
     }
 
-    public  void createUserData(@NonNull FirebaseUser firebaseUser, UserModel userModel, FirebaseCallback callback) {
+    public void createUserData(@NonNull FirebaseUser firebaseUser, UserModel userModel, FirebaseCallback callback) {
         DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
                 .document(firebaseUser.getUid());
         reference.set(userModel)
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
-                        createUserTask(firebaseUser, callback);
-                    }
-                }).addOnFailureListener(e -> {
-                    callback.onCallback(false, e, null);
-                });
-    }
-
-    private  void createUserTask(@NonNull FirebaseUser firebaseUser, FirebaseCallback callback) {
-        DocumentReference reference = FirebaseFirestore.getInstance().collection("Task")
-                .document(firebaseUser.getUid());
-        Map<String, List<com.example.tocare.BLL.Model.Task>> mapTask = new HashMap<>();
-        mapTask.put(firebaseUser.getUid(), new ArrayList<>());
-        reference.set(mapTask)
-                .addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-
                         callback.onCallback(true, null, firebaseUser);
+
                     }
                 }).addOnFailureListener(e -> {
                     callback.onCallback(false, e, null);
                 });
     }
 
-    public  void startPhoneNumberVerification(String phoneNumber, Activity activity, PhoneCallback callback) {
+
+    public void startPhoneNumberVerification(String phoneNumber, Activity activity, PhoneCallback callback) {
         phoneCallback = callback;
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
@@ -137,7 +164,7 @@ public final class Data implements IData {
 
     }
 
-    public  void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token, Activity activity) {
+    public void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token, Activity activity) {
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
                         .setPhoneNumber(phoneNumber)       // Phone number to verify
@@ -149,7 +176,7 @@ public final class Data implements IData {
         PhoneAuthProvider.verifyPhoneNumber(options);
     }
 
-    public  void signInWithAuthCredential(PhoneAuthCredential credential, PhoneCallback phoneCallback) {
+    public void signInWithAuthCredential(PhoneAuthCredential credential, PhoneCallback phoneCallback) {
         FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     phoneCallback.onCallback(true, null, task);
@@ -159,41 +186,10 @@ public final class Data implements IData {
                 });
     }
 
-    public  void verifyPhoneNumberWithCode(String code, String mVerificationId, PhoneCallback callback) {
+    public void verifyPhoneNumberWithCode(String code, String mVerificationId, PhoneCallback callback) {
 
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
         signInWithAuthCredential(credential, callback);
-    }
-
-    public void buildUser(FirebaseCallback callback) {
-        userCollectionRef
-                .document(firebaseUser.getUid())
-                .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Map<String, Object> map = document.getData();
-                            isAdmin = (boolean) map.get("admin");
-
-                            if (isAdmin) {
-                                Admin admin = document.toObject(Admin.class);
-                                users.put(admin.getId(), admin);
-                                updateAdminUI(admin);
-                                getUsersData(admin);
-                            } else {
-                                User user = document.toObject(User.class);
-                                users.put(user.getId(), user);
-                                updateUserUI(user);
-                            }
-                            callback.onCallback(true, null, firebaseUser);
-                        } else {
-                            Log.d(TAG, "No such document");
-                        }
-                    }
-                }).addOnFailureListener(e -> {
-                    callback.onCallback(false, e, null);
-                    Log.d(TAG, "get failed with ", e);
-                });
     }
 
     @Override
@@ -202,86 +198,30 @@ public final class Data implements IData {
         return credential;
     }
 
-    private void updateUserUI(@NonNull User user) {
+    public void updateUserUI(Callback callback) {
 
-        DocumentReference reference = userCollectionRef
-                .document(firebaseUser.getUid());
-
-        ListenerRegistration mainReference = reference
+        ListenerRegistration listener = userCollectionRef
+                .document(firebaseUser.getUid())
                 .addSnapshotListener((value, error) -> {
-                    // עדכון ב notification
-                    users.put(user.getId(), value.toObject(User.class));
-                    System.out.println("------updateUserUI::User--------");
-                    Log.d(TAG, "DocumentReferenceCurrentUser:success");
-                });
-
-        listenerRegistrationUser.put(firebaseUser.getUid(), mainReference);
-
-        DocumentReference referenceTask =
-                taskCollectionRef
-                        .document(user.getId());
-
-        ListenerRegistration mainReferenceTask = referenceTask
-                .addSnapshotListener((value, error) -> {
-                    System.out.println("------updateUserUI::Task--------");
-                    Map<String, Object> masTask = value.getData();
-                    Gson gson = new Gson();
-                    List<Task> listTask = new ArrayList<>();
-                    String tasksString = gson.toJson(masTask.get(user.getId()));
-                    List l = gson.fromJson(tasksString, List.class);
-                    for (Object obj : l) {
-                        String fromJson = gson.toJson(obj);
-                        Task task = gson.fromJson(fromJson, Task.class);
-                        listTask.add(task);
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        callback.onCallback(false, error, null);
+                        return;
                     }
-                    tasks.put(user.getId(), listTask);
-                    Log.d(TAG, "DocumentReferenceCurrentUser:success");
-                });
-        listenerRegistrationTasks.put(firebaseUser.getUid(), mainReferenceTask);
-    }
+                    if (value != null && value.exists()) {
+                        users.put(firebaseUser.getUid(), value.toObject(UserModel.class));
+                        callback.onCallback(true, null, firebaseUser);
+                        getAllFollowing(callback);
+                        Log.d(TAG, "DocumentReferenceCurrentUser:success");
+                        Log.w(TAG, "document exists.");
+                        // The document exists
 
-    private void updateAdminUI(@NonNull Admin admin) {
-        DocumentReference reference = userCollectionRef
-                .document(firebaseUser.getUid());
-
-        ListenerRegistration mainReference = reference
-                .addSnapshotListener((value, error) -> {
-                    // עדכון ב notification
-                    users.put(admin.getId(), value.toObject(Admin.class));
-                    Log.d(TAG, "DocumentReferenceCurrentUser:success");
-                });
-
-        listenerRegistrationUser.put(firebaseUser.getUid(), mainReference);
-
-        DocumentReference referenceTask = taskCollectionRef
-                .document(admin.getId());
-
-        ListenerRegistration mainReferenceTask = referenceTask
-                .addSnapshotListener((value, error) -> {
-                    Map<String, Object> masTask = value.getData();
-                    Gson gson = new Gson();
-                    List<Task> listTask = new ArrayList<>();
-                    String tasksString = gson.toJson(masTask.get(value.getId()));
-                    List l = gson.fromJson(tasksString, List.class);
-                    for (Object obj : l) {
-                        String fromJson = gson.toJson(obj);
-                        Task task = gson.fromJson(fromJson, Task.class);
-                        listTask.add(task);
-
+                    } else {
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
                     }
-                    tasks.put(admin.getId(), listTask);
-                    System.out.println("------updateAdminUI::Task--------");
-                    Log.d(TAG, "DocumentReferenceCurrentUser:success");
                 });
-        listenerRegistrationTasks.put(firebaseUser.getUid(), mainReferenceTask);
-    }
-
-    private void getUsersData(@NonNull Admin admin) {
-        List<String> childrenId = admin.getChildrenId();
-        for (String id : childrenId) {
-            addUserSnapshot(id);
-            addTaskSnapshot(id);
-        }
+        listenerRegistrations.add(listener);
     }
 
     @Override
@@ -289,11 +229,14 @@ public final class Data implements IData {
         return users.get(firebaseUser.getUid());
     }
 
+    public String getCurrentUserId() {
+        return firebaseUser.getUid();
+    }
+
     @Override
     public void addUserSnapshot(String UserId) {
-        DocumentReference referenceUser = userCollectionRef
-                .document(UserId);
-        ListenerRegistration mainReferenceUser = referenceUser
+        ListenerRegistration mainReferenceUser = userCollectionRef
+                .document(UserId)
                 .addSnapshotListener((value, error) -> {
                     // עדכון ב notification
                     users.put(UserId, value.toObject(User.class));
@@ -301,39 +244,9 @@ public final class Data implements IData {
                     Log.d(TAG, "DocumentReferenceCurrentUser:success");
 
                 });
-        listenerRegistrationUser.put(UserId, mainReferenceUser);
+        listenerRegistrations.add(mainReferenceUser);
     }
 
-    @Override
-    public void addTaskSnapshot(String taskId) {
-        DocumentReference referenceTask = taskCollectionRef
-                .document(taskId);
-        ListenerRegistration mainReferenceTask = referenceTask
-                .addSnapshotListener((value, error) -> {
-                    // עדכון ב notification
-                    Map<String, Object> masTask = value.getData();
-                    Gson gson = new Gson();
-                    List<Task> listTask = new ArrayList<>();
-                    String tasksString = gson.toJson(masTask.get(taskId));
-                    List l = gson.fromJson(tasksString, List.class);
-                    for (Object obj : l) {
-                        String fromJson = gson.toJson(obj);
-                        Task task = gson.fromJson(fromJson, Task.class);
-                        listTask.add(task);
-
-                    }
-                    tasks.put(taskId, listTask);
-                    System.out.println("------updateUsersUI::Task--------");
-                    Log.d(TAG, "DocumentReferenceCurrentUser:success");
-//                        int reload = navController.getCurrentDestination().getId();
-//                        navController.navigate(reload);
-                });
-        listenerRegistrationTasks.put(taskId, mainReferenceTask);
-    }
-
-    public void addNewTask(String userID, Task task) {
-        tasks.get(userID).add(task);
-    }
 
     public void deleteTaskByUserId(String userID, Task task) {
         tasks.get(userID).remove(task);
@@ -366,13 +279,44 @@ public final class Data implements IData {
 
     public List<UserModel> getAllUser() {
         System.out.println(users);
-       List<UserModel> list = new ArrayList<>(users.values());
-       list.remove(getCurrentUser());
+        List<UserModel> list = new ArrayList<>(users.values());
+        list.remove(getCurrentUser());
         return list;
     }
 
-    public UserModel getUserById(String userID) {
+    public UserModel getUserChildById(String userID) {
         return users.get(userID);
+    }
+
+
+    public void getFollowingByUserId(String userId, FollowingCallback callback) {
+        followingCollectionRef.document(userId).collection("following").get().addOnCompleteListener(task -> {
+            List<String> list = new ArrayList<>();
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot snap : task.getResult().getDocuments()) {
+                    list.add(snap.getId());
+                }
+                callback.result(true, list);
+
+            }
+        }).addOnFailureListener(e -> callback.result(false, null));
+
+    }
+
+    public void getPostsByUserId(List<String> following, FollowingCallback callback) {
+
+
+    }
+
+    public void getUserById(String userID, UserCallback callback) {
+        userCollectionRef.document(userID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                UserModel user = task.getResult().toObject(UserModel.class);
+                callback.result(true, user);
+            }
+        }).addOnFailureListener(e -> {
+            callback.result(false, null);
+        });
     }
 
     @Override
@@ -390,10 +334,6 @@ public final class Data implements IData {
 
     }
 
-    @Override
-    public void createNewTask() {
-
-    }
 
     @Override
     public void createNewUserByPhone() {
@@ -420,17 +360,17 @@ public final class Data implements IData {
 
     }
 
-    @Override
-    public void updateChildren(FirebaseCallback callback, String newUserId) {
-        addUserSnapshot(newUserId);
-        addTaskSnapshot(newUserId);
-
+    public void addChildren(FirebaseCallback callback, String newUserId) {
         FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Admin admin = (Admin) getCurrentUser();
-                        userCollectionRef.document(admin.getId())
-                                .update("childrenId", admin.getChildrenId())
+                        ChildrenCollectionRef.document("Parent:" + admin.getId())
+                                .collection(admin.getId())
+                                .document(newUserId)
+                                .set(new HashMap<String, Object>() {{
+                                    put("isChild", true);
+                                }})
                                 .addOnSuccessListener(aVoid -> {
                                     callback.onSuccess(true, null);
                                 })
@@ -468,36 +408,567 @@ public final class Data implements IData {
 
     @Override
     public void destroyListenerRegistration() {
-        Iterator<ListenerRegistration> iterator = listenerRegistrationUser.values().iterator();
-        while (iterator.hasNext())
-            iterator.next().remove();
-
-        iterator = listenerRegistrationTasks.values().iterator();
+        Iterator<ListenerRegistration> iterator = listenerRegistrations.iterator();
         while (iterator.hasNext())
             iterator.next().remove();
         FirebaseAuth.getInstance().signOut();
     }
 
-    @Override
-    public String toString() {
-        return "Data{" +
-                "\nisAdmin=" + isAdmin +
-                "\n, users=" + users +
-                "\n, tasks=" + tasks +
-                "\n, listenerRegistrationTasks=" + listenerRegistrationTasks +
-                "\n, listenerRegistrationUser=" + listenerRegistrationUser +
-                "\n, db=" + db +
-                "\n, storage=" + storage +
-                "\n, firebaseUser=" + firebaseUser +
-                "\n, mAuth=" + mAuth +
-                "\n, userCollectionRef=" + userCollectionRef +
-                "\n, taskCollectionRef=" + taskCollectionRef +
-                "\n, notificationCollectionRef=" + notificationCollectionRef +
-                "\n, refresh=" + refresh +
-                '}';
+    public void destroyData() {
+        this.users.clear();
+        this.tasks.clear();
+        this.following.clear();
+        this.followers.clear();
+        this.saved.clear();
+        this.listenerRegistrations.clear();
+
+    }
+
+    public void uploadImage(Uri ImageUri, String uriFileExtension, String postId, UploadCallback callback) {
+        if (ImageUri != null) {
+
+            StorageReference storageReference = storage.getReference("posts").child(System.currentTimeMillis() + "." + postId + uriFileExtension);
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setContentType("image/jpeg")
+                    .build();
+
+            UploadTask task = storageReference.putFile(ImageUri, metadata);
+            task.continueWithTask(taskWith -> {
+                com.google.android.gms.tasks.Task<Uri> downloadUrl = null;
+                if (taskWith.isComplete()) {
+                    downloadUrl = storageReference.getDownloadUrl();
+                }
+                return downloadUrl;
+            }).addOnCompleteListener(taskComplete -> {
+                if (taskComplete.isSuccessful()) {
+                    Uri downloadUri = taskComplete.getResult();
+                    String myUri = downloadUri.toString();
+                    callback.onSuccessUpload(true, null, myUri, postId);
+                }
+            }).addOnFailureListener(e -> {
+                callback.onSuccessUpload(false, e, null, postId);
+            });
+
+        }
+
+    }
+
+    public String getRandomIdByCollectionName(String collectionName) {
+        return db.collection("Posts").document().getId();
     }
 
     public void setRefresh(Refresh refresh) {
         this.refresh = refresh;
+    }
+
+    public void destroy() {
+        destroyListenerRegistration();
+        destroyData();
+        single_instance=null;
+    }
+
+    public Map<String, Object> getFollowing() {
+        return following;
+    }
+
+    public Map<String, Object> getFollowers() {
+        return followers;
+    }
+
+    public Map<String, Object> getSaved() {
+        return saved;
+    }
+
+    public void searchUsersAdmin(String search, SearchCallback callback) {
+        Query query = db.collection("User")
+                .whereEqualTo("admin", false)
+                .orderBy("userName")
+                .startAt(search)
+                .endAt(search + "\uf8ff");
+        query.addSnapshotListener((value, error) -> {
+            if (value != null) {
+                List<UserModel> list = new ArrayList<>();
+                for (DocumentSnapshot snap : value.getDocuments()) {
+                    list.add(snap.toObject(UserModel.class));
+                }
+                callback.result();
+            }
+        });
+    }
+
+    //    public void getAllFollowersByUser(String userId,  Map<String, Object> mFollowers) {
+//        ListenerRegistration listener = db.collection("Followers")
+//                .document(userId).addSnapshotListener((value, error) -> {
+//                    if (error != null) {
+//                        Log.w(TAG, "Listen failed.", error);
+//                        return;
+//                    }
+//                    if (value != null && value.exists()) {
+//                        mFollowers = value.getData();
+//                        Log.w(TAG, "document exists.");
+//                        // The document exists
+//
+//                    } else {
+//                        // The document does not exist
+//                        Log.w(TAG, "document does not exists.");
+//
+//                    }
+//                });
+//        listenerRegistrations.add(listener);
+//    }
+//
+//    public void getAllFollowingByUser(String userId) {
+//        ListenerRegistration listener = FirebaseFirestore.getInstance().collection("Following")
+//                .document(userId).addSnapshotListener((value, error) -> {
+//                    if (error != null) {
+//                        Log.w(TAG, "Listen failed.", error);
+//                        return;
+//                    }
+//
+//                    if (value != null && value.exists()) {
+//                        following = value.getData();
+//                        System.out.println(following);
+//                        Log.w(TAG, "document exists.");
+//                        // The document exists
+//
+//                    } else {
+//                        // The document does not exist
+//                        Log.w(TAG, "document does not exists.");
+//
+//                    }
+//                });
+//        listenerRegistrations.add(listener);
+//    }
+    public void searchUsers(String search, List<UserModel> list, SearchCallback callback) {
+        Query query = db.collection("User")
+                .orderBy("userName")
+                .startAt(search)
+                .endAt(search + "\uf8ff");
+        query.addSnapshotListener((value, error) -> {
+            list.clear();
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                return;
+            }
+            if (value != null && !value.isEmpty()) {
+                for (DocumentSnapshot snap : value.getDocuments()) {
+                    list.add(snap.toObject(UserModel.class));
+                }
+                callback.result();
+                Log.w(TAG, "document exists.");
+                // The document exists
+
+            } else {
+                callback.result();
+                // The document does not exist
+                Log.w(TAG, "document does not exists.");
+            }
+
+        });
+    }
+
+    public void getAllFollowers(Callback callback) {
+        followersCollectionRef
+                .document(firebaseUser.getUid()).get().addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        if (task != null && task.getResult().exists()) {
+                            followers = task.getResult().getData();
+                            System.out.println(followers);
+                            callback.onSuccess(true, null);
+                            Log.w(TAG, "document exists.");
+                            // The document exists
+                        } else {
+                            callback.onSuccess(true, null);
+                            // The document does not exist
+                            Log.w(TAG, "document does not exists.");
+                        }
+                    }
+                }).addOnFailureListener(error -> {
+                    Log.w(TAG, "Listen failed.", error);
+                    callback.onSuccess(false, error);
+                });
+    }
+
+    public void getAllFollowing(Callback callback) {
+        followingCollectionRef
+                .document(firebaseUser.getUid()).get().addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        if (task != null && task.getResult().exists()) {
+                            following = task.getResult().getData();
+                            System.out.println(following);
+                            getAllFollowers(callback);
+                            Log.w(TAG, "document exists.");
+                            // The document exists
+
+                        } else {
+                            getAllFollowers(callback);
+                            // The document does not exist
+                            Log.w(TAG, "document does not exists.");
+                        }
+                    }
+                }).addOnFailureListener(error -> {
+                    Log.w(TAG, "Listen failed.", error);
+                    callback.onSuccess(false, error);
+                });
+
+
+    }
+
+    public void setAllFollowersSnapShot() {
+        ListenerRegistration listener = followersCollectionRef
+                .document(firebaseUser.getUid()).addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+
+                        return;
+                    }
+                    if (value != null && value.exists()) {
+                        followers = value.getData();
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+                    } else {
+
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
+
+                    }
+                });
+        listenerRegistrations.add(listener);
+    }
+
+    public void getAllFollowingSnapShot() {
+        ListenerRegistration listener = followingCollectionRef
+                .document(firebaseUser.getUid())
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+
+                    if (value != null && value.exists()) {
+                        following = value.getData();
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+
+                    } else {
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
+                    }
+                });
+        listenerRegistrations.add(listener);
+    }
+
+    public void addFollow(String followUser, final TextView textView) {
+        followingCollectionRef
+                .document(firebaseUser.getUid())
+                .set(new HashMap<String, Object>() {{
+                    put(followUser, true);
+                }}, SetOptions.merge())
+                .addOnCompleteListener(task -> {
+                    textView.setText(R.string.Following);
+                })
+                .addOnFailureListener(e -> {
+                    textView.setText(R.string.Follow);
+                });
+
+        followersCollectionRef
+                .document(followUser)
+                .set(new HashMap<String, Boolean>() {{
+                    put(firebaseUser.getUid(), true);
+                }}, SetOptions.merge())
+                .addOnCompleteListener(task -> {
+                    textView.setText(R.string.Following);
+                })
+                .addOnFailureListener(e -> {
+                    textView.setText(R.string.Follow);
+                });
+    }
+
+    public void deleteFollow(String followUser, final TextView textView) {
+        followingCollectionRef
+                .document(firebaseUser.getUid())
+                .set(new HashMap<String, Object>() {{
+                    put(followUser, FieldValue.delete());
+                }}, SetOptions.merge())
+                .addOnCompleteListener(task -> {
+
+                    textView.setText(R.string.Follow);
+                })
+                .addOnFailureListener(e -> {
+                    textView.setText(R.string.Following);
+                });
+
+        followersCollectionRef
+                .document(followUser)
+                .set(new HashMap<String, Object>() {{
+                    put(firebaseUser.getUid(), FieldValue.delete());
+                }}, SetOptions.merge())
+                .addOnCompleteListener(task -> {
+                    textView.setText(R.string.Follow);
+                })
+                .addOnFailureListener(e -> {
+                    textView.setText(R.string.Following);
+                });
+    }
+
+    public void getAllSaved(String userId) {
+        ListenerRegistration listener = db.collection("Saved")
+                .document(userId).addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+                    if (value != null && value.exists()) {
+                        saved = value.getData();
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+
+                    } else {
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
+
+                    }
+                });
+        listenerRegistrations.add(listener);
+    }
+
+    public void addSavedItem(String postId) {
+        db.collection("Saved")
+                .document(postId)
+                .set(new HashMap<String, Object>() {{
+                    put(firebaseUser.getUid(), true);
+                }}, SetOptions.merge()).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Save Item : " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Save Item : " + postId + " Failed.");
+
+                });
+    }
+
+    public void deleteSavedItem(String postId) {
+        FirebaseFirestore.getInstance().collection("Saved")
+                .document(postId)
+                .set(new HashMap<String, Object>() {{
+                    put(firebaseUser.getUid(), FieldValue.delete());
+                }}, SetOptions.merge()).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Delete Item : " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Delete Item : " + postId + " Failed.");
+
+                });
+    }
+
+    public void addLikeToTask(String postId) {
+        db.collection("Likes")
+                .document(postId)
+                .set(new HashMap<String, Object>() {{
+                    put(firebaseUser.getUid(), true);
+                }}, SetOptions.merge()).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Like added : " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Task add : " + postId + " Failed.");
+
+                });
+    }
+
+    public void deleteLikeFromTask(String postId) {
+        db.collection("Likes")
+                .document(postId)
+                .set(new HashMap<String, Object>() {{
+                    put(firebaseUser.getUid(), FieldValue.delete());
+                }}, SetOptions.merge()).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Like deleted : " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Task deleted : " + postId + " Failed.");
+
+                });
+    }
+
+    public void getLikeByPostId(final TextView likes, String postId) {
+        ListenerRegistration listener = db.collection("Likes").document(postId)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+                    if (value != null && value.exists()) {
+                        likes.setText(value.getData().size() + " likes");
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+
+                    } else {
+                        // The document does not exist
+                        likes.setText("0" + " likes");
+                        Log.w(TAG, "document does not exists.");
+
+                    }
+                });
+        listenerRegistrations.add(listener);
+    }
+
+    public void isLiked(final ImageView imageView, String postId) {
+        ListenerRegistration listener = db.collection("Likes").document(postId)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+                    if (value != null && value.exists()) {
+                        if (value.getData().containsKey(firebaseUser.getUid())) {
+                            imageView.setImageResource(R.drawable.ic_red_like);
+                            imageView.setTag("liked");
+                        } else {
+                            imageView.setImageResource(R.drawable.ic_like);
+                            imageView.setTag("like");
+                        }
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+
+                    } else {
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
+                    }
+                });
+        listenerRegistrations.add(listener);
+    }
+
+    public void isSaved(final ImageView imageView, String postId) {
+        ListenerRegistration listener = db.collection("Saved").document(postId)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+                    if (value != null && value.exists()) {
+                        if (value.getData().containsKey(firebaseUser.getUid())) {
+                            imageView.setImageResource(R.drawable.ic_saved);
+                            imageView.setTag("saved");
+                        } else {
+                            imageView.setImageResource(R.drawable.ic_save);
+                            imageView.setTag("save");
+                        }
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+
+                    } else {
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
+                    }
+
+
+                });
+        listenerRegistrations.add(listener);
+    }
+
+    public void addPost(String postId, @NonNull Task task, UploadCallback callback) {
+        db.collection("Posts")
+                .document(postId)
+                .set(task)
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Task added : " + postId + " Success.");
+                                callback.onSuccess(true, null);
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Task add : " + postId + " Failed.");
+                    callback.onSuccess(false, e);
+                });
+    }
+
+    public void deletePost(String postId) {
+        postCollectionRef
+                .document(postId)
+                .delete()
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Delete Post: " + postId + " Success.");
+                                deleteAllLike(postId);
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
+                });
+    }
+
+    public void deleteAllLike(String postId) {
+        db.collection("Likes")
+                .document(postId)
+                .delete()
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Delete Post: " + postId + " Success.");
+                                deleteAllComment(postId);
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
+                });
+    }
+
+    public void deleteAllComment(String postId) {
+        db.collection("Comments")
+                .document(postId)
+                .delete()
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                deleteAllSaved(postId);
+                                Log.w(TAG, "Delete Post: " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
+                });
+    }
+
+    public void deleteAllSaved(String postId) {
+        db.collection("Saved")
+                .document(postId)
+                .delete()
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Delete Post: " + postId + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
+                });
+    }
+
+    public void getAllPost(List<Task> mTask, OnChangeCallback callback) {
+        ListenerRegistration listener = db.collection("Posts")
+//                .whereIn("author", Arrays.asList(getFollowing().keySet().toArray()))
+                .addSnapshotListener((value, error) -> {
+                    mTask.clear();
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+                    if (value != null && !value.isEmpty()) {
+                        for (DocumentSnapshot doc : value.getDocuments()) {
+                            mTask.add(doc.toObject(Task.class));
+                        }
+                        Log.w(TAG, "document exists.");
+                        // The document exists
+                    } else {
+                        // The document does not exist
+                        Log.w(TAG, "document does not exists.");
+                    }
+                    callback.onChange();
+
+                });
+        listenerRegistrations.add(listener);
     }
 }

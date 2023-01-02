@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 
+import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.Callback;
@@ -104,7 +105,6 @@ public final class Login implements ILogin {
 
     @Override
     public  void verifyPhoneNumberWithCode(String code, String mVerificationId, PhoneCallback callback) {
-
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
         signInWithAuthCredential(credential, callback);
     }
@@ -120,7 +120,7 @@ public final class Login implements ILogin {
                     callback.onSuccess(false, e, null);
                 });
 
-        Data.getInstance().createCredentialSignIn(email, password);
+//        Data.getInstance().createCredentialSignIn(email, password);
     }
 
     @Override
@@ -133,7 +133,6 @@ public final class Login implements ILogin {
 
                         FirebaseUser user = task.getResult().getUser();
                         userModel.setId(user.getUid());
-
                         callback.onCallback(true, null, user);
                         createUserData(user, userModel, callback);
                     }
@@ -241,29 +240,10 @@ public final class Login implements ILogin {
                     if (task1.isSuccessful()) {
                         Log.d(TAG, "DocumentReference::User::success");
                         callback.onSuccess(true, null);
-                        createUserTask(firebaseUser, callback);
                     }
                 }).addOnFailureListener(e -> {
                     Log.d(TAG, "DocumentReference::User::failed");
                     callback.onSuccess(false, e);
-                    FirebaseAuth.getInstance().getCurrentUser().delete();
-                });
-    }
-
-    private void createUserTask(@NonNull FirebaseUser firebaseUser, Callback callback) {
-        DocumentReference reference = FirebaseFirestore.getInstance().collection("Task")
-                .document(firebaseUser.getUid());
-        Map<String, List<Task>> mapTask = new HashMap<>();
-        mapTask.put(firebaseUser.getUid(), new ArrayList<>());
-        reference.set(mapTask)
-                .addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        Log.d(TAG, "DocumentReference::Task::success");
-                        callback.onComplete(true, null);
-                    }
-                }).addOnFailureListener(e -> {
-                    Log.d(TAG, "DocumentReference::Task::failed");
-                    callback.onComplete(false, e);
                     FirebaseAuth.getInstance().getCurrentUser().delete();
                 });
     }

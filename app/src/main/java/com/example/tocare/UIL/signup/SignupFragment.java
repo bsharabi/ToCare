@@ -122,10 +122,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                 "Hello my name is " + userName,
                 "https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a",
                 true);
-        if (UserValidation.SignUpValidation(email, password, userName, lastName, phone, cPassword) && ccp.isValidFullNumber()) {
+//        if (UserValidation.SignUpValidation(email, password, userName, lastName, phone, cPassword) && ccp.isValidFullNumber()) {
             login.createAccountWithEmail(email, password, userModel, this);
             loginActivity.hideKeyboard();
-        }
+//        }
     }
 
     @Override
@@ -158,6 +158,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
         if (success) {
             dialog.dismiss();
             Log.d(TAG, "DocumentReference::User::success");
+            Toast.makeText(getContext(), "The details have been successfully", Toast.LENGTH_SHORT).show();
+            loginActivity.swapFragmentByPosition(0);
         } else {
             dialog.dismiss();
             Log.d(TAG, "DocumentReference::User::failed");
@@ -165,15 +167,4 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
         }
     }
 
-    @Override
-    public void onComplete(boolean success, Exception e) {
-        if(success){
-            Log.d(TAG, "DocumentReference::Task::success");
-            loginActivity.swapFragmentByPosition(0);
-            Toast.makeText(getContext(), "The details have been successfully", Toast.LENGTH_SHORT).show();
-        }else{
-            Log.d(TAG, "DocumentReference::Task::failed");
-            Toast.makeText(getContext(), "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
 }

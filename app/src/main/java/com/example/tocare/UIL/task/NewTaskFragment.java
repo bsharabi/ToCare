@@ -61,7 +61,7 @@ public class NewTaskFragment extends Fragment {
         btnSelect.setOnClickListener(v -> SelectImage());
 
         btSubmit.setOnClickListener(v -> {
-            localData.addNewTask(UserSelected, new Task(binding.etBio.getText().toString(), UserSelected));
+//            localData.addNewTask(UserSelected, new Task(binding.etBio.getText().toString(), UserSelected));
             localData.updateListTaskByUserId(UserSelected)
                     .addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {

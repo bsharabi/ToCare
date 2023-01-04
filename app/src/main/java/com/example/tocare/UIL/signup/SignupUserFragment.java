@@ -16,12 +16,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Listener.PhoneCallback;
-import com.example.tocare.BLL.Listener.Refresh;
 import com.example.tocare.BLL.Validation.UserValidation;
 import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.R;
 import com.example.tocare.UIL.phone.PhoneSignupVerificationFragment;
-import com.example.tocare.UIL.users.UsersFragment;
+import com.example.tocare.UIL.Fragment.UsersManageFragment;
 import com.example.tocare.databinding.FragmentSignupUserBinding;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -34,7 +33,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.hbb20.CountryCodePicker;
 
 
-public class SignupUserFragment extends Fragment implements View.OnClickListener, PhoneCallback, Refresh {
+public class SignupUserFragment extends Fragment implements View.OnClickListener, PhoneCallback {
 
 
     private static final String TAG = "SignupUser";
@@ -64,9 +63,9 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         localData = Data.getInstance();
         manageUsersActivity = (ManageUsersActivity) getActivity();
         materialToolbar = binding.topAppBar;
-        Data.getInstance().setRefresh(this);
+
         materialToolbar.setNavigationOnClickListener(v -> {
-            manageUsersActivity.swapFragmentByFragmentClass(UsersFragment.class, null);
+            manageUsersActivity.swapFragmentByFragmentClass(UsersManageFragment.class, null);
 
         });
 
@@ -179,8 +178,5 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         manageUsersActivity.swapFragmentByFragmentClass(PhoneSignupVerificationFragment.class, bundle);
     }
 
-    @Override
-    public void refresh() {
-        manageUsersActivity.swapFragmentByFragmentClass(SignupUserFragment.class, null);
-    }
+
 }

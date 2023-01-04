@@ -12,14 +12,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.R;
-import com.example.tocare.UIL.users.UserCardFragment;
 import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
@@ -30,14 +29,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public UserAdapter(Context mContext, ManageUsersActivity manageUsersActivity) {
         this.mContext = mContext;
-        this.mUser = Data.getInstance().getAllUser();
+        this.mUser = new ArrayList<>();
         this.manageUsersActivity = manageUsersActivity;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item_manage, parent, false);
         return new ViewHolder(view);
     }
 
@@ -56,7 +55,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         holder.edit.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putString("userID", user.getId());
-            manageUsersActivity.swapFragmentByFragmentClass(UserCardFragment.class, bundle);
         });
         holder.delete.setOnClickListener(v -> {
             System.out.println(user.getUserName());
@@ -71,20 +69,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView userImage;
-        private final TextView bioTV, tvFullName;
+        private  ImageView userImage;
+        private  TextView bioTV, tvFullName;
         private MaterialButton edit, delete;
         private RelativeLayout card;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            userImage = itemView.findViewById(R.id.iv_user_image);
-            bioTV = itemView.findViewById(R.id.tv_bio);
-            tvFullName = itemView.findViewById(R.id.tv_user_name);
-            edit = itemView.findViewById(R.id.bt_edit);
-            delete = itemView.findViewById(R.id.bt_delete);
-            card = itemView.findViewById(R.id.rl_card);
+//            userImage = itemView.findViewById(R.id.iv_user_image);
+//            bioTV = itemView.findViewById(R.id.tv_bio);
+//            tvFullName = itemView.findViewById(R.id.tv_user_name);
+//            edit = itemView.findViewById(R.id.bt_edit);
+//            delete = itemView.findViewById(R.id.bt_delete);
+//            card = itemView.findViewById(R.id.rl_card);
 
 
         }

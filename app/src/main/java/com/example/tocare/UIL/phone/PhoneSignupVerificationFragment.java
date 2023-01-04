@@ -25,7 +25,7 @@ import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Validation.UserValidation;
 import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.R;
-import com.example.tocare.UIL.users.UsersFragment;
+import com.example.tocare.UIL.Fragment.UsersManageFragment;
 import com.example.tocare.databinding.FragmentPhoneCodeVerificationBinding;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
@@ -166,7 +166,7 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
         } else {
             Log.w(TAG, "signInWithCredential:failure", e);
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                ((ManageUsersActivity) getActivity()).swapFragmentByFragmentClass(UsersFragment.class, null);
+                ((ManageUsersActivity) getActivity()).swapFragmentByFragmentClass(UsersManageFragment.class, null);
             }
         }
     }

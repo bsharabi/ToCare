@@ -14,16 +14,9 @@ public interface IData {
     // ----------------- init ---------------
 
 
-
-
     AuthCredential createCredentialSignIn(String email, String password);
 
     //----------------- Get -------------------
-    List<UserModel> getAllUser();
-
-    List<Task> getAllTask();
-
-    UserModel getUserChildById(String userId);
 
     List<Task> getTasksByUser(String userId);
 
@@ -34,8 +27,6 @@ public interface IData {
     UserModel getCurrentUser();
 
     void addUserSnapshot(String UserId);
-
-
 
 
     //----------------- Post ------------------
@@ -69,5 +60,17 @@ public interface IData {
     // ------------------ destroy -------------------
     void destroyListenerRegistration();
 
+}
 
+
+interface IPost {
+}
+
+interface IGet {
+}
+
+interface IPut {
+}
+
+interface IDelete {
 }

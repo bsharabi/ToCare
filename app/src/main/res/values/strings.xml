@@ -38,7 +38,7 @@
     <string name="or_sing_up_with">Or sing-Up with</string>
     <string name="full_name">Full Name</string>
     <string name="profile">Profile</string>
-    <string name="task">Task</string>
+    <string name="task">Tasks</string>
     <string name="notification">Notification</string>
     <string name="HelloUser">Hello User</string>
     <string name="title_profile">Profile</string>
@@ -85,8 +85,11 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="description">Description</string>
-    <string name="post">POST</string>
+    <string name="post">Post</string>
     <string name="add_a_comments">Add a Comments</string>
+    <string name="Followers">Followers</string>
+    <string name="bio">Bio</string>
+    <string name="Message">Message</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

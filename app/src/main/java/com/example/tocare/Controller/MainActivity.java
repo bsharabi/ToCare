@@ -7,12 +7,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.example.tocare.BLL.Observer.Observe;
 import com.example.tocare.R;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
-import com.example.tocare.BLL.Listener.Refresh;
 import com.example.tocare.UIL.Fragment.HomeFragment;
 import com.example.tocare.UIL.Fragment.NotificationFragment;
 import com.example.tocare.UIL.Fragment.ProfileFragment;
@@ -30,7 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, FirebaseCallback, Refresh {
+public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, FirebaseCallback {
 
     private static final String TAG = "MainActivity";
     private ActivityMainBinding binding;
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
     private void initDataStructure() {
         localData = Data.getInstance();
         localData.updateUserUI(this);
-        localData.setRefresh(this);
     }
 
     private void updateUi() {
@@ -112,12 +110,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
                 reload(LoginActivity.class);
                 return true;
             case "Manage users":
-                if (localData.isAdmin()) {
-                    reload(ManageUsersActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                } else {
-                    item.setVisible(false);
-                    Toast.makeText(this, "Just Admin", Toast.LENGTH_SHORT).show();
-                }
+                reload(ManageUsersActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 return true;
             default:
                 return false;
@@ -138,15 +131,14 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
     }
 
 
-
     @Override
     public void onCallback(boolean success, Exception e, FirebaseUser user) {
-//        if (success) {
-//            updateUi();
-//            progressBar.setVisibility(View.GONE);
-//        } else {
-//            reload(LoginActivity.class);
-//        }
+        if (success) {
+         if(localData.getCurrentUser().isAdmin())
+             Observe.getInstance().updateAdmin();
+        } else {
+            Observe.getInstance().updateChild();
+        }
     }
 
     @Override
@@ -159,12 +151,4 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         }
     }
 
-
-    @Override
-    public void refresh() {
-        /*
-        int reload = navController.getCurrentDestination().getId();
-        navController.navigate(reload);*/
-        System.out.println("Ref main");
-    }
 }

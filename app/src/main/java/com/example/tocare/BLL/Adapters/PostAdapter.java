@@ -1,6 +1,7 @@
 package com.example.tocare.BLL.Adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 
 import com.example.tocare.UIL.CommentsActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -104,12 +106,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         });
         holder.delete.setOnClickListener(v -> {
-            localData.deletePost(task.getTaskId());
+            new MaterialAlertDialogBuilder(mContext)
+                    .setTitle("Delete post")
+                    .setMessage("Are you sure you want to delete the photo?")
+                    .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            localData.deletePost(task.getTaskId());
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    })
+                    .show();
+
         });
         localData.getLikeByPostId(holder.count_likes, task.getTaskId());
         localData.isLiked(holder.like, task.getTaskId());
         localData.isSaved(holder.save, task.getTaskId());
-        localData.getCommentByPostId(holder.comments,task.getTaskId());
+        localData.getCommentByPostId(holder.comments, task.getTaskId());
 
 
     }

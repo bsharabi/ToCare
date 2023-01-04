@@ -24,10 +24,7 @@ import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.DAL.api.IData;
 import com.example.tocare.BLL.Listener.PhoneCallback;
-import com.example.tocare.BLL.Listener.Refresh;
 import com.example.tocare.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -65,30 +62,27 @@ public final class Data implements IData {
     private static final String TAG = "DataUser";
     private static AuthCredential credential;
     private static PhoneCallback phoneCallback;
-    private boolean isAdmin;
-    private Map<String, UserModel> users;
+
+    private UserModel currentUser;
 
     private Map<String, Object> following;
     private Map<String, Object> followers;
     private Map<String, Object> saved;
 
     private List<ListenerRegistration> listenerRegistrations;
-    private Map<String, List<Task>> tasks;
-
 
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
     private final FirebaseUser firebaseUser;
     private final FirebaseAuth mAuth;
     private final CollectionReference userCollectionRef;
-    private final CollectionReference taskCollectionRef;
     private final CollectionReference commentsCollectionRef;
     private final CollectionReference followingCollectionRef;
     private final CollectionReference followersCollectionRef;
     private final CollectionReference ChildrenCollectionRef;
     private final CollectionReference postCollectionRef;
     private final CollectionReference notificationCollectionRef;
-    private Refresh refresh;
+
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -110,8 +104,6 @@ public final class Data implements IData {
     };
 
     private Data() {
-        this.users = new HashMap<>();
-        this.tasks = new HashMap<>();
         this.following = new HashMap<>();
         this.followers = new HashMap<>();
         this.saved = new HashMap<>();
@@ -124,7 +116,6 @@ public final class Data implements IData {
         firebaseUser = mAuth.getCurrentUser();
 
         userCollectionRef = db.collection("User");
-        taskCollectionRef = db.collection("Task");
         followingCollectionRef = db.collection("Following");
         followersCollectionRef = db.collection("Followers");
         postCollectionRef = db.collection("Posts");
@@ -213,8 +204,7 @@ public final class Data implements IData {
                         return;
                     }
                     if (value != null && value.exists()) {
-                        users.put(firebaseUser.getUid(), value.toObject(UserModel.class));
-
+                        currentUser= value.toObject(UserModel.class);
                         getAllFollowingSnapShot();
                         getAllFollowersSnapShot();
                         callback.onCallback(true, null, firebaseUser);
@@ -233,7 +223,7 @@ public final class Data implements IData {
 
     @Override
     public UserModel getCurrentUser() {
-        return users.get(firebaseUser.getUid());
+        return currentUser;
     }
 
     public String getCurrentUserId() {
@@ -246,55 +236,12 @@ public final class Data implements IData {
                 .document(UserId)
                 .addSnapshotListener((value, error) -> {
                     // עדכון ב notification
-                    users.put(UserId, value.toObject(User.class));
-                    System.out.println("------updateUsersUI::User--------");
+                    currentUser=value.toObject(User.class);
                     Log.d(TAG, "DocumentReferenceCurrentUser:success");
 
                 });
         listenerRegistrations.add(mainReferenceUser);
     }
-
-
-    public void deleteTaskByUserId(String userID, Task task) {
-        tasks.get(userID).remove(task);
-        updateListTaskByUserId(userID);
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public List<Task> getTaskByUserId(String UserId) {
-        return tasks.get(UserId);
-    }
-
-    public com.google.android.gms.tasks.Task<Void> updateListTaskByUserId(String UserID) {
-        DocumentReference reference = FirebaseFirestore.getInstance().collection("Task")
-                .document(UserID);
-        return reference.update(UserID, getTaskByUserId(UserID));
-    }
-
-    public List<Task> getAllTask() {
-
-        List<Task> mTask = new ArrayList<>();
-        for (Map.Entry<String, List<Task>> entry : tasks.entrySet()) {
-            mTask.addAll(entry.getValue());
-        }
-
-        return mTask;
-    }
-
-    public List<UserModel> getAllUser() {
-        System.out.println(users);
-        List<UserModel> list = new ArrayList<>(users.values());
-        list.remove(getCurrentUser());
-        return list;
-    }
-
-    public UserModel getUserChildById(String userID) {
-        return users.get(userID);
-    }
-
 
     public void getFollowingByUserId(String userId, FollowingCallback callback) {
         followingCollectionRef.document(userId).collection("following").get().addOnCompleteListener(task -> {
@@ -422,8 +369,6 @@ public final class Data implements IData {
     }
 
     public void destroyData() {
-        this.users.clear();
-        this.tasks.clear();
         this.following.clear();
         this.followers.clear();
         this.saved.clear();
@@ -464,10 +409,6 @@ public final class Data implements IData {
         return db.collection("Posts").document().getId();
     }
 
-    public void setRefresh(Refresh refresh) {
-        this.refresh = refresh;
-    }
-
     public void destroy() {
         destroyListenerRegistration();
         destroyData();
@@ -503,49 +444,6 @@ public final class Data implements IData {
         });
     }
 
-    //    public void getAllFollowersByUser(String userId,  Map<String, Object> mFollowers) {
-//        ListenerRegistration listener = db.collection("Followers")
-//                .document(userId).addSnapshotListener((value, error) -> {
-//                    if (error != null) {
-//                        Log.w(TAG, "Listen failed.", error);
-//                        return;
-//                    }
-//                    if (value != null && value.exists()) {
-//                        mFollowers = value.getData();
-//                        Log.w(TAG, "document exists.");
-//                        // The document exists
-//
-//                    } else {
-//                        // The document does not exist
-//                        Log.w(TAG, "document does not exists.");
-//
-//                    }
-//                });
-//        listenerRegistrations.add(listener);
-//    }
-//
-//    public void getAllFollowingByUser(String userId) {
-//        ListenerRegistration listener = FirebaseFirestore.getInstance().collection("Following")
-//                .document(userId).addSnapshotListener((value, error) -> {
-//                    if (error != null) {
-//                        Log.w(TAG, "Listen failed.", error);
-//                        return;
-//                    }
-//
-//                    if (value != null && value.exists()) {
-//                        following = value.getData();
-//                        System.out.println(following);
-//                        Log.w(TAG, "document exists.");
-//                        // The document exists
-//
-//                    } else {
-//                        // The document does not exist
-//                        Log.w(TAG, "document does not exists.");
-//
-//                    }
-//                });
-//        listenerRegistrations.add(listener);
-//    }
     public void searchUsers(String search, List<UserModel> list, SearchCallback callback) {
         Query query = db.collection("User")
                 .orderBy("userName")
@@ -627,16 +525,13 @@ public final class Data implements IData {
                 .document(firebaseUser.getUid()).addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Listen failed.", error);
-
                         return;
                     }
                     if (value != null && value.exists()) {
                         followers = value.getData();
-                        System.out.println();
                         Log.w(TAG, "document exists.");
                         // The document exists
                     } else {
-
                         // The document does not exist
                         Log.w(TAG, "document does not exists.");
 
@@ -646,7 +541,6 @@ public final class Data implements IData {
     }
 
     public void getAllFollowingSnapShot() {
-        System.out.println("\n\n\n\n-----------------------------------------------\n\n\n\n");
         ListenerRegistration listener = followingCollectionRef
                 .document(firebaseUser.getUid())
                 .addSnapshotListener((value, error) -> {
@@ -658,7 +552,6 @@ public final class Data implements IData {
                     if (value != null && value.exists()) {
                         following = value.getData();
                         following.put(firebaseUser.getUid(),true);
-                        System.out.println(following);
                         Log.w(TAG, "document exists.");
                         // The document exists
 
@@ -1006,7 +899,6 @@ public final class Data implements IData {
                                     mComments.add(commentObj);
 
                                 }
-                                System.out.println(mComments);
                                 Log.w(TAG, "document:AllComment exists.");
                                 // The document exists
 
@@ -1087,5 +979,15 @@ public final class Data implements IData {
 }
 
 
+class Post {
+}
 
+class Get {
+}
+
+class Put {
+}
+
+class Delete {
+}
 

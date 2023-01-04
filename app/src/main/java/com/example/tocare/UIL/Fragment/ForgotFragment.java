@@ -1,4 +1,4 @@
-package com.example.tocare.UIL;
+package com.example.tocare.UIL.Fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;

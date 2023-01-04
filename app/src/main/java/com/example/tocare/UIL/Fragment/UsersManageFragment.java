@@ -1,4 +1,4 @@
-package com.example.tocare.UIL.users;
+package com.example.tocare.UIL.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.tocare.BLL.Adapters.UserAdapter;
-import com.example.tocare.DAL.Data;
-import com.example.tocare.BLL.Listener.Refresh;
+
 import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.UIL.signup.SignupUserFragment;
 import com.example.tocare.databinding.FragmentUsersBinding;
@@ -18,7 +17,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
-public class UsersFragment extends Fragment  implements Refresh {
+public class UsersManageFragment extends Fragment  {
 
     private static final String TAG = "UsersFragment";
     private FragmentUsersBinding binding;
@@ -47,7 +46,7 @@ public class UsersFragment extends Fragment  implements Refresh {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         usersAdapter = new UserAdapter(getContext(),manageUsersActivity);
 
-        Data.getInstance().setRefresh(this);
+
         rvUsers.setLayoutManager(linearLayoutManager);
         rvUsers.setAdapter(usersAdapter);
 
@@ -65,8 +64,4 @@ public class UsersFragment extends Fragment  implements Refresh {
         binding = null;
     }
 
-    @Override
-    public void refresh() {
-        usersAdapter.notifyDataSetChanged();
-    }
 }

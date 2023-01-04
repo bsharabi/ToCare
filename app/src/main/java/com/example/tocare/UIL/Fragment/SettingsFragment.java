@@ -1,4 +1,4 @@
-package com.example.tocare.UIL;
+package com.example.tocare.UIL.Fragment;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

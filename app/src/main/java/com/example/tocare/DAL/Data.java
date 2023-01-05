@@ -67,6 +67,7 @@ public final class Data implements IData {
 
     private Map<String, Object> following;
     private Map<String, Object> followers;
+    private Map<String, Object> children;
     private Map<String, Object> saved;
 
     private List<ListenerRegistration> listenerRegistrations;
@@ -79,7 +80,7 @@ public final class Data implements IData {
     private final CollectionReference commentsCollectionRef;
     private final CollectionReference followingCollectionRef;
     private final CollectionReference followersCollectionRef;
-    private final CollectionReference ChildrenCollectionRef;
+    private final CollectionReference childrenCollectionRef;
     private final CollectionReference postCollectionRef;
     private final CollectionReference notificationCollectionRef;
 
@@ -106,6 +107,7 @@ public final class Data implements IData {
     private Data() {
         this.following = new HashMap<>();
         this.followers = new HashMap<>();
+        this.children = new HashMap<>();
         this.saved = new HashMap<>();
 
         this.listenerRegistrations = new ArrayList<>();
@@ -119,7 +121,7 @@ public final class Data implements IData {
         followingCollectionRef = db.collection("Following");
         followersCollectionRef = db.collection("Followers");
         postCollectionRef = db.collection("Posts");
-        ChildrenCollectionRef = db.collection("Children");
+        childrenCollectionRef = db.collection("Children");
         notificationCollectionRef = db.collection("Notification");
         commentsCollectionRef = db.collection("Comments");
 
@@ -204,9 +206,10 @@ public final class Data implements IData {
                         return;
                     }
                     if (value != null && value.exists()) {
-                        currentUser= value.toObject(UserModel.class);
+                        currentUser = value.toObject(UserModel.class);
                         getAllFollowingSnapShot();
                         getAllFollowersSnapShot();
+                        getAllChildrenIdSnapShot();
                         callback.onCallback(true, null, firebaseUser);
                         getAllFollowing(callback);
                         Log.d(TAG, "DocumentReferenceCurrentUser:success");
@@ -235,8 +238,7 @@ public final class Data implements IData {
         ListenerRegistration mainReferenceUser = userCollectionRef
                 .document(UserId)
                 .addSnapshotListener((value, error) -> {
-                    // עדכון ב notification
-                    currentUser=value.toObject(User.class);
+                    currentUser = value.toObject(User.class);
                     Log.d(TAG, "DocumentReferenceCurrentUser:success");
 
                 });
@@ -244,23 +246,23 @@ public final class Data implements IData {
     }
 
     public void getFollowingByUserId(String userId, FollowingCallback callback) {
-        followingCollectionRef.document(userId).collection("following").get().addOnCompleteListener(task -> {
-            List<String> list = new ArrayList<>();
-            if (task.isSuccessful()) {
-                for (DocumentSnapshot snap : task.getResult().getDocuments()) {
-                    list.add(snap.getId());
-                }
-                callback.result(true, list);
+        followingCollectionRef
+                .document(userId)
+                .collection("following")
+                .get()
+                .addOnCompleteListener(task -> {
+                    List<String> list = new ArrayList<>();
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot snap : task.getResult().getDocuments()) {
+                            list.add(snap.getId());
+                        }
+                        callback.result(true, list);
 
-            }
-        }).addOnFailureListener(e -> callback.result(false, null));
-
+                    }
+                })
+                .addOnFailureListener(e -> callback.result(false, null));
     }
 
-    public void getPostsByUserId(List<String> following, FollowingCallback callback) {
-
-
-    }
 
     public void getUserById(String userID, UserCallback callback) {
         userCollectionRef.document(userID).get().addOnCompleteListener(task -> {
@@ -273,108 +275,41 @@ public final class Data implements IData {
         });
     }
 
-    @Override
-    public List<Task> getTasksByUser(String userId) {
-        return null;
-    }
-
-    @Override
-    public void getAllNotification() {
-
-    }
-
-    @Override
-    public void getNotificationByUserId(String userId) {
-
-    }
-
-
-    @Override
-    public void createNewUserByPhone() {
-
-    }
-
-    @Override
-    public void uploadImage() {
-
-    }
-
-    @Override
-    public void updateUserTaskByTaskId(String taskId) {
-
-    }
-
-    @Override
-    public void updateUser(UserModel user) {
-
-    }
-
-    @Override
-    public void updateTaskByTaskIdAndPosition(String taskId, int position) {
-
-    }
 
     public void addChildren(FirebaseCallback callback, String newUserId) {
-        FirebaseAuth.getInstance().signInWithCredential(credential)
+
+        Admin admin = (Admin) getCurrentUser();
+        childrenCollectionRef.document(admin.getId())
+                .set(new HashMap<String, Boolean>() {{
+                    put(newUserId, true);
+                }}, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess(true, null);
+                })
+                .addOnFailureListener(e -> callback.onSuccess(false, e));
+
+
+    }
+
+    public void signInWithCredential() {
+        mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Admin admin = (Admin) getCurrentUser();
-                        ChildrenCollectionRef.document("Parent:" + admin.getId())
-                                .collection(admin.getId())
-                                .document(newUserId)
-                                .set(new HashMap<String, Object>() {{
-                                    put("isChild", true);
-                                }})
-                                .addOnSuccessListener(aVoid -> {
-                                    callback.onSuccess(true, null);
-                                })
-                                .addOnFailureListener(e -> callback.onSuccess(false, e));
+
                     }
+
+                }).addOnFailureListener(e -> {
 
                 });
     }
 
-    @Override
-    public void deleteAllTasks() {
-
-    }
-
-    @Override
-    public void deleteAllUsers() {
-
-    }
-
-    @Override
-    public void deleteAllTasksByUserId() {
-
-
-    }
-
-    @Override
-    public void deleteUserTaskByTaskId(String taskId) {
-
-    }
 
     @Override
     public void deleteUserById(String userId) {
 
-    }
-
-    @Override
-    public void destroyListenerRegistration() {
-        Iterator<ListenerRegistration> iterator = listenerRegistrations.iterator();
-        while (iterator.hasNext())
-            iterator.next().remove();
-        FirebaseAuth.getInstance().signOut();
-    }
-
-    public void destroyData() {
-        this.following.clear();
-        this.followers.clear();
-        this.saved.clear();
-        this.listenerRegistrations.clear();
 
     }
+
 
     public void uploadImage(Uri ImageUri, String uriFileExtension, String postId, UploadCallback callback) {
         if (ImageUri != null) {
@@ -405,26 +340,9 @@ public final class Data implements IData {
 
     }
 
+    @NonNull
     public String getRandomIdByCollectionName(String collectionName) {
-        return db.collection("Posts").document().getId();
-    }
-
-    public void destroy() {
-        destroyListenerRegistration();
-        destroyData();
-        single_instance = null;
-    }
-
-    public Map<String, Object> getFollowing() {
-        return following;
-    }
-
-    public Map<String, Object> getFollowers() {
-        return followers;
-    }
-
-    public Map<String, Object> getSaved() {
-        return saved;
+        return db.collection(collectionName).document().getId();
     }
 
     public void searchUsersAdmin(String search, SearchCallback callback) {
@@ -510,7 +428,7 @@ public final class Data implements IData {
                             // The document does not exist
                             Log.w(TAG, "document:AllFollowing does not exists.");
                         }
-                        following.put(firebaseUser.getUid(),true);
+                        following.put(firebaseUser.getUid(), true);
                     }
                 }).addOnFailureListener(error -> {
                     Log.w(TAG, "Listen failed.", error);
@@ -529,11 +447,11 @@ public final class Data implements IData {
                     }
                     if (value != null && value.exists()) {
                         followers = value.getData();
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:getAllFollowers exists.");
                         // The document exists
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:getAllFollowers does not exists.");
 
                     }
                 });
@@ -551,13 +469,13 @@ public final class Data implements IData {
 
                     if (value != null && value.exists()) {
                         following = value.getData();
-                        following.put(firebaseUser.getUid(),true);
-                        Log.w(TAG, "document exists.");
+                        following.put(firebaseUser.getUid(), true);
+                        Log.w(TAG, "document:getAllFollowing exists.");
                         // The document exists
 
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:getAllFollowing does not exists.");
                     }
                 });
         listenerRegistrations.add(listener);
@@ -625,12 +543,12 @@ public final class Data implements IData {
                     }
                     if (value != null && value.exists()) {
                         saved = value.getData();
-                        Log.w(TAG, "document exists.");
+                        Log.w(TAG, "document:getAllSaved exists.");
                         // The document exists
 
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document does not exists.");
+                        Log.w(TAG, "document:getAllSaved does not exists.");
 
                     }
                 });
@@ -685,7 +603,7 @@ public final class Data implements IData {
                 });
     }
 
-    public void deleteLikeFromTask(String postId) {
+    public void deleteLikeFromPost(String postId) {
         db.collection("Likes")
                 .document(postId)
                 .set(new HashMap<String, Object>() {{
@@ -853,27 +771,28 @@ public final class Data implements IData {
     }
 
     public void getAllPost(List<Task> mTask, OnChangeCallback callback) {
-        ListenerRegistration listener = db.collection("Posts")
-                .whereIn("author", Arrays.asList(getFollowing().keySet().toArray()))
-                .addSnapshotListener((value, error) -> {
-                    mTask.clear();
-                    if (error != null) {
-                        Log.w(TAG, "Listen failed.", error);
-                        return;
-                    }
-                    if (value != null && !value.isEmpty()) {
-                        for (DocumentSnapshot doc : value.getDocuments()) {
-                            mTask.add(doc.toObject(Task.class));
-                        }
-                        Log.w(TAG, "document:Post exists.");
-                        // The document exists
-                    } else {
-                        // The document does not exist
-                        Log.w(TAG, "document:Post does not exists.");
-                    }
-                    callback.onChange();
+        ListenerRegistration listener =
+                postCollectionRef
+                        .whereIn("author", Arrays.asList(getFollowing().keySet().toArray()))
+                        .addSnapshotListener((value, error) -> {
+                            mTask.clear();
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && !value.isEmpty()) {
+                                for (DocumentSnapshot doc : value.getDocuments()) {
+                                    mTask.add(doc.toObject(Task.class));
+                                }
+                                Log.w(TAG, "document:Post exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:Post does not exists.");
+                            }
+                            callback.onChange();
 
-                });
+                        });
         listenerRegistrations.add(listener);
     }
 
@@ -895,7 +814,7 @@ public final class Data implements IData {
                                     String author = (String) ((Map) obj).get("author");
                                     String comment = (String) ((Map) obj).get("comment");
                                     String publish = (String) ((Map) obj).get("publish");
-                                    Comment commentObj = new Comment(commentId,postId, author, comment, publish);
+                                    Comment commentObj = new Comment(commentId, postId, author, comment, publish);
                                     mComments.add(commentObj);
 
                                 }
@@ -976,13 +895,113 @@ public final class Data implements IData {
         listenerRegistrations.add(listener);
     }
 
+    public void getAllChildrenIdSnapShot() {
+        ListenerRegistration listener =
+                childrenCollectionRef
+                        .document(getCurrentUserId())
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                children = value.getData();
+                                System.out.println("----------------------------");
+                                System.out.println(children);
+                                Log.w(TAG, "document:getAllChildren exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllChildren does not exists.");
+                            }
+                        });
+        listenerRegistrations.add(listener);
+
+    }
+
+    public void getAllChildren(List<UserModel> mUser, OnChangeCallback callback) {
+
+        ListenerRegistration listener =
+                userCollectionRef
+                        .whereEqualTo("parentId", getCurrentUserId())
+//                        .whereIn("id", Arrays.asList( children.keySet().toArray()))
+                        .addSnapshotListener((value, error) -> {
+                            mUser.clear();
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && !value.isEmpty()) {
+                                for (DocumentSnapshot doc : value.getDocuments()) {
+                                    mUser.add(doc.toObject(User.class));
+                                }
+                                Log.w(TAG, "document:getAllChildren exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllChildren does not exists.");
+                            }
+                            callback.onChange();
+
+                        });
+        listenerRegistrations.add(listener);
+
+    }
+
+    //------------------------------- DestroyData ---------------------------------
+
+    @Override
+    public void destroyListenerRegistration() {
+        Iterator<ListenerRegistration> iterator = listenerRegistrations.iterator();
+        while (iterator.hasNext())
+            iterator.next().remove();
+        FirebaseAuth.getInstance().signOut();
+    }
+
+    public void destroyData() {
+        this.following.clear();
+        this.followers.clear();
+        this.saved.clear();
+        this.listenerRegistrations.clear();
+
+
+    }
+
+    public void destroy() {
+        destroyListenerRegistration();
+        destroyData();
+        single_instance = null;
+    }
+
+
+    // ------------------------------ Getters -------------------------------------
+
+    public Map<String, Object> getChildren() {
+        return children;
+    }
+
+    public Map<String, Object> getFollowing() {
+        return following;
+    }
+
+    public Map<String, Object> getFollowers() {
+        return followers;
+    }
+
+    public Map<String, Object> getSaved() {
+        return saved;
+    }
 }
 
 
 class Post {
+
+
 }
 
 class Get {
+
+
 }
 
 class Put {

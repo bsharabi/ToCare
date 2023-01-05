@@ -1,5 +1,6 @@
 package com.example.tocare.Controller;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,14 +30,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, FirebaseCallback {
+public class MainActivity extends AppCompatActivity implements  FirebaseCallback {
 
     private static final String TAG = "MainActivity";
-    private ActivityMainBinding binding;
     private BottomNavigationView bottomNavigationView;
     private Fragment selectedFragment;
-    private FirebaseUser firebaseUser;
-    private FirebaseAuth mAuth;
     private Data localData;
     private ProgressBar progressBar;
 
@@ -44,16 +42,15 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
-        firebaseUser = mAuth.getCurrentUser();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
             initDataStructure();
         } else {
             Log.d(TAG, "CurrentUser:null");
             reload(LoginActivity.class);
         }
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         selectedFragment = null;
 
@@ -67,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         localData.updateUserUI(this);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void updateUi() {
 
         bottomNavigationView.setVisibility(View.VISIBLE);
@@ -102,20 +100,6 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         });
     }
 
-    @Override
-    public boolean onMenuItemClick(@NonNull MenuItem item) {
-        switch (item.toString()) {
-            case "Log Out":
-                localData.destroy();
-                reload(LoginActivity.class);
-                return true;
-            case "Manage users":
-                reload(ManageUsersActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                return true;
-            default:
-                return false;
-        }
-    }
 
     public void reload(Class<?> name) {
         Intent intent = new Intent(MainActivity.this, name);
@@ -130,12 +114,11 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         startActivity(intent);
     }
 
-
     @Override
     public void onCallback(boolean success, Exception e, FirebaseUser user) {
         if (success) {
-         if(localData.getCurrentUser().isAdmin())
-             Observe.getInstance().updateAdmin();
+            if (localData.getCurrentUser().isAdmin())
+                Observe.getInstance().updateAdmin();
         } else {
             Observe.getInstance().updateChild();
         }

@@ -11,13 +11,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.example.tocare.DAL.Login;
+
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.BLL.Listener.PhoneCallback;
 import com.example.tocare.BLL.Validation.UserValidation;
-import com.example.tocare.Controller.PhoneLoginActivity;
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentPhoneLoginBinding;
 import com.google.android.gms.tasks.Task;
@@ -43,16 +44,13 @@ public class PhoneLoginFragment extends Fragment implements View.OnClickListener
     private String Phone;
     private String mVerificationId;
     private CountryCodePicker countryCodePicker;
-    private PhoneLoginActivity phoneLoginActivity;
-    private Login login;
+    private Auth login;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentPhoneLoginBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        phoneLoginActivity = (PhoneLoginActivity) getActivity();
         inputPhone = binding.etPhone;
         btSubmit = binding.btSubmit;
         imageView = binding.ivPhoneIcon;
@@ -62,7 +60,7 @@ public class PhoneLoginFragment extends Fragment implements View.OnClickListener
         countryCodePicker.registerCarrierNumberEditText(inputPhone);
 
         dialog = new ProgressDialog(root.getContext());
-        login = Login.getInstance();
+        login = Auth.getInstance();
         return root;
     }
 
@@ -152,9 +150,12 @@ public class PhoneLoginFragment extends Fragment implements View.OnClickListener
         bundle.putString("verificationId", mVerificationId);
         bundle.putString("phone", Phone);
         bundle.putString("countryCode", countryCodePicker.getSelectedCountryCode());
-
-        phoneLoginActivity.swapFragmentByFragmentClass(PhoneCodeFragment.class, bundle);
+        Fragment fragment = new PhoneCodeFragment();
+        fragment.setArguments(bundle);
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container_login, fragment).commit();
     }
-
 
 }

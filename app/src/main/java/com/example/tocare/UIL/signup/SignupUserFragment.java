@@ -16,13 +16,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Listener.PhoneCallback;
 import com.example.tocare.BLL.Validation.UserValidation;
 import com.example.tocare.R;
 import com.example.tocare.UIL.Fragment.UsersFragment;
+import com.example.tocare.UIL.phone.PhoneSignupVerificationFragment;
 import com.example.tocare.databinding.FragmentSignupUserBinding;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -42,7 +42,7 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
     private static final String TAG = "SignupUser";
 
     private EditText inputName, inputLastName, inputPhone, inputUserName;
-    private ImageView image_profile;
+    private ImageView image_profile,plus;
     private Button btSignup;
     private ProgressDialog dialog;
     private FragmentSignupUserBinding binding;
@@ -55,6 +55,7 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         View root = binding.getRoot();
 
         inputUserName = binding.etUserName;
+        plus = binding.plus;
         inputName = binding.etName;
         inputLastName = binding.etLastName;
         inputPhone = binding.etPhone;
@@ -90,7 +91,8 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         inputPhone.setTranslationX(300);
         ccp.setTranslationX(300);
         btSignup.setTranslationY(300);
-        image_profile.setTranslationY(300);
+        image_profile.setTranslationX(300);
+        plus.setTranslationX(300);
 
         final float alpha = 0;
 
@@ -101,8 +103,10 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         btSignup.setAlpha(alpha);
         inputUserName.setAlpha(alpha);
         image_profile.setAlpha(alpha);
+        plus.setAlpha(alpha);
 
         image_profile.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(250).start();
+        plus.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(250).start();
         inputUserName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(350).start();
         inputName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(400).start();
         inputLastName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(450).start();
@@ -183,10 +187,13 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         bundle.putString("lastName", lastName);
         bundle.putString("userName", userName);
         bundle.putBoolean("newUser", true);
+
+        Fragment fragment = new PhoneSignupVerificationFragment();
+        fragment.setArguments(bundle);
         requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container_manage, new UsersFragment()).commit();
+                .replace(R.id.fragment_container_manage, fragment).commit();
 
     }
 

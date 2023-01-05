@@ -13,11 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.tocare.BLL.Model.Admin;
-import com.example.tocare.DAL.Login;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.BLL.Model.UserModel;
-import com.example.tocare.BLL.Validation.UserValidation;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
-import com.example.tocare.Controller.LoginActivity;
+
 import com.example.tocare.R;
 import com.example.tocare.databinding.FragmentSignupBinding;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,16 +31,14 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
     private Button btSignup;
     private ProgressDialog dialog;
     private FragmentSignupBinding binding;
-    private LoginActivity loginActivity;
     private CountryCodePicker ccp;
-    private Login login;
+    private Auth login;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentSignupBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        loginActivity = (LoginActivity) getActivity();
         inputUserName = binding.etUserName;
         inputName = binding.etName;
         inputLastName = binding.etLastName;
@@ -53,7 +50,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
         inputConformPassword = binding.etCPassword;
         btSignup = binding.btSignup;
         dialog = new ProgressDialog(getContext());
-        login = Login.getInstance();
+        login = Auth.getInstance();
         return root;
     }
 
@@ -124,7 +121,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                 true);
 //        if (UserValidation.SignUpValidation(email, password, userName, lastName, phone, cPassword) && ccp.isValidFullNumber()) {
             login.createAccountWithEmail(email, password, userModel, this);
-            loginActivity.hideKeyboard();
+
 //        }
     }
 
@@ -159,7 +156,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
             dialog.dismiss();
             Log.d(TAG, "DocumentReference::User::success");
             Toast.makeText(getContext(), "The details have been successfully", Toast.LENGTH_SHORT).show();
-            loginActivity.swapFragmentByPosition(0);
         } else {
             dialog.dismiss();
             Log.d(TAG, "DocumentReference::User::failed");

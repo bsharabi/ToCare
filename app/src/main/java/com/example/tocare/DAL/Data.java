@@ -1,5 +1,6 @@
 package com.example.tocare.DAL;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import android.net.Uri;
@@ -16,7 +17,6 @@ import com.example.tocare.BLL.Listener.OnChangeCallback;
 import com.example.tocare.BLL.Listener.SearchCallback;
 import com.example.tocare.BLL.Listener.UploadCallback;
 import com.example.tocare.BLL.Listener.UserCallback;
-import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Model.Comment;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.BLL.Model.User;
@@ -34,7 +34,6 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import com.google.firebase.firestore.FieldValue;
@@ -51,9 +50,9 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public final class Data implements IData {
@@ -70,7 +69,7 @@ public final class Data implements IData {
     private Map<String, Object> children;
     private Map<String, Object> saved;
 
-    private List<ListenerRegistration> listenerRegistrations;
+    private final List<ListenerRegistration> listenerRegistrations;
 
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
@@ -82,10 +81,10 @@ public final class Data implements IData {
     private final CollectionReference followersCollectionRef;
     private final CollectionReference childrenCollectionRef;
     private final CollectionReference postCollectionRef;
-    private final CollectionReference notificationCollectionRef;
+    private final CollectionReference savedCollectionRef;
 
 
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    private final PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         @Override
         public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
@@ -93,7 +92,7 @@ public final class Data implements IData {
         }
 
         @Override
-        public void onVerificationFailed(FirebaseException e) {
+        public void onVerificationFailed(@NonNull FirebaseException e) {
             phoneCallback.onVerificationFailed(e);
         }
 
@@ -122,7 +121,7 @@ public final class Data implements IData {
         followersCollectionRef = db.collection("Followers");
         postCollectionRef = db.collection("Posts");
         childrenCollectionRef = db.collection("Children");
-        notificationCollectionRef = db.collection("Notification");
+        savedCollectionRef = db.collection("Saved");
         commentsCollectionRef = db.collection("Comments");
 
     }
@@ -134,17 +133,16 @@ public final class Data implements IData {
     }
 
     public void createUserData(@NonNull FirebaseUser firebaseUser, UserModel userModel, FirebaseCallback callback) {
-        DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
-                .document(firebaseUser.getUid());
-        reference.set(userModel)
+
+        userCollectionRef
+                .document(firebaseUser.getUid()).
+                set(userModel)
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         callback.onCallback(true, null, firebaseUser);
 
                     }
-                }).addOnFailureListener(e -> {
-                    callback.onCallback(false, e, null);
-                });
+                }).addOnFailureListener(e -> callback.onCallback(false, e, null));
     }
 
     public void startPhoneNumberVerification(String phoneNumber, Activity activity, PhoneCallback callback) {
@@ -173,13 +171,9 @@ public final class Data implements IData {
     }
 
     public void signInWithAuthCredential(PhoneAuthCredential credential, PhoneCallback phoneCallback) {
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-                .addOnCompleteListener(task -> {
-                    phoneCallback.onCallback(true, null, task);
-                }).addOnFailureListener(failure -> {
-                    phoneCallback.onCallback(false, failure, null);
-
-                });
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> phoneCallback.onCallback(true, null, task))
+                .addOnFailureListener(failure -> phoneCallback.onCallback(false, failure, null));
     }
 
     public void verifyPhoneNumberWithCode(String code, String mVerificationId, PhoneCallback callback) {
@@ -201,7 +195,6 @@ public final class Data implements IData {
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Listen failed.", error);
-
                         callback.onCallback(false, error, null);
                         return;
                     }
@@ -229,6 +222,7 @@ public final class Data implements IData {
         return currentUser;
     }
 
+    @NonNull
     public String getCurrentUserId() {
         return firebaseUser.getUid();
     }
@@ -238,6 +232,7 @@ public final class Data implements IData {
         ListenerRegistration mainReferenceUser = userCollectionRef
                 .document(UserId)
                 .addSnapshotListener((value, error) -> {
+                    assert value != null;
                     currentUser = value.toObject(User.class);
                     Log.d(TAG, "DocumentReferenceCurrentUser:success");
 
@@ -263,53 +258,39 @@ public final class Data implements IData {
                 .addOnFailureListener(e -> callback.result(false, null));
     }
 
-
     public void getUserById(String userID, UserCallback callback) {
         userCollectionRef.document(userID).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 UserModel user = task.getResult().toObject(UserModel.class);
                 callback.result(true, user);
             }
-        }).addOnFailureListener(e -> {
-            callback.result(false, null);
-        });
+        }).addOnFailureListener(e -> callback.result(false, null));
     }
-
 
     public void addChildren(FirebaseCallback callback, String newUserId) {
 
-        Admin admin = (Admin) getCurrentUser();
-        childrenCollectionRef.document(admin.getId())
+        childrenCollectionRef.document(getCurrentUserId())
                 .set(new HashMap<String, Boolean>() {{
                     put(newUserId, true);
                 }}, SetOptions.merge())
-                .addOnSuccessListener(aVoid -> {
-                    callback.onSuccess(true, null);
-                })
+                .addOnSuccessListener(aVoid -> callback.onSuccess(true, null))
                 .addOnFailureListener(e -> callback.onSuccess(false, e));
-
-
     }
 
-    public void signInWithCredential() {
+    public void signInWithCredential(Callback callback) {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-
-                    }
-
-                }).addOnFailureListener(e -> {
-
-                });
+                    if (task.isSuccessful())
+                        callback.onSuccess(true, null);
+                }).addOnFailureListener(e ->
+                        callback.onSuccess(true, e)
+                );
     }
-
 
     @Override
     public void deleteUserById(String userId) {
 
-
     }
-
 
     public void uploadImage(Uri ImageUri, String uriFileExtension, String postId, UploadCallback callback) {
         if (ImageUri != null) {
@@ -332,9 +313,7 @@ public final class Data implements IData {
                     String myUri = downloadUri.toString();
                     callback.onSuccessUpload(true, null, myUri, postId);
                 }
-            }).addOnFailureListener(e -> {
-                callback.onSuccessUpload(false, e, null, postId);
-            });
+            }).addOnFailureListener(e -> callback.onSuccessUpload(false, e, null, postId));
 
         }
 
@@ -345,7 +324,7 @@ public final class Data implements IData {
         return db.collection(collectionName).document().getId();
     }
 
-    public void searchUsersAdmin(String search, SearchCallback callback) {
+    public void searchUsersAdmin(String search, List<UserModel> list, SearchCallback callback) {
         Query query = db.collection("User")
                 .whereEqualTo("admin", false)
                 .orderBy("userName")
@@ -353,7 +332,6 @@ public final class Data implements IData {
                 .endAt(search + "\uf8ff");
         query.addSnapshotListener((value, error) -> {
             if (value != null) {
-                List<UserModel> list = new ArrayList<>();
                 for (DocumentSnapshot snap : value.getDocuments()) {
                     list.add(snap.toObject(UserModel.class));
                 }
@@ -394,7 +372,7 @@ public final class Data implements IData {
         followersCollectionRef
                 .document(firebaseUser.getUid()).get().addOnCompleteListener(task -> {
                     if (task.isComplete()) {
-                        if (task != null && task.getResult().exists()) {
+                        if (task.getResult().exists()) {
                             followers = task.getResult().getData();
                             callback.onSuccess(true, null);
                             Log.w(TAG, "document:AllFollowers exists.");
@@ -415,8 +393,7 @@ public final class Data implements IData {
         followingCollectionRef
                 .document(firebaseUser.getUid()).get().addOnCompleteListener(task -> {
                     if (task.isComplete()) {
-
-                        if (task != null && task.getResult().exists()) {
+                        if (task.getResult().exists()) {
                             following = task.getResult().getData();
 
                             getAllFollowers(callback);
@@ -466,9 +443,9 @@ public final class Data implements IData {
                         Log.w(TAG, "Listen failed.", error);
                         return;
                     }
-
                     if (value != null && value.exists()) {
                         following = value.getData();
+                        assert following != null;
                         following.put(firebaseUser.getUid(), true);
                         Log.w(TAG, "document:getAllFollowing exists.");
                         // The document exists
@@ -487,24 +464,16 @@ public final class Data implements IData {
                 .set(new HashMap<String, Object>() {{
                     put(followUser, true);
                 }}, SetOptions.merge())
-                .addOnCompleteListener(task -> {
-                    textView.setText(R.string.Following);
-                })
-                .addOnFailureListener(e -> {
-                    textView.setText(R.string.Follow);
-                });
+                .addOnCompleteListener(task -> textView.setText(R.string.Following))
+                .addOnFailureListener(e -> textView.setText(R.string.Follow));
 
         followersCollectionRef
                 .document(followUser)
                 .set(new HashMap<String, Boolean>() {{
                     put(firebaseUser.getUid(), true);
                 }}, SetOptions.merge())
-                .addOnCompleteListener(task -> {
-                    textView.setText(R.string.Following);
-                })
-                .addOnFailureListener(e -> {
-                    textView.setText(R.string.Follow);
-                });
+                .addOnCompleteListener(task -> textView.setText(R.string.Following))
+                .addOnFailureListener(e -> textView.setText(R.string.Follow));
     }
 
     public void deleteFollow(String followUser, final TextView textView) {
@@ -513,45 +482,37 @@ public final class Data implements IData {
                 .set(new HashMap<String, Object>() {{
                     put(followUser, FieldValue.delete());
                 }}, SetOptions.merge())
-                .addOnCompleteListener(task -> {
-
-                    textView.setText(R.string.Follow);
-                })
-                .addOnFailureListener(e -> {
-                    textView.setText(R.string.Following);
-                });
+                .addOnCompleteListener(task -> textView.setText(R.string.Follow))
+                .addOnFailureListener(e -> textView.setText(R.string.Following));
 
         followersCollectionRef
                 .document(followUser)
                 .set(new HashMap<String, Object>() {{
                     put(firebaseUser.getUid(), FieldValue.delete());
                 }}, SetOptions.merge())
-                .addOnCompleteListener(task -> {
-                    textView.setText(R.string.Follow);
-                })
-                .addOnFailureListener(e -> {
-                    textView.setText(R.string.Following);
-                });
+                .addOnCompleteListener(task -> textView.setText(R.string.Follow))
+                .addOnFailureListener(e -> textView.setText(R.string.Following));
     }
 
     public void getAllSaved(String userId) {
-        ListenerRegistration listener = db.collection("Saved")
-                .document(userId).addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.w(TAG, "Listen failed.", error);
-                        return;
-                    }
-                    if (value != null && value.exists()) {
-                        saved = value.getData();
-                        Log.w(TAG, "document:getAllSaved exists.");
-                        // The document exists
+        ListenerRegistration listener =
+                savedCollectionRef
+                        .document(userId).addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                saved = value.getData();
+                                Log.w(TAG, "document:getAllSaved exists.");
+                                // The document exists
 
-                    } else {
-                        // The document does not exist
-                        Log.w(TAG, "document:getAllSaved does not exists.");
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllSaved does not exists.");
 
-                    }
-                });
+                            }
+                        });
         listenerRegistrations.add(listener);
     }
 
@@ -565,10 +526,7 @@ public final class Data implements IData {
                                 Log.w(TAG, "Save Item : " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Save Item : " + postId + " Failed.");
-
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Save Item : " + postId + " Failed."));
     }
 
     public void deleteSavedItem(String postId) {
@@ -581,10 +539,7 @@ public final class Data implements IData {
                                 Log.w(TAG, "Delete Item : " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Delete Item : " + postId + " Failed.");
-
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Delete Item : " + postId + " Failed."));
     }
 
     public void addLikeToTask(String postId) {
@@ -597,10 +552,7 @@ public final class Data implements IData {
                                 Log.w(TAG, "Like added : " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Task add : " + postId + " Failed.");
-
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Task add : " + postId + " Failed."));
     }
 
     public void deleteLikeFromPost(String postId) {
@@ -613,21 +565,18 @@ public final class Data implements IData {
                                 Log.w(TAG, "Like deleted : " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Task deleted : " + postId + " Failed.");
-
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Task deleted : " + postId + " Failed."));
     }
 
     public void getLikeByPostId(final TextView likes, String postId) {
-        ListenerRegistration listener = db.collection("Likes").document(postId)
+        @SuppressLint("SetTextI18n") ListenerRegistration listener = db.collection("Likes").document(postId)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Listen failed.", error);
                         return;
                     }
                     if (value != null && value.exists()) {
-                        likes.setText(value.getData().size() + " likes");
+                        likes.setText(Objects.requireNonNull(value.getData()).size() + " likes");
                         Log.w(TAG, "document:LikeByPostId exists.");
                         // The document exists
 
@@ -649,7 +598,7 @@ public final class Data implements IData {
                         return;
                     }
                     if (value != null && value.exists()) {
-                        if (value.getData().containsKey(firebaseUser.getUid())) {
+                        if (Objects.requireNonNull(value.getData()).containsKey(firebaseUser.getUid())) {
                             imageView.setImageResource(R.drawable.ic_red_like);
                             imageView.setTag("liked");
                         } else {
@@ -675,7 +624,7 @@ public final class Data implements IData {
                         return;
                     }
                     if (value != null && value.exists()) {
-                        if (value.getData().containsKey(firebaseUser.getUid())) {
+                        if (Objects.requireNonNull(value.getData()).containsKey(firebaseUser.getUid())) {
                             imageView.setImageResource(R.drawable.ic_saved);
                             imageView.setTag("saved");
                         } else {
@@ -721,9 +670,7 @@ public final class Data implements IData {
                                 deleteAllLike(postId);
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
     }
 
     public void deleteAllLike(String postId) {
@@ -736,9 +683,7 @@ public final class Data implements IData {
                                 deleteAllComment(postId);
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
     }
 
     public void deleteAllComment(String postId) {
@@ -751,9 +696,9 @@ public final class Data implements IData {
                                 Log.w(TAG, "Delete Post: " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
+
+
     }
 
     public void deleteAllSaved(String postId) {
@@ -765,9 +710,7 @@ public final class Data implements IData {
                                 Log.w(TAG, "Delete Post: " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Delete Post: " + postId + " Failed.");
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
     }
 
     public void getAllPost(List<Task> mTask, OnChangeCallback callback) {
@@ -808,12 +751,13 @@ public final class Data implements IData {
                             }
                             if (value != null && value.exists()) {
                                 mComments.clear();
-                                Map map = value.getData();
+                                Map<String, Object> map = value.getData();
+                                assert map != null;
                                 for (Object obj : map.values()) {
-                                    String commentId = (String) ((Map) obj).get("commentId");
-                                    String author = (String) ((Map) obj).get("author");
-                                    String comment = (String) ((Map) obj).get("comment");
-                                    String publish = (String) ((Map) obj).get("publish");
+                                    String commentId = (String) ((Map<?, ?>) obj).get("commentId");
+                                    String author = (String) ((Map<?, ?>) obj).get("author");
+                                    String comment = (String) ((Map<?, ?>) obj).get("comment");
+                                    String publish = (String) ((Map<?, ?>) obj).get("publish");
                                     Comment commentObj = new Comment(commentId, postId, author, comment, publish);
                                     mComments.add(commentObj);
 
@@ -865,14 +809,11 @@ public final class Data implements IData {
                                 Log.w(TAG, "Like deleted : " + postId + " Success.");
                             }
                         }
-                ).addOnFailureListener(e -> {
-                    Log.w(TAG, "Task deleted : " + postId + " Failed.");
-
-                });
+                ).addOnFailureListener(e -> Log.w(TAG, "Task deleted : " + postId + " Failed."));
     }
 
     public void getCommentByPostId(final TextView likes, String postId) {
-        ListenerRegistration listener =
+        @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 commentsCollectionRef
                         .document(postId)
                         .addSnapshotListener((value, error) -> {
@@ -881,7 +822,7 @@ public final class Data implements IData {
                                 return;
                             }
                             if (value != null && value.exists()) {
-                                likes.setText("View All " + value.getData().size() + " Comments");
+                                likes.setText("View All " + Objects.requireNonNull(value.getData()).size() + " Comments");
                                 Log.w(TAG, "document:CommentByPostId exists.");
                                 // The document exists
 
@@ -952,9 +893,8 @@ public final class Data implements IData {
 
     @Override
     public void destroyListenerRegistration() {
-        Iterator<ListenerRegistration> iterator = listenerRegistrations.iterator();
-        while (iterator.hasNext())
-            iterator.next().remove();
+        for (ListenerRegistration listenerRegistration : listenerRegistrations)
+            listenerRegistration.remove();
         FirebaseAuth.getInstance().signOut();
     }
 
@@ -976,10 +916,6 @@ public final class Data implements IData {
 
     // ------------------------------ Getters -------------------------------------
 
-    public Map<String, Object> getChildren() {
-        return children;
-    }
-
     public Map<String, Object> getFollowing() {
         return following;
     }
@@ -988,25 +924,7 @@ public final class Data implements IData {
         return followers;
     }
 
-    public Map<String, Object> getSaved() {
-        return saved;
-    }
 }
 
 
-class Post {
-
-
-}
-
-class Get {
-
-
-}
-
-class Put {
-}
-
-class Delete {
-}
 

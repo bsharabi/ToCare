@@ -12,6 +12,9 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         android:padding="4dp"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -46,10 +49,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.186"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar"
+        app:layout_constraintVertical_bias="0.095"
         app:layout_constraintWidth_percent="0.3" />
-
 
     <ImageView
         android:id="@+id/plus"
@@ -64,6 +66,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.277"
         app:layout_constraintWidth_percent="0.07" />
+
 
     <EditText
         android:id="@+id/et_user_name"
@@ -81,16 +84,16 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.459"
+        app:layout_constraintTop_toBottomOf="@+id/im_profile"
+        app:layout_constraintVertical_bias="0.117"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
         android:id="@+id/et_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/name"
@@ -103,17 +106,16 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.166"
+        app:layout_constraintHorizontal_bias="0.162"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_user_name"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/et_user_name"
+        app:layout_constraintVertical_bias="0.039"
         app:layout_constraintWidth_percent=".4" />
 
     <EditText
         android:id="@+id/et_last_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/last_name"
@@ -126,39 +128,35 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.837"
+        app:layout_constraintHorizontal_bias="0.833"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_user_name"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/et_user_name"
+        app:layout_constraintVertical_bias="0.039"
         app:layout_constraintWidth_percent=".4" />
-
 
     <com.hbb20.CountryCodePicker
         android:id="@+id/country_picker"
         android:layout_width="0dp"
-        app:ccp_defaultPhoneCode="972"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:paddingTop="0dp"
         android:paddingBottom="4dp"
-        app:ccp_countryAutoDetectionPref="NETWORK_LOCALE"
         app:ccp_autoDetectCountry="true"
-        app:ccp_showNameCode="true"
+        app:ccp_countryAutoDetectionPref="NETWORK_LOCALE"
         app:ccp_countryPreference="us,in"
+        app:ccp_defaultPhoneCode="972"
+        app:ccp_showNameCode="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintHorizontal_bias="0.141"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_name"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintWidth_percent=".295"
-        />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.614"
+        app:layout_constraintWidth_percent=".295" />
 
     <EditText
         android:id="@+id/et_phone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:drawableStart="@drawable/ic_baseline_phone_android_24"
         android:drawablePadding="16dp"
         android:hint="@string/phone"
@@ -171,17 +169,16 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias=".8"
+        app:layout_constraintHorizontal_bias="0.795"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_name"
-        app:layout_constraintVertical_bias="0"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.614"
         app:layout_constraintWidth_percent=".5" />
 
     <Button
         android:id="@+id/bt_signup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:background="@drawable/button_bg"
         android:padding="0dp"
         android:text="@string/register_now"
@@ -189,10 +186,9 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_phone"
-        app:layout_constraintVertical_bias="0.191"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.702"
         app:layout_constraintWidth_percent=".8" />
 
 

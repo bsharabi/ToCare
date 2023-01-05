@@ -15,7 +15,8 @@ public class ManageUsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_users);
 
-        getSupportFragmentManager().beginTransaction()
+        getSupportFragmentManager()
+                .beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.fragment_container_manage, UsersFragment.class, null)
                 .commit();

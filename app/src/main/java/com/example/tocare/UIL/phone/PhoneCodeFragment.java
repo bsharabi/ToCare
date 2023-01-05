@@ -2,6 +2,7 @@ package com.example.tocare.UIL.phone;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,16 +15,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.example.tocare.DAL.Login;
+
+import com.example.tocare.Controller.LoginActivity;
+import com.example.tocare.Controller.MainActivity;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.BLL.Listener.PhoneCallback;
 import com.example.tocare.BLL.Validation.UserValidation;
-import com.example.tocare.Controller.LoginActivity;
-import com.example.tocare.Controller.PhoneLoginActivity;
+
 import com.example.tocare.R;
-import com.example.tocare.Controller.MainActivity;
+
 import com.example.tocare.databinding.FragmentPhoneCodeVerificationBinding;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -44,9 +48,8 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
     private ImageView imageView;
     private ProgressDialog dialog;
     private String mVerificationId;
-    private PhoneLoginActivity phoneLoginActivity;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
-    private Login login;
+    private Auth login;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,10 +64,9 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
         sendAgain = binding.tvSendAgain;
         imageView = binding.ivPhoneIcon;
         mVerificationId = requireArguments().getString("verificationId");
-        phoneLoginActivity = (PhoneLoginActivity) getActivity();
 
         dialog = new ProgressDialog(root.getContext());
-        login = Login.getInstance();
+        login = Auth.getInstance();
 
         return root;
     }
@@ -108,10 +110,7 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (UserValidation.isValidCode(inputPhoneCode.getText().toString().trim()))
-            btSubmit.setEnabled(true);
-        else
-            btSubmit.setEnabled(false);
+        btSubmit.setEnabled(UserValidation.isValidCode(inputPhoneCode.getText().toString().trim()));
     }
 
     @Override
@@ -148,14 +147,14 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
     public void onCallback(boolean success, Exception e, Task<AuthResult> task) {
         if (success) {
             Log.d(TAG, "signInWithCredential:success");
-            phoneLoginActivity.reload(MainActivity.class);
+            reload(MainActivity.class);
         } else {
             if (e.getMessage().equals("not registered"))
                 Toast.makeText(getContext(), "This phone number is not registered in the system", Toast.LENGTH_LONG).show();
             Log.w(TAG, "signInWithCredential:failure", e);
-            System.out.println(e);
-            phoneLoginActivity.reload(LoginActivity.class);
+            reload(LoginActivity.class);
         }
+        dialog.dismiss();
     }
 
     @Override
@@ -167,7 +166,7 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
         } else if (e instanceof FirebaseTooManyRequestsException) {
             // The SMS quota for the project has been exceeded
         }
-        phoneLoginActivity.reload(LoginActivity.class);
+        reload(LoginActivity.class);
         dialog.dismiss();
     }
 
@@ -186,5 +185,13 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
         dialog.dismiss();
         mVerificationId = verificationId;
         mResendToken = token;
+    }
+
+    public void reload(Class<?> name) {
+        Log.d(TAG, "Reload:nextScreen");
+        Intent intent = new Intent(getContext(), name);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        requireActivity().finish();
     }
 }

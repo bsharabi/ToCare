@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.example.tocare.BLL.Model.Admin;
-import com.example.tocare.DAL.Login;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.TwitterCallback;
 import com.example.tocare.databinding.ActivityTwitterLoginBinding;
@@ -23,7 +23,7 @@ public class TwitterLoginActivity extends AppCompatActivity implements TwitterCa
     private ProgressDialog dialog;
     private ActivityTwitterLoginBinding binding;
     private ImageView imTwitter;
-    private Login login;
+    private Auth login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class TwitterLoginActivity extends AppCompatActivity implements TwitterCa
         binding = ActivityTwitterLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        login = Login.getInstance();
+        login = Auth.getInstance();
 
         final float alpha = 0;
         imTwitter = binding.imTwitter;

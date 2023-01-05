@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tocare.R;
-import com.example.tocare.DAL.Login;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.facebook.AccessToken;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -24,7 +24,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements FirebaseCa
     private static final int RC_SIGN_IN = 1;
     private GoogleSignInOptions gso;
     private GoogleSignInClient gsc;
-    private Login login;
+    private Auth login;
     private ProgressDialog dialog;
 
 
@@ -35,7 +35,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements FirebaseCa
         dialog = new ProgressDialog(this);
         AccessToken.setCurrentAccessToken(null);
 
-        login = Login.getInstance();
+        login = Auth.getInstance();
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

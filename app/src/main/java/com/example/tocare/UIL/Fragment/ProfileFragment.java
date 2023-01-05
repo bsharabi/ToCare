@@ -75,6 +75,7 @@ public class ProfileFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE);
         String profileId = sharedPreferences.getString("profileId", null);
+
         boolean isChild = sharedPreferences.getBoolean("isChile", false);
 
         followers.setText("0");

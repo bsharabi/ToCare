@@ -1,8 +1,8 @@
 package com.example.tocare.BLL.Listener;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+
+import com.google.firebase.auth.AuthCredential;
 
 public interface FirebaseLoginCallback {
-    void onSuccess(boolean success, Exception e, Task<AuthResult> task);
+    void onSuccess(boolean success, Exception e, AuthCredential credential);
 }

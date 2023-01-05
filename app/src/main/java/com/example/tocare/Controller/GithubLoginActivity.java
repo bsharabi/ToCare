@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.tocare.BLL.Model.Admin;
-import com.example.tocare.DAL.Login;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.Callback;
 import com.example.tocare.databinding.ActivityGithubLoginBinding;
@@ -33,7 +33,7 @@ public class GithubLoginActivity extends AppCompatActivity implements Callback {
     private EditText inputEmail, inputName, inputLastName, inputUserName;
     private CountryCodePicker ccp;
     private Button btLogin;
-    private Login login;
+    private Auth login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class GithubLoginActivity extends AppCompatActivity implements Callback {
 
         ccp.registerCarrierNumberEditText(binding.etPhone);
 
-        login = Login.getInstance();
+        login = Auth.getInstance();
         dialog = new ProgressDialog(this);
 
         btLogin.setOnClickListener(view -> {

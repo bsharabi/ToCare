@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.tocare.DAL.Login;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.R;
 import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
@@ -34,7 +34,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Firebase
     private CallbackManager callbackManager;
     private static final String TAG = "FacebookLoginActivity";
     private ProgressDialog dialog;
-    private Login login;
+    private Auth login;
 
 
     @Override
@@ -48,7 +48,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Firebase
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
         callbackManager = CallbackManager.Factory.create();
-        login = Login.getInstance();
+        login = Auth.getInstance();
         dialog.setMessage("Please wait..");
         dialog.setTitle("Login with Facebook");
         dialog.setCanceledOnTouchOutside(false);

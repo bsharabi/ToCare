@@ -18,11 +18,6 @@ public interface IData {
 
     //----------------- Get -------------------
 
-    List<Task> getTasksByUser(String userId);
-
-    void getAllNotification();
-
-    void getNotificationByUserId(String userId);
 
     UserModel getCurrentUser();
 
@@ -32,28 +27,12 @@ public interface IData {
     //----------------- Post ------------------
     void addPost(String postID, @NonNull Task task, UploadCallback callback);
 
-    void createNewUserByPhone();
-
-    void uploadImage();
 
     //----------------- Put -------------------
 
-    void updateUserTaskByTaskId(String taskId);
-
-    void updateUser(UserModel user);
-
-    void updateTaskByTaskIdAndPosition(String taskId, int position);
 
 
     //----------------- Delete ----------------
-    void deleteAllTasks();
-
-    void deleteAllUsers();
-
-    void deleteAllTasksByUserId();
-
-
-    void deleteUserTaskByTaskId(String taskId);
 
     void deleteUserById(String userId);
 

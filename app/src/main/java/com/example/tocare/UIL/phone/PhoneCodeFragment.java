@@ -1,5 +1,6 @@
 package com.example.tocare.UIL.phone;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.Editable;
@@ -117,6 +118,7 @@ public class PhoneCodeFragment extends Fragment implements View.OnClickListener,
     public void afterTextChanged(Editable editable) {
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(@NonNull View view) {
         switch (view.getId()) {

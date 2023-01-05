@@ -75,13 +75,16 @@ public class ProfileFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE);
         String profileId = sharedPreferences.getString("profileId", null);
+        boolean isChild = sharedPreferences.getBoolean("isChile", false);
+
+        followers.setText("0");
+        following.setText("0");
 
         if (profileId.equals(localData.getCurrentUser().getId())) {
             bt_follow.setText("Edit Profile");
             followers.setText(localData.getFollowers().size() + "");
             following.setText(localData.getFollowing().size() - 1 + "");
             tasks.setText("10");
-
 
         } else {
             manage.setVisibility(View.GONE);

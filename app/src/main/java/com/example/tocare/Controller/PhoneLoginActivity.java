@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.tocare.R;
-import com.example.tocare.UIL.phone.PhoneFragment;
+import com.example.tocare.UIL.phone.PhoneLoginFragment;
 
 public class PhoneLoginActivity extends AppCompatActivity {
 
@@ -17,7 +17,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.fragment_container_view, PhoneFragment.class, null)
+                    .add(R.id.fragment_container_view, PhoneLoginFragment.class, null)
                     .commit();
 
         }

@@ -45,7 +45,6 @@ public class SearchFragment extends Fragment implements TextWatcher {
         recyclerView = view.findViewById(R.id.recycler_view);
         userModelList = new ArrayList<>();
 
-
         return view;
 
     }

@@ -79,7 +79,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             if (holder.like.getTag().equals("like")) {
                 localData.addLikeToTask(task.getTaskId());
             } else {
-                localData.deleteLikeFromTask(task.getTaskId());
+                localData.deleteLikeFromPost(task.getTaskId());
             }
         });
 
@@ -109,17 +109,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             new MaterialAlertDialogBuilder(mContext)
                     .setTitle("Delete post")
                     .setMessage("Are you sure you want to delete the photo?")
-                    .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            localData.deletePost(task.getTaskId());
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                    .setPositiveButton("Continue", (dialogInterface, i) -> localData.deletePost(task.getTaskId()))
+                    .setNegativeButton("Cancel", (dialogInterface, i) -> {
 
-                        }
                     })
                     .show();
 

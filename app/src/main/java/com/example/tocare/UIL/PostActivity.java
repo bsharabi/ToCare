@@ -120,7 +120,6 @@ public class PostActivity extends AppCompatActivity implements View.OnTouchListe
         if (!mArrayUri.isEmpty()) {
             dialog.setMessage("Posting... ");
             dialog.show();
-
             String postId = localData.getRandomIdByCollectionName("Posts");
             for (Uri uri : mArrayUri) {
                 localData.uploadImage(uri, getFileExtension(uri), postId, this);

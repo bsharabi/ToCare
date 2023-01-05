@@ -21,17 +21,15 @@
                     android:id="@+id/image_profile"
                     android:layout_width="40dp"
                     android:layout_height="40sp"
-                    android:layout_margin="10dp"
-                    android:src="@drawable/demo_profile" />
+                    android:layout_margin="10dp" />
 
                 <TextView
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="username"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
 
@@ -39,6 +37,7 @@
 
             <ImageView
                 android:id="@+id/bt_delete"
+                android:contentDescription="@string/NullImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -50,9 +49,10 @@
         <ImageView
             android:id="@+id/post_image"
             android:layout_width="400dp"
+            android:contentDescription="@string/NullImage"
             android:layout_height="300dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_image" />
+             />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -62,6 +62,7 @@
             <ImageView
                 android:id="@+id/like"
                 android:layout_width="30dp"
+                android:contentDescription="@string/NullImage"
                 android:layout_height="30dp"
                 android:src="@drawable/ic_like"
                 android:tag="like" />
@@ -70,6 +71,8 @@
             <ImageView
                 android:id="@+id/comment"
                 android:layout_width="30dp"
+                android:contentDescription="@string/NullImage"
+
                 android:layout_height="30dp"
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/like"
@@ -78,6 +81,7 @@
             <ImageView
                 android:id="@+id/save"
                 android:layout_width="30dp"
+                android:contentDescription="@string/NullImage"
 
                 android:layout_height="30dp"
                 android:layout_alignParentEnd="true"
@@ -91,7 +95,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="150 like"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold" />
 
@@ -100,7 +103,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="username"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold" />
 
@@ -109,7 +111,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="@string/description"
             android:textColor="@color/colorPrimaryDark" />
 
         <TextView
@@ -119,8 +120,6 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="7dp"
             android:layout_marginBottom="15dp"
-            android:text="View All 20 Comments"
-
             android:textColor="@color/colorAccent"
             android:textStyle="bold" />
     </LinearLayout>

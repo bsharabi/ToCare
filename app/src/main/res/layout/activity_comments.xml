@@ -40,6 +40,7 @@
             android:layout_marginBottom="7dp" />
 
         <EditText
+            android:inputType="text"
             android:id="@+id/add_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +52,8 @@
             android:layout_toEndOf="@+id/image_profile"
             android:layout_toRightOf="@id/image_profile"
             android:background="@android:color/transparent"
-            android:hint="@string/add_a_comments" />
+            android:hint="@string/add_a_comments"
+            android:importantForAutofill="no" />
 
         <TextView
             android:id="@+id/post"

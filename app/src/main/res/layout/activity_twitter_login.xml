@@ -9,6 +9,8 @@
     <ImageView
         android:id="@+id/imTwitter"
         android:layout_width="413dp"
+        android:contentDescription="@string/NullImage"
+
         android:layout_height="730dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

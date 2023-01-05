@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Home" />
+        android:text="@string/home" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/bar"
@@ -30,6 +30,8 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
+                    android:contentDescription="@string/NullImage"
+
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
@@ -37,6 +39,8 @@
                     android:src="@drawable/logo_home" />
 
                 <ImageView
+                    android:contentDescription="@string/NullImage"
+
                     android:id="@+id/inbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -46,6 +50,8 @@
                     android:src="@drawable/ic_inbox" />
 
                 <ImageView
+                    android:contentDescription="@string/NullImage"
+
                     android:id="@+id/logout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

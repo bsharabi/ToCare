@@ -14,7 +14,7 @@
     <string name="last_name">Last Name</string>
     <string name="phone">Phone</string>
     <string name="register_now">Register Now</string>
-    <string name="conform_passoword">Conform password</string>
+    <string name="conform_password">Conform password</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="Following">Following</string>
@@ -26,7 +26,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="reset_password">Reset your password...</string>
+    <string name="reset_password">Reset your password</string>
     <string name="submit">Submit</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -47,7 +47,7 @@
     <string name="title_feed">Feed</string>
     <string name="fab_content_desc">None</string>
     <string name="title_setting">Setting</string>
-    <string name="title_signout">Log Out</string>
+    <string name="title_signOut">Log Out</string>
 
 
     <string name="facebook_app_id">919221845733311</string>
@@ -70,8 +70,6 @@
     <string name="pref_uploads">pref_uploads</string>
     <string name="specify_network_prefs">Specify network preferences for uploads</string>
     <string name="prefs_restricted_mode">prefs_restricted_mode</string>
-    <string name="restricated_mode">Restricted Mode can help to hide videos with potentially mature content.No filter is 100% accurate, but it should help you to avoid most of this type of content.</string>
-    <string name="restricated_mode_description">Restricted Mode</string>
     <string name="prefs_enable_stats">prefs_enable_stats</string>
     <string name="enable_stats">Enable stats for nerds</string>
     <string name="notification_title">None</string>
@@ -94,6 +92,21 @@
     <string name="newUser">Create New User</string>
     <string name="forgetPassword">Reset Password</string>
     <string name="VerificationCode">Verification Code</string>
+    <string name="NullImage">null</string>
+    <string name="Sharabi">Sharabi</string>
+    <string name="tapoh11">tapoh11</string>
+    <string name="barak">Barak</string>
+    <string name="_0509367801">0509367801</string>
+    <string name="bsharabi95_gmail_com">bsharabi95@gmail.com</string>
+    <string name="_12s_sjjsd54">12s@sjJSD54</string>
+    <string name="search">Search...</string>
+    <string name="login_with_phone_number">Login with Phone number</string>
+    <string name="login_with_email">Login with Email</string>
+    <string name="home">Home</string>
+    <string name="type">Type</string>
+    <string name="start_date">Start Date</string>
+    <string name="priority">Priority</string>
+    <string name="end_date">End Date</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

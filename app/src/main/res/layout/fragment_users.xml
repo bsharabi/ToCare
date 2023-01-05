@@ -37,6 +37,7 @@
             <ImageView
                 android:id="@+id/add_user"
                 android:layout_width="wrap_content"
+                android:contentDescription="@string/NullImage"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_add_user"
                 android:layout_gravity="right"

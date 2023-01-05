@@ -40,6 +40,8 @@
 
 
     <ImageView
+        android:contentDescription="@string/NullImage"
+
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:src="@drawable/logo_home"
@@ -68,6 +70,7 @@
 
     <EditText
         android:id="@+id/et_email"
+        android:autofillHints="emailAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/edittext_bg"

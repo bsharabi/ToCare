@@ -26,7 +26,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:text="username"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold" />
 
@@ -42,13 +41,13 @@
     </LinearLayout>
 
     <ImageView
+        android:contentDescription="@string/NullImage"
         android:id="@+id/bt_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_delete"
-        android:text="follow"
         android:textStyle="bold"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:layout_margin="10dp"
         android:layout_alignParentEnd="true"
         android:backgroundTint="@null"

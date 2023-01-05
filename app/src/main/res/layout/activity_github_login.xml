@@ -8,6 +8,8 @@
     tools:context=".Controller.GithubLoginActivity">
 
     <ImageView
+        android:contentDescription="@string/NullImage"
+
         android:id="@+id/imageView"
         android:layout_width="223dp"
         android:layout_height="314dp"
@@ -19,6 +21,7 @@
         app:srcCompat="@drawable/github_icon" />
 
     <EditText
+        android:autofillHints="username"
         android:id="@+id/et_user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -31,7 +34,6 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="tapoh11"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,6 +45,7 @@
 
     <EditText
         android:id="@+id/et_name"
+        android:autofillHints="name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -55,7 +58,6 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="Barak"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,6 +68,7 @@
         app:layout_constraintWidth_percent=".4" />
 
     <EditText
+        android:autofillHints="name"
         android:id="@+id/et_last_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -79,7 +82,6 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="Sharabi"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,6 +114,7 @@
         app:layout_constraintWidth_percent=".295" />
 
     <EditText
+        android:autofillHints="phone"
         android:id="@+id/et_phone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -125,7 +128,6 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="0509367801"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -136,6 +138,7 @@
         app:layout_constraintWidth_percent=".5" />
 
     <EditText
+        android:autofillHints="emailAddress"
         android:id="@+id/et_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -149,7 +152,6 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="bsharabi95@gmail.com"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

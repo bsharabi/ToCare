@@ -93,7 +93,8 @@ public final class Auth implements IAuth {
                         } else
                             phoneCallback.onCallback(true, null, task);
                     }
-                }).addOnFailureListener(failure -> phoneCallback.onCallback(false, failure, null));
+                })
+                .addOnFailureListener(failure -> phoneCallback.onCallback(false, failure, null));
     }
 
     @Override

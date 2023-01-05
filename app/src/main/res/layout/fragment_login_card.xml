@@ -15,7 +15,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:text="Login with Email"
+        android:text="@string/login_with_email"
         android:textAlignment="center"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/et_email"
@@ -27,6 +27,7 @@
         app:layout_constraintVertical_bias="0.923" />
 
     <EditText
+        android:autofillHints="emailAddress"
         android:id="@+id/et_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -40,7 +41,7 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="bsharabi95@gmail.com"
+        android:text="@string/bsharabi95_gmail_com"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,6 +52,7 @@
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
+        android:autofillHints="password"
         android:id="@+id/et_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -65,7 +67,7 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="12s@sjJSD54"
+        android:text="@string/_12s_sjjsd54"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

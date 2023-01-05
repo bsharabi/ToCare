@@ -30,7 +30,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.hbb20.CountryCodePicker;
 
 
-public class PhoneFragment extends Fragment implements View.OnClickListener, PhoneCallback {
+public class PhoneLoginFragment extends Fragment implements View.OnClickListener, PhoneCallback {
 
     private static final String TAG = "PhoneFragment";
 
@@ -99,13 +99,9 @@ public class PhoneFragment extends Fragment implements View.OnClickListener, Pho
 
     @Override
     public void onClick(@NonNull View view) {
-        switch (view.getId()) {
-            case R.id.bt_submit:
-                Phone = inputPhone.getText().toString().trim();
-                SignInWithPhone(Phone);
-                break;
-            default:
-                break;
+        if (view.getId() == R.id.bt_submit) {
+            Phone = inputPhone.getText().toString().trim();
+            SignInWithPhone(Phone);
         }
     }
 
@@ -116,9 +112,10 @@ public class PhoneFragment extends Fragment implements View.OnClickListener, Pho
             dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             login.startPhoneNumberVerification(countryCodePicker.getFullNumberWithPlus(), getActivity(), this);
+            return true;
         } else
             inputPhone.setError("The phone format is incorrect");
-        return true;
+        return false;
     }
 
 

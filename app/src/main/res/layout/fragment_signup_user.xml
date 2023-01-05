@@ -6,63 +6,69 @@
     android:layout_height="match_parent"
     tools:context=".UIL.signup.SignupUserFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/orange_500"
-        android:tint="?attr/colorControlNormal"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-        />
-
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/windowBackground"
+        android:padding="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".37"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        android:contentDescription="@string/root_background"
-        />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/imgView_profile"
-        android:layout_width="153dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="84dp"
-        android:background="@drawable/circle_image"
-        android:contentDescription="@string/todo"
-        android:scaleType="centerInside"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/windowBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/newUser"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/im_profile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:src="@drawable/demo_profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ImageContrastCheck" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/vie_bg"
-        app:layout_constraintHeight_percent=".05"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHeight_percent="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.341" />
+        app:layout_constraintVertical_bias="0.186"
+        app:layout_constraintWidth_percent="0.3" />
+
+
+    <ImageView
+        android:id="@+id/plus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_add_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.277"
+        app:layout_constraintWidth_percent="0.07" />
 
     <EditText
         android:id="@+id/et_user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/edittext_bg"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/username"
@@ -76,8 +82,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imgView_profile"
-        app:layout_constraintVertical_bias="0.221"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.459"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
@@ -85,7 +91,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/edittext_bg"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/name"
@@ -109,7 +114,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/edittext_bg"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/last_name"
@@ -135,7 +139,6 @@
         app:ccp_defaultPhoneCode="972"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/edittext_bg"
         android:paddingTop="0dp"
         android:paddingBottom="4dp"
         app:ccp_countryAutoDetectionPref="NETWORK_LOCALE"
@@ -156,7 +159,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/edittext_bg"
         android:drawableStart="@drawable/ic_baseline_phone_android_24"
         android:drawablePadding="16dp"
         android:hint="@string/phone"
@@ -190,7 +192,7 @@
         app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_phone"
-        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintVertical_bias="0.191"
         app:layout_constraintWidth_percent=".8" />
 
 

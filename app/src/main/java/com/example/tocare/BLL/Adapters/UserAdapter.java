@@ -1,14 +1,11 @@
 package com.example.tocare.BLL.Adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,23 +13,19 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tocare.BLL.Model.UserModel;
-import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 import com.example.tocare.UIL.Fragment.ProfileFragment;
-import com.example.tocare.UIL.signup.SignupUserFragment;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private final Context mContext;
-    private List<UserModel> mUser;
-    private Data localData;
+    private final List<UserModel> mUser;
+    private final Data localData;
 
 
     public UserAdapter(Context mContext, List<UserModel> mUser) {
@@ -59,32 +52,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         holder.username.setText(user.getUserName());
         holder.fullName.setText(user.getFullName());
 
-        holder.edit.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
-            editor.putString("profileId", user.getId());
-            editor.putBoolean("isChild", true);
-            editor.apply();
-            ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_manage, new ProfileFragment()).commit();
-        });
+        holder.edit.setOnClickListener(v -> goToProfile( user.getId()));
 
-        holder.itemView.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
-            editor.putString("profileId", user.getId());
-            editor.putBoolean("isChild", true);
-            editor.apply();
-            ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_manage, new ProfileFragment()).commit();
-        });
+        holder.itemView.setOnClickListener(v -> goToProfile( user.getId()));
 
-        holder.delete.setOnClickListener(v -> {
-            new MaterialAlertDialogBuilder(mContext)
-                    .setTitle("Delete post")
-                    .setMessage("Are you sure you want to delete the photo?")
-                    .setPositiveButton("Continue", (dialogInterface, i) -> localData.deleteUserById(user.getId()))
-                    .setNegativeButton("Cancel", (dialogInterface, i) -> {
-
-                    })
-                    .show();
-        });
+        holder.delete.setOnClickListener(v -> new MaterialAlertDialogBuilder(mContext)
+                .setTitle("Delete post")
+                .setMessage("Are you sure you want to delete the photo?")
+                .setPositiveButton("Continue", (dialogInterface, i) -> localData.deleteUserById(user.getId()))
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                })
+                .show());
 
 
     }
@@ -94,10 +72,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return mUser.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    private void goToProfile(String userId) {
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
+        editor.putString("profileId", userId);
+        editor.putBoolean("fromManage", true);
+        editor.apply();
+        ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_manage, new ProfileFragment()).commit();
+    }
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView userImage;
-        private TextView username, fullName, edit, delete;
+        private final ImageView userImage;
+        private final TextView username, fullName, edit, delete;
 
 
         public ViewHolder(@NonNull View itemView) {

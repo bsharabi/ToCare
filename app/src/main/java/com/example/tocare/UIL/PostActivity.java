@@ -40,6 +40,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 
 public class PostActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, ViewSwitcher.ViewFactory, UploadCallback {
@@ -165,7 +166,7 @@ public class PostActivity extends AppCompatActivity implements View.OnTouchListe
         } else {
             Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show();
         }
-        if(!mArrayUri.isEmpty()){
+        if (!mArrayUri.isEmpty()) {
             imageSwitcher.setVisibility(View.VISIBLE);
             btPrevious.setVisibility(View.VISIBLE);
             btNext.setVisibility(View.VISIBLE);
@@ -267,19 +268,18 @@ public class PostActivity extends AppCompatActivity implements View.OnTouchListe
             dialog.setMessage("Posting...\n" + "upload: " + mArrayUrl.size() + "/" + mArrayUri.size());
             if (mArrayUrl.size() == mArrayUri.size()) {
 
-                Task task = new Task(
-                        postId,
+                Task task = new Task(postId,
                         type.getText().toString(),
                         description.getText().toString(),
-                        FirebaseAuth.getInstance().getUid(),
                         "Active",
                         12,
-                        "public",
-                        "all",
+                        "Public",
+                        "200",
                         startDate.getText().toString(),
                         endDate.getText().toString(),
-                        localData.getCurrentUser().getId(),
-                        mArrayUrl);
+                        localData.getCurrentUserId(),
+                        mArrayUrl,
+                        new Date());
                 localData.addPost(postId, task, this);
             }
         } else {

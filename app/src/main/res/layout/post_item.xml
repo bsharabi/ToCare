@@ -35,24 +35,70 @@
 
             </LinearLayout>
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/status_lamp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="55dp"
+                android:src="@drawable/ic_active"
+                android:tag="Active" />
+
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="70dp"
+                android:layout_toLeftOf="@+id/bt_delete"
+                android:tag="Active"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
             <ImageView
                 android:id="@+id/bt_delete"
-                android:contentDescription="@string/NullImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
+                android:contentDescription="@string/NullImage"
                 android:src="@drawable/ic_delete" />
+
+            <ImageView
+                android:id="@+id/take_task"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/NullImage"
+                android:src="@drawable/ic_take" />
+
         </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/post_image"
-            android:layout_width="400dp"
-            android:contentDescription="@string/NullImage"
-            android:layout_height="300dp"
+        <ViewFlipper
+            android:id="@+id/viewFlipper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-             />
+            android:autoStart="false"
+            android:flipInterval="3000">
+
+            <ImageView
+                android:id="@+id/post_image"
+                android:layout_width="400dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/NullImage" />
+
+        </ViewFlipper>
+
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -62,8 +108,8 @@
             <ImageView
                 android:id="@+id/like"
                 android:layout_width="30dp"
-                android:contentDescription="@string/NullImage"
                 android:layout_height="30dp"
+                android:contentDescription="@string/NullImage"
                 android:src="@drawable/ic_like"
                 android:tag="like" />
 
@@ -71,20 +117,33 @@
             <ImageView
                 android:id="@+id/comment"
                 android:layout_width="30dp"
-                android:contentDescription="@string/NullImage"
-
                 android:layout_height="30dp"
+
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/like"
+                android:contentDescription="@string/NullImage"
                 android:src="@drawable/ic_comment" />
+
+
+            <TextView
+                android:id="@+id/tv_user_name_take"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/NullImage"
+                android:src="@drawable/ic_take"
+                android:tag="save"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/save"
                 android:layout_width="30dp"
-                android:contentDescription="@string/NullImage"
-
                 android:layout_height="30dp"
+
                 android:layout_alignParentEnd="true"
+                android:contentDescription="@string/NullImage"
                 android:src="@drawable/ic_save"
                 android:tag="save" />
 

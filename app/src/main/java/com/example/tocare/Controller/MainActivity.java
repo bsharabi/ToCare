@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
     private Fragment selectedFragment;
     private Data localData;
     private ProgressBar progressBar;
+    private Observe myObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +51,13 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
             Log.d(TAG, "CurrentUser:null");
             reload(LoginActivity.class);
         }
+        myObserver=Observe.getInstance();
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         selectedFragment = null;
 
         progressBar = binding.progressBar;
+        myObserver.setBottomNavigationView(binding.bottomNavigation);
         bottomNavigationView = binding.bottomNavigation;
         bottomNavigationView.setVisibility(View.GONE);
     }
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
                 case R.id.nav_profile:
                     SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
                     editor.putString("profileId", localData.getCurrentUser().getId());
+                    editor.putBoolean("fromManage", false);
                     editor.apply();
                     selectedFragment = new ProfileFragment();
                     break;

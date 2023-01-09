@@ -1,28 +1,35 @@
 package com.example.tocare.BLL.Adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tocare.BLL.Model.Task;
+
 
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 
 import com.example.tocare.UIL.CommentsActivity;
+import com.example.tocare.UIL.Fragment.ProfileFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
@@ -52,13 +59,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         Picasso.get().load(task.getImagesUrl().get(0)).into(holder.post_image);
 
+        Animation slideInRight = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_right);
+        Animation slideOutLeft = AnimationUtils.loadAnimation(mContext, R.anim.slide_out_left);
 
-        if (task.getAuthor().equals(localData.getCurrentUserId())) {
-            holder.delete.setVisibility(View.VISIBLE);
-        } else {
-            holder.delete.setVisibility(View.GONE);
-        }
+        holder.viewFlipper.setInAnimation(slideInRight);
+        holder.viewFlipper.setOutAnimation(slideOutLeft);
 
+        if (task.getImagesUrl().size() > 1)
+            holder.viewFlipper.setOnClickListener(new View.OnClickListener() {
+                int index = 1;
+                @Override
+                public void onClick(View view) {
+                    Picasso.get().load(task.getImagesUrl().get(index)).into(holder.post_image);
+                    index = (index + 1) % task.getImagesUrl().size();
+                }
+            });
 
         if (holder.description.getText().equals("")) {
             holder.description.setVisibility(View.GONE);
@@ -74,6 +89,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         });
 
+        holder.username.setOnClickListener(v -> {
+            goToProfile(task.getAuthor());
+        });
 
         holder.like.setOnClickListener(v -> {
             if (holder.like.getTag().equals("like")) {
@@ -92,36 +110,93 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         });
 
         holder.comment.setOnClickListener(v -> {
-            Intent intent = new Intent(mContext, CommentsActivity.class);
-            intent.putExtra("postId", task.getTaskId());
-            intent.putExtra("publish", task.getAuthor());
-            mContext.startActivity(intent);
-
+            goToCommentsPost(task.getAuthor(), task.getTaskId());
         });
+
         holder.comments.setOnClickListener(v -> {
-            Intent intent = new Intent(mContext, CommentsActivity.class);
-            intent.putExtra("postId", task.getTaskId());
-            intent.putExtra("publish", task.getAuthor());
-            mContext.startActivity(intent);
-
+            goToCommentsPost(task.getAuthor(), task.getTaskId());
         });
+
         holder.delete.setOnClickListener(v -> {
             new MaterialAlertDialogBuilder(mContext)
                     .setTitle("Delete post")
                     .setMessage("Are you sure you want to delete the photo?")
                     .setPositiveButton("Continue", (dialogInterface, i) -> localData.deletePost(task.getTaskId()))
                     .setNegativeButton("Cancel", (dialogInterface, i) -> {
-
                     })
                     .show();
-
         });
+
+
+        if (task.getAuthor().equals(localData.getCurrentUserId())) {
+            holder.delete.setVisibility(View.VISIBLE);
+            holder.btTask.setVisibility(View.GONE);
+        } else {
+            holder.delete.setVisibility(View.GONE);
+            holder.btTask.setVisibility(View.VISIBLE);
+        }
+
+        if (((String) task.getStatus()).equals("Active")) {
+            holder.statusLamp.setImageResource(R.drawable.ic_active);
+            holder.statusText.setText(R.string.active);
+            holder.statusText.setTag(R.string.active);
+        } else {
+
+            holder.btTask.setImageResource(R.drawable.ic_take_process);
+            holder.btTask.setEnabled(false);
+            holder.userTake.setVisibility(View.VISIBLE);
+            holder.userTake.setText(task.getTakenByUserName());
+
+            holder.userTake.setOnClickListener(v -> goToProfile(task.getTakenByUserId()));
+
+            if (task.getStatus().equals("In Process")) {
+                holder.statusLamp.setImageResource(R.drawable.ic_process);
+                holder.statusLamp.setTag(R.string.In_Process);
+                holder.statusText.setText(R.string.In_Process);
+                holder.statusText.setTag(R.string.In_Process);
+            } else {
+                holder.statusLamp.setImageResource(R.drawable.ic_done);
+                holder.statusText.setText(R.string.done);
+                holder.statusLamp.setTag(R.string.done);
+                holder.statusText.setTag(R.string.done);
+            }
+        }
+
+        if (task.getTakenByUserId().equals(""))
+            holder.btTask.setOnClickListener(v ->
+                    new MaterialAlertDialogBuilder(mContext)
+                            .setTitle("Performing a task")
+                            .setMessage("Do you want to take the task in exchange for " + task.getBid() + " coins?")
+                            .setPositiveButton("Continue", (dialogInterface, i) ->
+                                    localData.takeATaskByUser(task.getTaskId(), new HashMap<String, Object>() {{
+                                        put("takenByUserName", localData.getCurrentUser().getFullName());
+                                        put("takenByUserId", localData.getCurrentUserId());
+                                        put("status", "In Process");
+                                    }}))
+                            .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                            })
+                            .show());
+
         localData.getLikeByPostId(holder.count_likes, task.getTaskId());
         localData.isLiked(holder.like, task.getTaskId());
         localData.isSaved(holder.save, task.getTaskId());
         localData.getCommentByPostId(holder.comments, task.getTaskId());
 
+    }
 
+    private void goToProfile(String userId) {
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
+        editor.putString("profileId", userId);
+        editor.putBoolean("fromManage", false);
+        editor.apply();
+        ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+    }
+
+    private void goToCommentsPost(String publisher, String postId) {
+        Intent intent = new Intent(mContext, CommentsActivity.class);
+        intent.putExtra("postId", postId);
+        intent.putExtra("publish", publisher);
+        mContext.startActivity(intent);
     }
 
     @Override
@@ -131,8 +206,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView image_profile, post_image, like, comment, save, delete;
-        private final TextView username, count_likes, description, publisher, comments;
+        private final ImageView image_profile, post_image, like, comment, save, delete, statusLamp, btTask;
+        private final TextView username, count_likes, description, publisher, comments, userTake, statusText;
+        private final ViewFlipper viewFlipper;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -143,12 +219,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             comment = itemView.findViewById(R.id.comment);
             save = itemView.findViewById(R.id.save);
             delete = itemView.findViewById(R.id.bt_delete);
+            statusLamp = itemView.findViewById(R.id.status_lamp);
+            btTask = itemView.findViewById(R.id.take_task);
 
             username = itemView.findViewById(R.id.username);
             count_likes = itemView.findViewById(R.id.count_like);
             description = itemView.findViewById(R.id.description);
             publisher = itemView.findViewById(R.id.publisher);
             comments = itemView.findViewById(R.id.comments);
+            viewFlipper = itemView.findViewById(R.id.viewFlipper);
+            userTake = itemView.findViewById(R.id.tv_user_name_take);
+            statusText = itemView.findViewById(R.id.status_text);
 
 
         }

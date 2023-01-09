@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserModel implements Serializable {
 
-    private String id, userName, name, lastName, phone, bio, imageUrl;
+    private String id, userName, name, lastName, phone, bio, imageUrl, fullName;
     private boolean isAdmin;
     private String birthday;
     private String country;
@@ -21,6 +21,7 @@ public class UserModel implements Serializable {
         this.lastName = lastName;
         this.phone = phone;
         this.bio = bio;
+        fullName = name + " " + lastName;
         this.imageUrl = imageUrl;
         this.isAdmin = isAdmin;
         this.birthday = birthday;
@@ -46,6 +47,10 @@ public class UserModel implements Serializable {
     }
 
     //---------------------------- Getter&&Setter -------------------------------
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
     public String getId() {
         return id;

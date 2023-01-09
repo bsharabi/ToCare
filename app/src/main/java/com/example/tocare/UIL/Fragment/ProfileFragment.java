@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -22,22 +24,34 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tocare.BLL.Observer.Observe;
+import com.example.tocare.BLL.Adapters.PostGalleryAdapter;
+
+import com.example.tocare.BLL.Adapters.SavedGalleryAdapter;
+import com.example.tocare.BLL.Adapters.TasksGalleryAdapter;
+import com.example.tocare.BLL.Listener.UserCallback;
+import com.example.tocare.BLL.Model.Task;
+import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.Controller.ManageUsersActivity;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
+import com.example.tocare.UIL.EditProfileActivity;
 import com.squareup.picasso.Picasso;
 
-public class ProfileFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-    private TextView userName, tasks, followers, following, fullName, bio;
+public class ProfileFragment extends Fragment implements UserCallback {
+
+    private TextView userName, tasksCount, followers, following, fullName, bio;
     private Button bt_follow;
-    private ImageButton posts, saved;
+    private ImageButton posts, saved, tasks;
     private ImageView options, manage, image_profile, plus;
-    private RecyclerView recyclerView_post, recyclerView_save;
+    private RecyclerView recyclerView_post, recyclerView_saved, recyclerView_tasks;
     private Data localData;
     private ScrollView scrollView;
     private ProgressBar progressBar;
+    private String profileId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,7 +62,7 @@ public class ProfileFragment extends Fragment {
         scrollView = view.findViewById(R.id.scrollView);
         progressBar = view.findViewById(R.id.progress_bar_p);
         plus = view.findViewById(R.id.plus);
-        tasks = view.findViewById(R.id.count_tasks);
+        tasksCount = view.findViewById(R.id.count_tasks);
         followers = view.findViewById(R.id.count_followers);
         following = view.findViewById(R.id.count_following);
         fullName = view.findViewById(R.id.full_name_profile);
@@ -56,82 +70,131 @@ public class ProfileFragment extends Fragment {
         bt_follow = view.findViewById(R.id.bt_follow);
         posts = view.findViewById(R.id.all_post);
         saved = view.findViewById(R.id.saved);
+        tasks = view.findViewById(R.id.all_task);
         options = view.findViewById(R.id.im_options);
         manage = view.findViewById(R.id.im_manage);
         image_profile = view.findViewById(R.id.im_profile);
         recyclerView_post = view.findViewById(R.id.recycler_view_post);
-        recyclerView_save = view.findViewById(R.id.recycler_view_saved);
+        recyclerView_tasks = view.findViewById(R.id.recycler_view_tasks);
+        recyclerView_saved = view.findViewById(R.id.recycler_view_saved);
         scrollView.setVisibility(View.GONE);
-
-        Observe.getInstance().add(manage);
 
         return view;
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE);
-        String profileId = sharedPreferences.getString("profileId", null);
 
-        boolean isChild = sharedPreferences.getBoolean("isChile", false);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE);
+        profileId = sharedPreferences.getString("profileId", null);
+        boolean fromManage = sharedPreferences.getBoolean("fromManage", false);
 
-        followers.setText("0");
-        following.setText("0");
-
-        if (profileId.equals(localData.getCurrentUser().getId())) {
-            bt_follow.setText("Edit Profile");
-            followers.setText(localData.getFollowers().size() + "");
-            following.setText(localData.getFollowing().size() - 1 + "");
-            tasks.setText("10");
-
-        } else {
-            manage.setVisibility(View.GONE);
-            plus.setVisibility(View.GONE);
-            image_profile.setEnabled(false);
+        if (fromManage) {
+            options.setImageResource(R.drawable.ic_back);
+            options.setOnClickListener(v -> requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container_manage, new UsersFragment()).commit());
         }
 
+        localData.getUserById(profileId, this);
 
-        localData.getUserById(profileId, (success, userModel) -> {
-            if (success) {
-                userName.setText(userModel.getUserName());
-                fullName.setText(userModel.getFullName());
-                bio.setText(userModel.getBio());
-                Picasso.get().load(userModel.getImageUrl()).into(image_profile);
-                progressBar.setVisibility(View.GONE);
-                scrollView.setVisibility(View.VISIBLE);
+        tasks.setOnClickListener(v -> setRecyclerViewVisibility(recyclerView_tasks));
+        saved.setOnClickListener(v -> setRecyclerViewVisibility(recyclerView_saved));
+        posts.setOnClickListener(v -> setRecyclerViewVisibility(recyclerView_post));
 
-            } else {
-                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
+        List<Task> mTask = new ArrayList<>();
+        List<Task> mPost = new ArrayList<>();
+        List<Task> mSave = new ArrayList<>();
 
-        if (!bt_follow.getText().toString().equals("Edit Profile")) {
-            Boolean isFollowing = localData.getFollowing().containsKey(profileId);
-            if (isFollowing) {
-                bt_follow.setText(R.string.Following);
-            } else {
-                bt_follow.setText(R.string.Follow);
-            }
-        }
+        List<UserModel> mFollowingUser = new ArrayList<>();
+        List<UserModel> mFollowersUser = new ArrayList<>();
 
-        manage.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), ManageUsersActivity.class);
-            startActivity(intent);
-        });
+        localData.getAllPostsByUserId(profileId, mPost, tasksCount, () -> Objects.requireNonNull(recyclerView_post.getAdapter()).notifyDataSetChanged());
+        localData.getAllSavedByUserId(profileId, mSave, () -> Objects.requireNonNull(recyclerView_saved.getAdapter()).notifyDataSetChanged());
+        localData.getAllTasksByUserId(profileId, mTask, () -> Objects.requireNonNull(recyclerView_tasks.getAdapter()).notifyDataSetChanged());
 
-        bt_follow.setOnClickListener(v -> {
+        localData.getAllFollowingByUserId(profileId, mFollowingUser, following);
+        localData.getAllFollowersByUserId(profileId, mFollowersUser, followers);
 
-            if (bt_follow.getText().toString().equals("Edit Profile")) {
+        setRecyclerView(recyclerView_saved, new SavedGalleryAdapter(getContext(), mSave));
+        setRecyclerView(recyclerView_tasks, new TasksGalleryAdapter(getContext(), mTask));
+        setRecyclerView(recyclerView_post, new PostGalleryAdapter(getContext(), mPost));
 
-
-            } else if (bt_follow.getText().toString().equals("Follow")) {
-                localData.addFollow(profileId, bt_follow);
-            } else {
-                localData.deleteFollow(profileId, bt_follow);
-            }
-        });
     }
+
+    private void setRecyclerViewVisibility(RecyclerView recyclerView) {
+        recyclerView_saved.setVisibility(View.GONE);
+        recyclerView_post.setVisibility(View.GONE);
+        recyclerView_tasks.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void setRecyclerView(@NonNull RecyclerView recyclerView, RecyclerView.Adapter<?> adapter) {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void reload(Class<?> name, int flag) {
+        Intent intent = new Intent(getContext(), name);
+        intent.setFlags(flag);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void result(boolean success, UserModel userModel) {
+
+        //if this is current user
+        if (success) {
+            userName.setText(userModel.getUserName());
+            fullName.setText(userModel.getFullName());
+            bio.setText(userModel.getBio());
+            Picasso.get().load(userModel.getImageUrl()).into(image_profile);
+            progressBar.setVisibility(View.GONE);
+            scrollView.setVisibility(View.VISIBLE);
+
+            boolean isCurrentUser = localData.getCurrentUserId().equals(profileId);
+            boolean isMyChild = localData.isMyChild(profileId);
+            if (isCurrentUser || isMyChild) {
+                if (isCurrentUser && localData.getCurrentUser().isAdmin()) {
+                    manage.setOnClickListener(v -> {
+                        Intent intent = new Intent(getContext(), ManageUsersActivity.class);
+                        startActivity(intent);
+                    });
+                    manage.setVisibility(View.VISIBLE);
+                }
+                plus.setVisibility(View.VISIBLE);
+                bt_follow.setText(R.string.editProfile);
+                bt_follow.setOnClickListener(v -> reload(EditProfileActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+            } else {
+                boolean isFollowing = localData.getFollowing().containsKey(profileId);
+                if (isFollowing) {
+                    bt_follow.setText(R.string.Following);
+                } else {
+                    bt_follow.setText(R.string.Follow);
+                }
+                image_profile.setEnabled(false);
+                saved.setVisibility(View.GONE);
+                bt_follow.setOnClickListener(v -> {
+                    if (bt_follow.getText().toString().equals("Follow")) {
+                        localData.addFollow(profileId, bt_follow);
+                    } else {
+                        localData.deleteFollow(profileId, bt_follow);
+                    }
+                });
+            }
+        } else {
+            Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

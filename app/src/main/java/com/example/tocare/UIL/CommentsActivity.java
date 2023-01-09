@@ -1,7 +1,6 @@
 package com.example.tocare.UIL;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tocare.BLL.Adapters.CommentsAdapter;
-import com.example.tocare.BLL.Listener.OnChangeCallback;
+
 import com.example.tocare.BLL.Model.Comment;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;

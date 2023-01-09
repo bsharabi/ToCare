@@ -56,25 +56,20 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Vi
 
         Picasso.get().load(user.getImageUrl()).into(holder.profileImage);
 
-        Boolean isFollowing = localData.getFollowing().containsKey(user.getId());
+        boolean isFollowing = localData.getFollowing().containsKey(user.getId());
         if (isFollowing) {
             holder.tv_follow.setText(R.string.Following);
         } else {
             holder.tv_follow.setText(R.string.Follow);
         }
 
-        holder.itemView.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
-            editor.putString("profileId", user.getId());
-            editor.apply();
-            ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
-        });
+        holder.itemView.setOnClickListener(v -> goToProfile(user.getId()));
 
         holder.tv_follow.setOnClickListener(v -> {
             if (holder.tv_follow.getText().toString().equals("Follow")) {
                 localData.addFollow(user.getId(), holder.tv_follow);
             } else {
-                localData.deleteFollow( user.getId(), holder.tv_follow);
+                localData.deleteFollow(user.getId(), holder.tv_follow);
             }
         });
 
@@ -85,6 +80,13 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Vi
         return mUser.size();
     }
 
+    private void goToProfile(String userId) {
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
+        editor.putString("profileId", userId);
+        editor.putBoolean("fromManage", false);
+        editor.apply();
+        ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 

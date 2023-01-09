@@ -21,7 +21,7 @@ public interface IData {
 
     UserModel getCurrentUser();
 
-    void addUserSnapshot(String UserId);
+
 
 
     //----------------- Post ------------------

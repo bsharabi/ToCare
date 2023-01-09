@@ -57,6 +57,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         recyclerView.setHasFixedSize(true);
         adapter = new PostAdapter(getContext(), mTask);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setStackFromEnd(true);
         linearLayoutManager.setReverseLayout(true);

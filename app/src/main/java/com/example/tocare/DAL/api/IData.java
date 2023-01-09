@@ -42,14 +42,4 @@ public interface IData {
 }
 
 
-interface IPost {
-}
 
-interface IGet {
-}
-
-interface IPut {
-}
-
-interface IDelete {
-}

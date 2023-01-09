@@ -38,7 +38,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.comment_item, parent, false);
-        return new CommentsAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -62,9 +62,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             }
         });
 
-        holder.delete.setOnClickListener(v -> {
-            localData.deleteComment(comment.getPostId(), comment.getCommentId());
-        });
+        holder.delete.setOnClickListener(v -> localData.deleteComment(comment.getPostId(), comment.getCommentId()));
 
 
     }
@@ -74,7 +72,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         return mComments.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView image_profile, delete;
         private final TextView username, comment;

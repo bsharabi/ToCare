@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tocare.BLL.Listener.FollowCallback;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;

@@ -20,14 +20,10 @@ public class LoginAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position) {
-            case 0:
-                return new LoginCardFragment();
-            case 1:
-                return new SignupFragment();
-            default:
-                return null;
-        }
+        if (position == 1)
+            return new SignupFragment();
+
+        return new LoginCardFragment();
     }
 
     @Override

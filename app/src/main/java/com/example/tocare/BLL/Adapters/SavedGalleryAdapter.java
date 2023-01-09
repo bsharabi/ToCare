@@ -33,7 +33,7 @@ public class SavedGalleryAdapter extends RecyclerView.Adapter<SavedGalleryAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.post_profile_item, parent, false);
-        return new SavedGalleryAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SavedGalleryAdapter extends RecyclerView.Adapter<SavedGalleryAdapte
         return mSaved.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView image_profile;
 

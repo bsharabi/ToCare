@@ -49,7 +49,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.post_item, parent, false);
-        return new PostAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -89,9 +89,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         });
 
-        holder.username.setOnClickListener(v -> {
-            goToProfile(task.getAuthor());
-        });
+        holder.username.setOnClickListener(v -> goToProfile(task.getAuthor()));
 
         holder.like.setOnClickListener(v -> {
             if (holder.like.getTag().equals("like")) {
@@ -101,39 +99,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         });
 
-        holder.save.setOnClickListener(v -> {
-            if (holder.save.getTag().equals("save")) {
-                localData.addSavedItem(task.getTaskId());
-            } else {
-                localData.deleteSavedItem(task.getTaskId());
-            }
-        });
 
-        holder.comment.setOnClickListener(v -> {
-            goToCommentsPost(task.getAuthor(), task.getTaskId());
-        });
+        holder.comment.setOnClickListener(v -> goToCommentsPost(task.getAuthor(), task.getTaskId()));
 
-        holder.comments.setOnClickListener(v -> {
-            goToCommentsPost(task.getAuthor(), task.getTaskId());
-        });
-
-        holder.delete.setOnClickListener(v -> {
-            new MaterialAlertDialogBuilder(mContext)
-                    .setTitle("Delete post")
-                    .setMessage("Are you sure you want to delete the photo?")
-                    .setPositiveButton("Continue", (dialogInterface, i) -> localData.deletePost(task.getTaskId()))
-                    .setNegativeButton("Cancel", (dialogInterface, i) -> {
-                    })
-                    .show();
-        });
+        holder.comments.setOnClickListener(v -> goToCommentsPost(task.getAuthor(), task.getTaskId()));
 
 
         if (task.getAuthor().equals(localData.getCurrentUserId())) {
             holder.delete.setVisibility(View.VISIBLE);
             holder.btTask.setVisibility(View.GONE);
+            holder.save.setVisibility(View.GONE);
+            holder.delete.setOnClickListener(v -> new MaterialAlertDialogBuilder(mContext)
+                    .setTitle("Delete post")
+                    .setMessage("Are you sure you want to delete the photo?")
+                    .setPositiveButton("Continue", (dialogInterface, i) -> localData.deletePost(task.getTaskId()))
+                    .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    })
+                    .show());
         } else {
+            holder.save.setOnClickListener(v -> {
+                if (holder.save.getTag().equals("save")) {
+                    localData.addSavedItem(task.getTaskId());
+                } else {
+                    localData.deleteSavedItem(task.getTaskId());
+                }
+            });
             holder.delete.setVisibility(View.GONE);
             holder.btTask.setVisibility(View.VISIBLE);
+            holder.save.setVisibility(View.VISIBLE);
         }
 
         if (((String) task.getStatus()).equals("Active")) {
@@ -204,7 +197,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         return mTask.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView image_profile, post_image, like, comment, save, delete, statusLamp, btTask;
         private final TextView username, count_likes, description, publisher, comments, userTake, statusText;

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UIL.Fragment.FollowFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_follow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/windowBackground"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_follow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/windowBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_follow"
+        app:layout_constraintVertical_bias="0">
+
+
+        <TextView
+            android:id="@+id/all_followers"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:contentDescription="@string/NullImage"
+            android:gravity="center"
+            android:text="@string/Followers"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/all_following"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:contentDescription="@string/NullImage"
+            android:gravity="center"
+            android:text="@string/Following"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_following"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_followers"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_bar" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

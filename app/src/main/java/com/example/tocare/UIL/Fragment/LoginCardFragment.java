@@ -124,13 +124,13 @@ public class LoginCardFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onSuccess(boolean success, Exception e,AuthCredential credential) {
+    public void onSuccess(boolean success, Exception e, AuthCredential credential) {
         dialog.dismiss();
         if (success) {
-                Log.d(TAG, "signInWithEmail:success");
-                Toast.makeText(getContext(), "Login successful", Toast.LENGTH_LONG).show();
-                saveCredential(credential);
-                reload();
+            Log.d(TAG, "signInWithEmail:success");
+            Toast.makeText(getContext(), "Login successful", Toast.LENGTH_LONG).show();
+            saveCredential(credential);
+            reload();
         } else {
             if (e != null && Objects.equals(e.getMessage(), "not confirm")) {
                 Log.d(TAG, "signInWithEmail:Email confirm");
@@ -138,6 +138,7 @@ public class LoginCardFragment extends Fragment implements View.OnClickListener,
             } else {
 
                 Log.d(TAG, "signInWithEmail:failed");
+                assert e != null;
                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
 

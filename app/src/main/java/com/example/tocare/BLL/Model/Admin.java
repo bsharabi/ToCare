@@ -9,10 +9,6 @@ public class Admin extends UserModel {
 
     //---------------------------- Constructor ----------------------------------
 
-    public Admin(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin, String birthday, String country, String codePhone) {
-        super(id, userName, name, lastName, phone, bio, imageUrl, isAdmin, birthday, country, codePhone);
-    }
-
     public Admin(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin) {
         super(id, userName, name, lastName, phone, bio, imageUrl, isAdmin);
     }

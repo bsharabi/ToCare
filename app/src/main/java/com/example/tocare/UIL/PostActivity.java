@@ -36,7 +36,6 @@ import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.Controller.MainActivity;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Calendar;

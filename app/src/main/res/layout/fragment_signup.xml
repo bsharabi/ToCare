@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
 
-    tools:context=".UIL.signup.SignupFragment">
+    tools:context=".UIL.signup.SignupUserFragment">
 
 
     <EditText

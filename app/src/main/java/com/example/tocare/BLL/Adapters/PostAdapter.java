@@ -68,6 +68,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         if (task.getImagesUrl().size() > 1)
             holder.viewFlipper.setOnClickListener(new View.OnClickListener() {
                 int index = 1;
+
                 @Override
                 public void onClick(View view) {
                     Picasso.get().load(task.getImagesUrl().get(index)).into(holder.post_image);
@@ -93,7 +94,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         holder.like.setOnClickListener(v -> {
             if (holder.like.getTag().equals("like")) {
-                localData.addLikeToTask(task.getTaskId());
+                localData.addLikeToPost(task.getTaskId());
             } else {
                 localData.deleteLikeFromPost(task.getTaskId());
             }
@@ -129,7 +130,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             holder.save.setVisibility(View.VISIBLE);
         }
 
-        if (((String) task.getStatus()).equals("Active")) {
+        if (task.getStatus().equals("Active")) {
             holder.statusLamp.setImageResource(R.drawable.ic_active);
             holder.statusText.setText(R.string.active);
             holder.statusText.setTag(R.string.active);
@@ -162,7 +163,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                             .setMessage("Do you want to take the task in exchange for " + task.getBid() + " coins?")
                             .setPositiveButton("Continue", (dialogInterface, i) ->
                                     localData.takeATaskByUser(task.getTaskId(), new HashMap<String, Object>() {{
-                                        put("takenByUserName", localData.getCurrentUser().getFullName());
+                                        put("takenByUserName", localData.getCurrentUser().getName() + " " + localData.getCurrentUser().getLastName());
                                         put("takenByUserId", localData.getCurrentUserId());
                                         put("status", "In Process");
                                     }}))

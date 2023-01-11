@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserModel implements Serializable {
 
-    private String id, userName, name, lastName, phone, bio, imageUrl, fullName;
+    private String id, userName, name, lastName, phone, bio, imageUrl;
     private boolean isAdmin;
     private String birthday;
     private String country;
@@ -12,22 +12,6 @@ public class UserModel implements Serializable {
 
 
     //---------------------------- Constructor ----------------------------------
-
-
-    public UserModel(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin, String birthday, String country, String codePhone) {
-        this.id = id;
-        this.userName = userName;
-        this.name = name;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.bio = bio;
-        fullName = name + " " + lastName;
-        this.imageUrl = imageUrl;
-        this.isAdmin = isAdmin;
-        this.birthday = birthday;
-        this.country = country;
-        this.codePhone = codePhone;
-    }
 
     public UserModel(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin) {
         this.id = id;
@@ -41,16 +25,11 @@ public class UserModel implements Serializable {
 
     }
 
-
     public UserModel() {
-
     }
 
     //---------------------------- Getter&&Setter -------------------------------
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
 
     public String getId() {
         return id;
@@ -141,11 +120,8 @@ public class UserModel implements Serializable {
         isAdmin = admin;
     }
 
-    public String getFullName() {
-        return name + " " + lastName;
-    }
 
-    //---------------------------- Methods --------------------------------------
+//---------------------------- Methods --------------------------------------
 
 
     //---------------------------- Override --------------------------------------
@@ -162,6 +138,9 @@ public class UserModel implements Serializable {
                 ", bio='" + bio + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", isAdmin=" + isAdmin +
+                ", birthday='" + birthday + '\'' +
+                ", country='" + country + '\'' +
+                ", codePhone='" + codePhone + '\'' +
                 '}';
     }
 }

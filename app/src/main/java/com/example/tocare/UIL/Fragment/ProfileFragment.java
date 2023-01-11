@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -52,6 +53,8 @@ public class ProfileFragment extends Fragment implements UserCallback {
     private ScrollView scrollView;
     private ProgressBar progressBar;
     private String profileId;
+    private LinearLayout getFollowing, getFollowers;
+    private boolean fromManage;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,6 +77,8 @@ public class ProfileFragment extends Fragment implements UserCallback {
         options = view.findViewById(R.id.im_options);
         manage = view.findViewById(R.id.im_manage);
         image_profile = view.findViewById(R.id.im_profile);
+        getFollowing = view.findViewById(R.id.get_following);
+        getFollowers = view.findViewById(R.id.get_followers);
         recyclerView_post = view.findViewById(R.id.recycler_view_post);
         recyclerView_tasks = view.findViewById(R.id.recycler_view_tasks);
         recyclerView_saved = view.findViewById(R.id.recycler_view_saved);
@@ -90,7 +95,7 @@ public class ProfileFragment extends Fragment implements UserCallback {
 
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE);
         profileId = sharedPreferences.getString("profileId", null);
-        boolean fromManage = sharedPreferences.getBoolean("fromManage", false);
+        fromManage = sharedPreferences.getBoolean("fromManage", false);
 
         if (fromManage) {
             options.setImageResource(R.drawable.ic_back);
@@ -105,6 +110,9 @@ public class ProfileFragment extends Fragment implements UserCallback {
         tasks.setOnClickListener(v -> setRecyclerViewVisibility(recyclerView_tasks));
         saved.setOnClickListener(v -> setRecyclerViewVisibility(recyclerView_saved));
         posts.setOnClickListener(v -> setRecyclerViewVisibility(recyclerView_post));
+
+        getFollowing.setOnClickListener(v -> goToFollow("Following"));
+        getFollowers.setOnClickListener(v -> goToFollow("Followers"));
 
         List<Task> mTask = new ArrayList<>();
         List<Task> mPost = new ArrayList<>();
@@ -139,24 +147,38 @@ public class ProfileFragment extends Fragment implements UserCallback {
         recyclerView.setAdapter(adapter);
     }
 
-    public void reload(Class<?> name, int flag) {
+    private void goToFollow(String str) {
+        Bundle bundle = new Bundle();
+        bundle.putString("clickOn", str);
+        bundle.putString("name", userName.getText().toString());
+        bundle.putBoolean("fromManage", fromManage);
+        final int fragment_container = (fromManage) ? R.id.fragment_container_manage : R.id.fragment_container;
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(fragment_container, FollowFragment.class, bundle).commit();
+    }
+
+    public void reload(Class<?> name) {
         Intent intent = new Intent(getContext(), name);
-        intent.setFlags(flag);
         startActivity(intent);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        localData.destroyProfileListener(profileId);
     }
 
+
+    @SuppressLint("SetTextI18n")
     @Override
     public void result(boolean success, UserModel userModel) {
 
         //if this is current user
         if (success) {
             userName.setText(userModel.getUserName());
-            fullName.setText(userModel.getFullName());
+            fullName.setText(userModel.getName() + " " + userModel.getLastName());
             bio.setText(userModel.getBio());
             Picasso.get().load(userModel.getImageUrl()).into(image_profile);
             progressBar.setVisibility(View.GONE);
@@ -166,15 +188,12 @@ public class ProfileFragment extends Fragment implements UserCallback {
             boolean isMyChild = localData.isMyChild(profileId);
             if (isCurrentUser || isMyChild) {
                 if (isCurrentUser && localData.getCurrentUser().isAdmin()) {
-                    manage.setOnClickListener(v -> {
-                        Intent intent = new Intent(getContext(), ManageUsersActivity.class);
-                        startActivity(intent);
-                    });
+                    manage.setOnClickListener(v -> reload(ManageUsersActivity.class));
                     manage.setVisibility(View.VISIBLE);
                 }
                 plus.setVisibility(View.VISIBLE);
                 bt_follow.setText(R.string.editProfile);
-                bt_follow.setOnClickListener(v -> reload(EditProfileActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                bt_follow.setOnClickListener(v -> reload(EditProfileActivity.class));
             } else {
                 boolean isFollowing = localData.getFollowing().containsKey(profileId);
                 if (isFollowing) {

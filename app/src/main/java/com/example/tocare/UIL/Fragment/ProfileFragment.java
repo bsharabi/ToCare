@@ -102,7 +102,7 @@ public class ProfileFragment extends Fragment implements UserCallback {
             options.setOnClickListener(v -> requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container_manage, UsersFragment.class,null).commit());
+                    .replace(R.id.fragment_container_manage, UsersFragment.class, null).commit());
         }
 
         localData.getUserById(profileId, this);
@@ -149,6 +149,7 @@ public class ProfileFragment extends Fragment implements UserCallback {
         Bundle bundle = new Bundle();
         bundle.putString("clickOn", str);
         bundle.putString("name", userName.getText().toString());
+        bundle.putString("profileId", profileId);
         bundle.putBoolean("fromManage", fromManage);
         final int fragment_container = (fromManage) ? R.id.fragment_container_manage : R.id.fragment_container;
         requireActivity()
@@ -162,18 +163,11 @@ public class ProfileFragment extends Fragment implements UserCallback {
         startActivity(intent);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        localData.destroyListener("");
-    }
-
 
     @SuppressLint("SetTextI18n")
     @Override
     public void result(boolean success, UserModel userModel) {
 
-        //if this is current user
         if (success) {
             userName.setText(userModel.getUserName());
             fullName.setText(userModel.getName() + " " + userModel.getLastName());
@@ -215,4 +209,9 @@ public class ProfileFragment extends Fragment implements UserCallback {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        localData.destroyListener("");
+    }
 }

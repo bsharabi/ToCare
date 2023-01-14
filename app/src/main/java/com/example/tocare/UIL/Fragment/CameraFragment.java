@@ -3,6 +3,7 @@ package com.example.tocare.UIL.Fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
@@ -30,15 +31,18 @@ import java.util.Collections;
 
 public class CameraFragment extends Fragment {
     private FrameLayout preview;
+    private ImageView first;
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
-        ImageView first = view.findViewById(R.id.firstImage);
+        first = view.findViewById(R.id.firstImage);
 
         view.findViewById(R.id.close_camera).setOnClickListener(v -> goTo());
-        view.findViewById(R.id.take_photo).setOnClickListener(null);
-        preview = view.findViewById(R.id.camera_frame);
+        view.findViewById(R.id.take_photo).setOnClickListener(v -> takePhoto());
+        preview = view.findViewById(R.id.camera_preview);
+
 
         if (getArguments() != null) {
             String firstImage = getArguments().getString("gallery");
@@ -49,6 +53,10 @@ public class CameraFragment extends Fragment {
         first.setOnClickListener(v -> goTo());
         startCameraPreviewAndTakePhoto();
         return view;
+    }
+
+    private void takePhoto() {
+        System.out.println(first);
     }
 
     private void startCameraPreviewAndTakePhoto() {
@@ -62,7 +70,6 @@ public class CameraFragment extends Fragment {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-
         // Step 3: Create a SurfaceView
         SurfaceView surfaceView = new SurfaceView(getContext());
         SurfaceHolder surfaceHolder = surfaceView.getHolder();

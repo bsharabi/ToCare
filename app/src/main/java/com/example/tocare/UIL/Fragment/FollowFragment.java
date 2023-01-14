@@ -1,5 +1,6 @@
 package com.example.tocare.UIL.Fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,10 +19,12 @@ import android.widget.TextView;
 
 import com.example.tocare.BLL.Adapters.FollowAdapter;
 import com.example.tocare.BLL.Model.UserModel;
+import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class FollowFragment extends Fragment {
@@ -31,27 +34,39 @@ public class FollowFragment extends Fragment {
     private TextView all_followers;
     private List<UserModel> mFollowing;
     private List<UserModel> mFollowers;
+    private List<String> mFollowingId;
+    private List<String> mFollowersId;
+    private Data localData;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_follow, container, false);
+
         assert getArguments() != null;
+        boolean fromManage = getArguments().getBoolean("fromManage");
+        String profileId = getArguments().getString("profileId");
         String clickOn = getArguments().getString("clickOn");
         String name = getArguments().getString("name");
-        boolean fromManage = getArguments().getBoolean("fromManage");
 
         final int fragment_container = (fromManage) ? R.id.fragment_container_manage : R.id.fragment_container;
 
+        localData = Data.getInstance();
+
         recycler_view_following = view.findViewById(R.id.recycler_view_following);
         recycler_view_followers = view.findViewById(R.id.recycler_view_followers);
-        TextView userName = view.findViewById(R.id.userName);
         all_following = view.findViewById(R.id.all_following);
         all_followers = view.findViewById(R.id.all_followers);
+        TextView userName = view.findViewById(R.id.userName);
 
+        mFollowersId = new ArrayList<>();
+        mFollowingId = new ArrayList<>();
         mFollowing = new ArrayList<>();
         mFollowers = new ArrayList<>();
 
+        localData.getAllFollowersIdByUserId(profileId, mFollowersId, () -> localData.getAllFollowersUser(mFollowers, mFollowersId, () -> Objects.requireNonNull(recycler_view_followers.getAdapter()).notifyDataSetChanged()));
 
+        localData.getAllFollowingIdByUserId(profileId, mFollowingId, () -> localData.getAllFollowingUser(mFollowing, mFollowingId, () -> Objects.requireNonNull(recycler_view_following.getAdapter()).notifyDataSetChanged()));
 
         userName.setText(name);
 
@@ -82,11 +97,10 @@ public class FollowFragment extends Fragment {
         all_following.setOnClickListener(v -> changeSelect());
 
         recycler_view_followers.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recycler_view_followers.setAdapter(new FollowAdapter(getContext(),mFollowers));
+        recycler_view_followers.setAdapter(new FollowAdapter(getContext(), mFollowers));
 
         recycler_view_following.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recycler_view_following.setAdapter(new FollowAdapter(getContext(),mFollowing));
-
+        recycler_view_following.setAdapter(new FollowAdapter(getContext(), mFollowing));
 
 
     }
@@ -102,5 +116,9 @@ public class FollowFragment extends Fragment {
 
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        localData.destroyListener("2");
+    }
 }

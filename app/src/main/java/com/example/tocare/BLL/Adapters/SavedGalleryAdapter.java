@@ -1,6 +1,8 @@
 package com.example.tocare.BLL.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.R;
+import com.example.tocare.UIL.TaskDetailsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -41,7 +44,14 @@ public class SavedGalleryAdapter extends RecyclerView.Adapter<SavedGalleryAdapte
 
         Task task = mSaved.get(position);
         Picasso.get().load(task.getImagesUrl().get(0)).into(holder.image_profile);
+        holder.image_profile.setOnClickListener(v -> {
 
+            SharedPreferences.Editor editor = mContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit();
+            editor.putString("postId", task.getTaskId());
+            editor.apply();
+            Intent intent = new Intent(mContext, TaskDetailsActivity.class);
+            mContext.startActivity(intent);
+        });
     }
 
     @Override

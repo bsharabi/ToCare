@@ -25,7 +25,6 @@ public class Comparing {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            assert dateObject1 != null;
             return dateObject1.compareTo(dateObject2);
 
         }

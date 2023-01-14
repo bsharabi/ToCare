@@ -27,11 +27,11 @@
         app:layout_constraintVertical_bias="0.923" />
 
     <EditText
-        android:autofillHints="emailAddress"
         android:id="@+id/et_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:autofillHints="emailAddress"
         android:background="@drawable/edittext_bg"
         android:drawableStart="@drawable/ic_baseline_email_24"
         android:drawablePadding="16dp"
@@ -45,10 +45,9 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.206"
+        app:layout_constraintVertical_bias="0.186"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
@@ -82,17 +81,19 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/button_bg"
-        android:text="@string/login"
         android:padding="0dp"
+        android:text="@string/login"
+        app:flow_firstHorizontalBias="1"
         android:textAllCaps="false"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".06"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_forgetPassword"
-        app:layout_constraintVertical_bias="0.047"
-        app:layout_constraintWidth_percent=".8"
-        app:layout_constraintHeight_percent=".06"/>
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintWidth_percent=".8" />
 
     <TextView
         android:id="@+id/tv_forgetPassword"

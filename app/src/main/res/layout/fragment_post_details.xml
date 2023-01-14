@@ -169,6 +169,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/start_date"
+        android:tag="start"
         android:importantForAutofill="no"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -177,13 +178,17 @@
         app:layout_constraintTop_toBottomOf="@+id/type"
         app:layout_constraintVertical_bias="0.0"
         android:inputType="datetime"
+        android:focusable="false"
         app:layout_constraintWidth_percent="0.45" />
 
     <EditText
         android:id="@+id/dateEnd"
+        android:enabled="false"
         android:layout_width="0dp"
+        android:focusable="false"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:tag="end"
         android:hint="@string/end_date"
         android:importantForAutofill="no"
         app:layout_constraintBottom_toBottomOf="parent"

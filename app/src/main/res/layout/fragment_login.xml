@@ -169,7 +169,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.94"
+            app:layout_constraintVertical_bias="1"
             app:layout_constraintHorizontal_bias="0.293"
             app:maxImageSize="40dp"
             app:tint="@null" />
@@ -189,7 +189,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.91"
+            app:layout_constraintVertical_bias="1"
             app:layout_constraintHorizontal_bias="0.5"
             app:maxImageSize="45dp"
             app:tint="@null" />
@@ -209,7 +209,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.94"
+            app:layout_constraintVertical_bias="1"
             app:layout_constraintHorizontal_bias="0.705"
             app:maxImageSize="40dp"
             app:tint="@null" />

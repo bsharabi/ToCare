@@ -1,7 +1,6 @@
 package com.example.tocare.UIL;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,11 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tocare.BLL.Listener.OnChangeCallback;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
@@ -81,6 +78,12 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
+        edit_picture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 

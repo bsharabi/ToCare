@@ -107,7 +107,7 @@
     <string name="home">Home</string>
     <string name="type">Type</string>
     <string name="start_date">Start Date</string>
-    <string name="priority">Priority 1–12 </string>
+    <string name="priority">Priority 0–12 </string>
     <string name="end_date">End Date</string>
     <string name="restricated_mode">d</string>
     <string name="restricated_mode_description">d</string>
@@ -234,5 +234,6 @@
     <string name="_2_likes">2 likes</string>
     <string name="view_all_2_comments">View All 2 comments</string>
     <string name="bid">Bid</string>
+    <string name="details">Details</string>
 
 </resources>

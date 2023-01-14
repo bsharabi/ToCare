@@ -25,6 +25,7 @@ import com.example.tocare.R;
 
 import com.example.tocare.UIL.CommentsActivity;
 import com.example.tocare.UIL.Fragment.ProfileFragment;
+import com.example.tocare.UIL.TaskDetailsActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
@@ -58,6 +59,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         Task task = mTask.get(position);
 
+
         Picasso.get().load(task.getImagesUrl().get(0)).fit().into(holder.post_image);
         Picasso.get().load(localData.getCurrentUser().getImageUrl()).fit().into(holder.currentUserImage);
 
@@ -70,6 +72,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         if (task.getImagesUrl().size() > 1)
             holder.viewFlipper.setOnClickListener(new View.OnClickListener() {
                 int index = 1;
+
                 @Override
                 public void onClick(View view) {
                     Picasso.get().load(task.getImagesUrl().get(index)).fit().into(holder.post_image);
@@ -77,11 +80,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 }
             });
 
-        if (holder.description.getText().toString().equals("")) {
+        if (task.getDescription().equals("")) {
             holder.description.setVisibility(View.GONE);
         } else {
+            holder.description.setVisibility(View.VISIBLE);
             holder.description.setText(task.getDescription());
         }
+
+        holder.details.setOnClickListener(v -> {
+
+            SharedPreferences.Editor editor = mContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit();
+            editor.putString("postId", task.getTaskId());
+            editor.apply();
+            Intent intent = new Intent(mContext, TaskDetailsActivity.class);
+            mContext.startActivity(intent);
+        });
 
         localData.getUserById(task.getAuthor(), (success, userModel) -> {
             if (success) {
@@ -92,6 +105,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         });
 
         holder.username.setOnClickListener(v -> goToProfile(task.getAuthor()));
+
         holder.image_profile.setOnClickListener(v -> goToProfile(task.getAuthor()));
 
         holder.like.setOnClickListener(v -> {
@@ -207,7 +221,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView image_profile, post_image, like, comment, save, delete, statusLamp, btTask, currentUserImage;
-        private final TextView username, count_likes, description, publisher, comments, userTake, statusText, timeAgo, newComment;
+        private final TextView username, count_likes, description, publisher, comments, userTake, statusText, timeAgo, newComment,details;
         private final ViewFlipper viewFlipper;
 
 
@@ -233,6 +247,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             statusText = itemView.findViewById(R.id.status_text);
             timeAgo = itemView.findViewById(R.id.time_ago);
             newComment = itemView.findViewById(R.id.add_a_comment);
+            details = itemView.findViewById(R.id.tv_details);
 
 
         }

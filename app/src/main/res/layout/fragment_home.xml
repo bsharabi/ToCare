@@ -1,59 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".UIL.Fragment.HomeFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/home" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground">
+        android:background="?android:attr/windowBackground"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="?android:attr/windowBackground"
             android:padding="5dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
                 <ImageView
-                    android:contentDescription="@string/NullImage"
                     android:layout_width="120dp"
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
+                    android:contentDescription="@string/NullImage"
                     android:src="@drawable/logo_profile" />
 
                 <ImageView
-                    android:contentDescription="@string/NullImage"
                     android:id="@+id/inbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="7dp"
                     android:layout_marginRight="50dp"
+                    android:contentDescription="@string/NullImage"
                     android:src="@drawable/ic_inbox" />
 
                 <ImageView
-                    android:contentDescription="@string/NullImage"
-
                     android:id="@+id/logout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="7dp"
                     android:layout_marginRight="10dp"
+                    android:contentDescription="@string/NullImage"
                     android:src="@drawable/ic_logout" />
 
             </RelativeLayout>
@@ -61,10 +63,15 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="10dp"
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/bar" />
+        android:layout_below="@id/bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bar"
+        app:layout_constraintVertical_bias="0.0" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

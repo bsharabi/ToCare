@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,18 +39,20 @@ import com.example.tocare.Controller.MainActivity;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 
-import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 
 
 public class PostDetailsFragment extends Fragment implements View.OnClickListener, ViewSwitcher.ViewFactory, UploadCallback {
 
     private int position = 0;
-
     private EditText type, description, priority, bid, startDate, endDate;
     private ImageSwitcher imageSwitcher;
     private ArrayList<String> mArrayUrl;
@@ -69,7 +73,9 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
         View view = inflater.inflate(R.layout.fragment_post_details, container, false);
 
         localData = Data.getInstance();
+
         mArrayUrl = new ArrayList<>();
+        child = new ArrayList<>();
         url = new ArrayList<>();
 
         ImageView back = view.findViewById(R.id.go_back);
@@ -80,45 +86,44 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
         btPrevious = view.findViewById(R.id.bt_previous);
         btNext = view.findViewById(R.id.bt_next);
 
-        switcher = view.findViewById(R.id.visibility);
         select = view.findViewById(R.id.spinner_select);
+        switcher = view.findViewById(R.id.visibility);
 
         btPrevious.setVisibility(View.GONE);
         btNext.setVisibility(View.GONE);
 
-        type = view.findViewById(R.id.type);
+        imageSwitcher = view.findViewById(R.id.image_select);
         description = view.findViewById(R.id.description);
         startDate = view.findViewById(R.id.dateStart);
-        endDate = view.findViewById(R.id.dateEnd);
         priority = view.findViewById(R.id.priority);
+        endDate = view.findViewById(R.id.dateEnd);
+        type = view.findViewById(R.id.type);
         bid = view.findViewById(R.id.bid);
-        priority.setOnClickListener(this);
 
-        imageSwitcher = view.findViewById(R.id.image_select);
-
-        child = new ArrayList<>();
-
-
-        imageSwitcher.setFactory(this);
-        startDate.setOnClickListener(this);
-        endDate.setOnClickListener(this);
         imageSwitcher.setOnClickListener(this);
+        btPrevious.setOnClickListener(this);
+        startDate.setOnClickListener(this);
+        priority.setOnClickListener(this);
+        endDate.setOnClickListener(this);
+        btNext.setOnClickListener(this);
+        imageSwitcher.setFactory(this);
         post.setOnClickListener(this);
         back.setOnClickListener(this);
-        btPrevious.setOnClickListener(this);
-        btNext.setOnClickListener(this);
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         if (getArguments() != null) {
             mArrayUrl = getArguments().getStringArrayList("selected");
             Uri uri = Uri.parse(mArrayUrl.get(position));
             imageSwitcher.setImageURI(uri);
         } else
             goTo();
+
         if (mArrayUrl.size() > 1) {
             btPrevious.setVisibility(View.VISIBLE);
             btNext.setVisibility(View.VISIBLE);
@@ -127,10 +132,37 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
         switcher.setOnClickListener(v -> {
             if (switcher.getText().toString().equals("Private")) {
                 switcher.setText(R.string.Public);
+                switcher.setTag(R.string.Public);
                 select.setVisibility(View.GONE);
             } else {
-                select.setVisibility(View.VISIBLE);
                 switcher.setText(R.string.privatePermission);
+                switcher.setTag(R.string.privatePermission);
+                select.setVisibility(View.VISIBLE);
+            }
+        });
+        priority.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    int num = Integer.parseInt(s.toString());
+                    if (num > 12) {
+                        priority.setError("Number should be between 0 and 12");
+                        priority.setText("12");
+                    } else {
+                        priority.setError(null);
+                    }
+                } catch (NumberFormatException e) {
+                    // Do nothing
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
 
@@ -150,8 +182,6 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
                 selectItem.add(child.get(new Random().nextInt(child.size())).getId());
                 childName.add("Free");
                 selectItem.add("");
-                childName.add("Expired");
-                selectItem.add(child.get(new Random().nextInt(child.size())).getId());
             }
             for (User user : child) {
                 childName.add(user.getUserName());
@@ -183,14 +213,9 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
         }
     }
 
-
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(@NonNull View v) {
-        final Calendar cldr = Calendar.getInstance();
-        int day = cldr.get(Calendar.DAY_OF_MONTH);
-        int month = cldr.get(Calendar.MONTH);
-        int year = cldr.get(Calendar.YEAR);
         switch (v.getId()) {
             case R.id.go_back:
                 goTo();
@@ -199,37 +224,67 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
                 uploadMultiImage();
                 break;
             case R.id.bt_previous:
-                imageSwitcher.setInAnimation(getContext(), R.anim.from_right);
-                imageSwitcher.setOutAnimation(getContext(), R.anim.to_left);
-                position = (position - 1) % mArrayUrl.size();
-                Uri uri = Uri.parse(mArrayUrl.get(position));
-                imageSwitcher.setImageURI(uri);
+                nextOrPrevImage(-1);
                 break;
             case R.id.bt_next:
-                imageSwitcher.setInAnimation(getContext(), R.anim.from_left);
-                imageSwitcher.setOutAnimation(getContext(), R.anim.to_right);
-                position = (position + 1) % mArrayUrl.size();
-                uri = Uri.parse(mArrayUrl.get(position));
-                imageSwitcher.setImageURI(uri);
+                nextOrPrevImage(1);
                 break;
             case R.id.dateStart:
-                @SuppressLint("SetTextI18n") DatePickerDialog pickerStart = new DatePickerDialog(requireContext(),
-                        (view, year1, monthOfYear, dayOfMonth) -> startDate.setText(MessageFormat.format("{0}\\{1}\\{2}", dayOfMonth, monthOfYear + 1, year1)), year, month, day);
-                long currentTime = System.currentTimeMillis();
-                pickerStart.getDatePicker().setMinDate(currentTime);
-                pickerStart.show();
-
+                setDate(startDate);
                 break;
             case R.id.dateEnd:
-                @SuppressLint("SetTextI18n") DatePickerDialog pikerEnd = new DatePickerDialog(requireContext(),
-                        (view, year1, monthOfYear, dayOfMonth) -> endDate.setText(MessageFormat.format("{0}\\{1}\\{2}", dayOfMonth, monthOfYear + 1, year1)), year, month, day);
-                currentTime = System.currentTimeMillis();
-                pikerEnd.getDatePicker().setMinDate(currentTime);
-                pikerEnd.show();
+                setDate(endDate);
                 break;
             default:
                 break;
         }
+    }
+
+    private void nextOrPrevImage(int pos) {
+        imageSwitcher.setInAnimation(getContext(), (pos == 1) ? R.anim.from_left : R.anim.from_right);
+        imageSwitcher.setOutAnimation(getContext(), (pos == 1) ? R.anim.to_right : R.anim.to_left);
+        position = (position + pos) % mArrayUrl.size();
+        Uri uri = Uri.parse(mArrayUrl.get(position));
+        imageSwitcher.setImageURI(uri);
+    }
+
+    private void setDate(@NonNull final EditText date) {
+
+        final Calendar cldr = Calendar.getInstance();
+        int day = cldr.get(Calendar.DAY_OF_MONTH);
+        int month = cldr.get(Calendar.MONTH);
+        int year = cldr.get(Calendar.YEAR);
+
+        @SuppressLint("SetTextI18n") DatePickerDialog picker = new DatePickerDialog(requireContext(),
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    String dateSelect = dayOfMonth + "/" + monthOfYear + 1 + "/" + String.valueOf(year1).replace(",", "");
+                    date.setText(dateSelect);
+                    if (date.getTag().equals("start")) {
+                        endDate.setEnabled(true);
+                    }
+                },
+                year,
+                month,
+                day);
+
+        if (date.getTag().equals("end")) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            try {
+                picker.getDatePicker().setMinDate(Objects.requireNonNull(sdf.parse(startDate.getText().toString())).getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else
+            picker.getDatePicker().setMinDate(System.currentTimeMillis());
+
+        picker.show();
+        picker.setOnCancelListener(dialog -> {
+            if (date.getTag().equals("start")) {
+                endDate.setText("");
+                endDate.setEnabled(false);
+            }
+            date.setText("");
+        });
     }
 
     @Override
@@ -251,14 +306,18 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
             if (mArrayUrl.size() == url.size()) {
 
                 Task task = new Task(postId,
-                        type.getText().toString(),
-                        description.getText().toString(),
+                        type.getText().toString().trim(),
+                        description.getText().toString().trim(),
                         switcher.getText().toString().equals("Private") ? selectItem.get(select.getSelectedItemPosition()) : "",
-                        Integer.parseInt(priority.getText().toString().isEmpty() ? 0 + "" : priority.getText().toString()),
-                        switcher.getText().toString(),
-                        bid.getText().toString().isEmpty() ? "0" : bid.getText().toString(),
-                        new Date(startDate.getText().toString()).toString(),
-                        new Date(endDate.getText().toString()).toString(),
+                        Integer.parseInt(priority.getText().toString().isEmpty() ? 0 + "" : priority.getText().toString().trim()),
+                        switcher.getText().toString().trim(),
+                        bid.getText().toString().isEmpty() ? "0" : bid.getText().toString().trim(),
+                        startDate.getText().toString().isEmpty() ?
+                                ""
+                                : new Date(startDate.getText().toString()).toString(),
+                        endDate.getText().toString().isEmpty() ?
+                                "" :
+                                new Date(endDate.getText().toString()).toString(),
                         localData.getCurrentUserId(),
                         url,
                         new Date().toString());
@@ -267,8 +326,7 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
         } else {
             Toast.makeText(requireContext(), "Filed", Toast.LENGTH_LONG).show();
             dialog.dismiss();
-            startActivity(new Intent(requireContext(), MainActivity.class));
-            requireActivity().finish();
+            reload();
         }
     }
 
@@ -279,6 +337,10 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
         } else {
             Toast.makeText(requireContext(), "Filed", Toast.LENGTH_LONG).show();
         }
+        reload();
+    }
+
+    private void reload() {
         dialog.dismiss();
         startActivity(new Intent(requireContext(), MainActivity.class));
         requireActivity().finish();
@@ -292,13 +354,6 @@ public class PostDetailsFragment extends Fragment implements View.OnClickListene
                 .beginTransaction()
                 .replace(R.id.fragment_container_post, GalleryFragment.class, bundle).commit();
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Data.getInstance().destroyListener("2");
-    }
-
 }
 
 

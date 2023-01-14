@@ -138,25 +138,19 @@ public class LoginFragment extends Fragment implements TabLayout.OnTabSelectedLi
 
     private void startAnimationFabDown() {
 
-        facebook.animate().translationY(300).alpha(1).setDuration(0).setStartDelay(300).start();
-        google.animate().translationY(300).alpha(1).setDuration(0).setStartDelay(250).start();
-        phone.animate().translationY(300).alpha(1).setDuration(0).setStartDelay(200).start();
-        twitter.animate().translationY(300).alpha(1).setDuration(0).setStartDelay(150).start();
-        github.animate().translationY(300).alpha(1).setDuration(0).setStartDelay(50).start();
+        facebook.animate().translationY(500).alpha(1).setDuration(0).setStartDelay(300).start();
+        google.animate().translationY(500).alpha(1).setDuration(0).setStartDelay(250).start();
+        phone.animate().translationY(500).alpha(1).setDuration(0).setStartDelay(200).start();
+        twitter.animate().translationY(500).alpha(1).setDuration(0).setStartDelay(150).start();
+        github.animate().translationY(500).alpha(1).setDuration(0).setStartDelay(50).start();
     }
 
     @Override
     public void onTabSelected(@NonNull TabLayout.Tab tab) {
         int pos = tab.getPosition();
         swapFragmentByPosition(pos);
-        switch (pos) {
-            case 0:
-                startAnimationFabUp();
-            case 1:
-                startAnimationFabDown();
-                break;
-            default:
-
+        if (pos == 0) {
+            startAnimationFabUp();
         }
     }
 

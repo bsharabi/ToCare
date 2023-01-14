@@ -14,7 +14,6 @@ public interface IData {
     // ----------------- init ---------------
 
 
-    AuthCredential createCredentialSignIn(String email, String password);
 
     //----------------- Get -------------------
 

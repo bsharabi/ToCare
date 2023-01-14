@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.tocare.UIL.Fragment.LoginCardFragment;
-import com.example.tocare.UIL.signup.SignupFragment;
+import com.example.tocare.UIL.signup.SignupUserFragment;
 
 
 public class LoginAdapter extends FragmentStateAdapter {
@@ -21,7 +21,7 @@ public class LoginAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 1)
-            return new SignupFragment();
+            return new SignupUserFragment();
 
         return new LoginCardFragment();
     }

@@ -1,5 +1,9 @@
 package com.example.tocare.BLL.Model;
 
+import androidx.annotation.NonNull;
+
+import java.util.Date;
+
 public class Comment {
 
     private String commentId;
@@ -7,21 +11,32 @@ public class Comment {
     private String author;
     private String comment;
     private String publish;
+    private String created;
 
 
-    public Comment(String commentId,String postId, String author,  String comment, String publish) {
-        this.commentId = commentId;
-        this.author = author;
-        this.comment = comment;
-        this.publish = publish;
-        this.postId=postId;
+    public Comment(String commentId, String postId, String author, String comment, String publish, String create) {
+        setCommentId(commentId);
+        setAuthor(author);
+        setComment(comment);
+        setPublish(publish);
+        setPostId(postId);
+        setCreated(create);
     }
 
     public Comment(String author, String postId, String comment, String publish) {
-        this.author = author;
-        this.comment = comment;
-        this.publish = publish;
-        this.postId=postId;
+        setAuthor(author);
+        setComment(comment);
+        setPublish(publish);
+        setPostId(postId);
+        setCreated(new Date().toString());
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
     }
 
     public String getCommentId() {
@@ -64,13 +79,16 @@ public class Comment {
         this.publish = publish;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Comment{" +
                 "commentId='" + commentId + '\'' +
+                ", postId='" + postId + '\'' +
                 ", author='" + author + '\'' +
                 ", comment='" + comment + '\'' +
-                ", publish='" + publish + '\'' +
+                ", publish='" + getPublish() + '\'' +
+                ", created='" + getCreated() + '\'' +
                 '}';
     }
 }

@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,45 +24,44 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CommentsActivity extends AppCompatActivity {
 
 
     private EditText newComment;
-    private ImageView imageProfile;
-    private RecyclerView recyclerView;
-    private TextView post;
     private String postId;
     private String publishId;
-    private List<Comment> mComment;
     private Data localData;
     private CommentsAdapter adapter;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
 
-        mComment=new ArrayList<>();
+        List<Comment> mComment = new ArrayList<>();
         localData = Data.getInstance();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Comments");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Comments");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> finish());
 
         newComment = findViewById(R.id.add_comment);
-        imageProfile = findViewById(R.id.image_profile);
-        recyclerView = findViewById(R.id.recycler_view);
-        post = findViewById(R.id.post);
+        ImageView imageProfile = findViewById(R.id.image_profile);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        TextView post = findViewById(R.id.post);
 
         recyclerView.setHasFixedSize(true);
         adapter = new CommentsAdapter(this, mComment);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setStackFromEnd(true);
         linearLayoutManager.setReverseLayout(true);
+
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
 

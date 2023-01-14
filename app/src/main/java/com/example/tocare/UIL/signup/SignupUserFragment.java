@@ -8,76 +8,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-
-import com.example.tocare.DAL.Data;
-import com.example.tocare.BLL.Listener.PhoneCallback;
+import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Validation.UserValidation;
+import com.example.tocare.DAL.Auth;
+import com.example.tocare.BLL.Model.UserModel;
+import com.example.tocare.BLL.Listener.FirebaseCallback;
+
 import com.example.tocare.R;
-import com.example.tocare.UIL.Fragment.UsersFragment;
-import com.example.tocare.UIL.phone.PhoneSignupVerificationFragment;
-import com.example.tocare.databinding.FragmentSignupUserBinding;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
+import com.example.tocare.databinding.FragmentSignupBinding;
+import com.google.firebase.auth.FirebaseUser;
 import com.hbb20.CountryCodePicker;
 
-import java.util.Objects;
+
+public class SignupUserFragment extends Fragment implements View.OnClickListener, FirebaseCallback {
 
 
-public class SignupUserFragment extends Fragment implements View.OnClickListener, PhoneCallback {
-
-
-    private static final String TAG = "SignupUser";
-
-    private EditText inputName, inputLastName, inputPhone, inputUserName;
-    private ImageView image_profile,plus;
+    private static final String TAG = "SignupUserFragment";
+    private EditText inputName, inputLastName, inputPhone, inputEmail, inputPassword, inputConformPassword, inputUserName;
     private Button btSignup;
     private ProgressDialog dialog;
-    private FragmentSignupUserBinding binding;
     private CountryCodePicker ccp;
-    private Data localData;
-
+    private Auth login;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentSignupUserBinding.inflate(inflater, container, false);
+
+        com.example.tocare.databinding.FragmentSignupBinding binding = FragmentSignupBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         inputUserName = binding.etUserName;
-        plus = binding.plus;
         inputName = binding.etName;
         inputLastName = binding.etLastName;
         inputPhone = binding.etPhone;
         ccp = binding.countryPicker;
-        btSignup = binding.btSignup;
-        image_profile = binding.imProfile;
-
         ccp.registerCarrierNumberEditText(inputPhone);
+        inputEmail = binding.etEmail;
+        inputPassword = binding.etPassword;
+        inputConformPassword = binding.etCPassword;
+        btSignup = binding.btSignup;
         dialog = new ProgressDialog(getContext());
-        localData = Data.getInstance();
-        Toolbar toolbar = binding.toolbar;
-
-
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("");
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> requireActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_manage, new UsersFragment()).commit());
-
-
+        login = Auth.getInstance();
         return root;
     }
 
@@ -90,112 +63,99 @@ public class SignupUserFragment extends Fragment implements View.OnClickListener
         inputLastName.setTranslationX(300);
         inputPhone.setTranslationX(300);
         ccp.setTranslationX(300);
+        inputEmail.setTranslationX(300);
+        inputPassword.setTranslationX(300);
+        inputConformPassword.setTranslationX(300);
         btSignup.setTranslationY(300);
-        image_profile.setTranslationX(300);
-        plus.setTranslationX(300);
 
-        final float alpha = 0;
+        final int alpha = 0;
 
         inputName.setAlpha(alpha);
         inputLastName.setAlpha(alpha);
         inputPhone.setAlpha(alpha);
         ccp.setAlpha(alpha);
+        inputEmail.setAlpha(alpha);
+        inputPassword.setAlpha(alpha);
+        inputConformPassword.setAlpha(alpha);
         btSignup.setAlpha(alpha);
         inputUserName.setAlpha(alpha);
-        image_profile.setAlpha(alpha);
-        plus.setAlpha(alpha);
 
-        image_profile.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(250).start();
-        plus.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(250).start();
         inputUserName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(350).start();
         inputName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(400).start();
         inputLastName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(450).start();
         inputPhone.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(500).start();
         ccp.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(500).start();
+        inputEmail.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        inputPassword.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(700).start();
+        inputConformPassword.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(800).start();
         btSignup.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(900).start();
 
         btSignup.setOnClickListener(this);
 
-        btSignup.setEnabled(false);
-        ccp.setOnCountryChangeListener(() -> {
-            btSignup.setEnabled(true);
-        });
 
     }
 
-    public void createAccountWithPhone() {
-        if (UserValidation.isValidPhone(ccp.getFullNumber())) {
-            dialog.setMessage("Please wait...");
-            dialog.setTitle("Send code");
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.show();
-            localData.startPhoneNumberVerification(ccp.getFullNumberWithPlus(), getActivity(), this);
-        } else
-            inputPhone.setError("The phone format is incorrect");
+    private void setDialog() {
+        dialog.setMessage("Please wait while Registration");
+        dialog.setTitle("Register");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
+    private void buildUser() {
+        String name = inputName.getText().toString();
+        String lastName = inputLastName.getText().toString();
+        String email = inputEmail.getText().toString();
+        String password = inputPassword.getText().toString();
+        String cPassword = inputConformPassword.getText().toString();
+        String phone = inputPhone.getText().toString();
+        String userName = inputUserName.getText().toString();
+        UserModel userModel = new Admin(
+                "",
+                userName,
+                name,
+                lastName,
+                ccp.getFullNumberWithPlus(),
+                "Hello my name is " + userName,
+                "https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a",
+                true);
+        if (UserValidation.SignUpValidation(email, password, userName, lastName, phone, cPassword) && ccp.isValidFullNumber()) {
+            login.createAccountWithEmail(email, password, userModel, this);
+        }
     }
 
     @Override
     public void onClick(@NonNull View view) {
-        switch (view.getId()) {
-            case R.id.bt_signup:
-//                if (UserValidation.SignUpValidation(email, password, userName, fullName, phone, cPassword) && ccp.isValidFullNumber())
-                createAccountWithPhone();
-                break;
-            default:
-                break;
+        if (view.getId() == R.id.bt_signup) {
+            setDialog();
+            buildUser();
         }
 
     }
 
     @Override
-    public void onCallback(boolean success, Exception e, Task<AuthResult> task) {
-
-    }
-
-    @Override
-    public void onVerificationFailed(FirebaseException e) {
-        Log.w(TAG, "onVerificationFailed", e);
-        Toast.makeText(getContext(), "Verification Failed", Toast.LENGTH_SHORT).show();
-        if (e instanceof FirebaseAuthInvalidCredentialsException) {
-            // Invalid request
-        } else if (e instanceof FirebaseTooManyRequestsException) {
-            // The SMS quota for the project has been exceeded
+    public void onCallback(boolean success, Exception e, FirebaseUser user) {
+        if (success) {
+            Log.w(TAG, "createUserWithEmail:success");
+            Toast.makeText(getContext(), "Registration successful Go confirm your email", Toast.LENGTH_SHORT).show();
+        } else {
+            dialog.dismiss();
+            Log.w(TAG, "createUserWithEmail:failure");
+            Toast.makeText(getContext(), "Authentication failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        dialog.dismiss();
     }
 
     @Override
-    public void onVerificationCompleted(boolean success, PhoneAuthCredential credential) {
-        if (success)
-            Log.d(TAG, "onVerificationCompleted:" + credential);
+    public void onSuccess(boolean success, Exception e) {
+        if (success) {
+            dialog.dismiss();
+            Log.d(TAG, "DocumentReference::User::success");
+            Toast.makeText(getContext(), "The details have been successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            dialog.dismiss();
+            Log.d(TAG, "DocumentReference::User::failed");
+            Toast.makeText(getContext(), "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
-
-    @Override
-    public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
-        Log.d(TAG, "onCodeSent:" + verificationId);
-        Toast.makeText(getContext(), "Code sent ", Toast.LENGTH_SHORT).show();
-        dialog.dismiss();
-
-        Bundle bundle = new Bundle();
-        String name = inputName.getText().toString();
-        String lastName = inputLastName.getText().toString();
-        String userName = inputUserName.getText().toString();
-        bundle.putString("verificationId", verificationId);
-        bundle.putString("phone", ccp.getFullNumberWithPlus());
-        bundle.putString("countryCode", "+" + ccp.getSelectedCountryCode());
-        bundle.putString("name", name);
-        bundle.putString("lastName", lastName);
-        bundle.putString("userName", userName);
-        bundle.putBoolean("newUser", true);
-
-        Fragment fragment = new PhoneSignupVerificationFragment();
-        fragment.setArguments(bundle);
-        requireActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_manage, fragment).commit();
-
-    }
-
 
 }

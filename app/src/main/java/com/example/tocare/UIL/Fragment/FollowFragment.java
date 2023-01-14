@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.tocare.BLL.Adapters.FollowAdapter;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.R;
 
@@ -45,8 +47,11 @@ public class FollowFragment extends Fragment {
         TextView userName = view.findViewById(R.id.userName);
         all_following = view.findViewById(R.id.all_following);
         all_followers = view.findViewById(R.id.all_followers);
+
         mFollowing = new ArrayList<>();
         mFollowers = new ArrayList<>();
+
+
 
         userName.setText(name);
 
@@ -66,8 +71,6 @@ public class FollowFragment extends Fragment {
         actionBar.setTitle("");
         actionBar.setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction().replace(fragment_container, new ProfileFragment()).commit());
-
-
         return view;
     }
 
@@ -77,6 +80,14 @@ public class FollowFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         all_followers.setOnClickListener(v -> changeSelect());
         all_following.setOnClickListener(v -> changeSelect());
+
+        recycler_view_followers.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recycler_view_followers.setAdapter(new FollowAdapter(getContext(),mFollowers));
+
+        recycler_view_following.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recycler_view_following.setAdapter(new FollowAdapter(getContext(),mFollowing));
+
+
 
     }
 
@@ -90,4 +101,6 @@ public class FollowFragment extends Fragment {
         recycler_view_following.setVisibility(visibility);
 
     }
+
+
 }

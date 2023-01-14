@@ -26,7 +26,6 @@ public class TasksGalleryAdapter extends RecyclerView.Adapter<TasksGalleryAdapte
     public TasksGalleryAdapter(Context mContext, List<Task> mTask) {
         this.mContext = mContext;
         this.mTask = (mTask == null) ? new ArrayList<>() : mTask;
-
     }
 
     @NonNull
@@ -41,8 +40,6 @@ public class TasksGalleryAdapter extends RecyclerView.Adapter<TasksGalleryAdapte
 
         Task task = mTask.get(position);
         Picasso.get().load(task.getImagesUrl().get(0)).into(holder.image_profile);
-
-
     }
 
     @Override

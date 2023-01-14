@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -20,9 +19,7 @@ import com.example.tocare.UIL.Fragment.SearchFragment;
 import com.example.tocare.UIL.PostActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.tocare.databinding.ActivityMainBinding;
@@ -37,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
     private Fragment selectedFragment;
     private Data localData;
     private ProgressBar progressBar;
-    private Observe myObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
             Log.d(TAG, "CurrentUser:null");
             reload(LoginActivity.class);
         }
-        myObserver=Observe.getInstance();
+        Observe myObserver = Observe.getInstance();
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         selectedFragment = null;

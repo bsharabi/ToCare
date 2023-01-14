@@ -133,7 +133,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        tools:ignore="UselessParent">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -159,6 +160,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/get_followers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
@@ -182,6 +184,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/get_following"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"

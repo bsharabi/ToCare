@@ -1,5 +1,6 @@
 package com.example.tocare.BLL.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -12,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tocare.BLL.Model.UserModel;
+import com.example.tocare.BLL.Model.User;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 import com.example.tocare.UIL.Fragment.ProfileFragment;
@@ -24,11 +25,11 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private final Context mContext;
-    private final List<UserModel> mUser;
+    private final List<User> mUser;
     private final Data localData;
 
 
-    public UserAdapter(Context mContext, List<UserModel> mUser) {
+    public UserAdapter(Context mContext, List<User> mUser) {
         this.mContext = mContext;
         this.mUser = mUser;
         localData=Data.getInstance();
@@ -41,16 +42,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        UserModel user = mUser.get(position);
+        User user = mUser.get(position);
+
 
         String imageURL = user.getImageUrl();
         Picasso.get().load(imageURL).into(holder.userImage);
 
         holder.username.setText(user.getUserName());
-        holder.fullName.setText(user.getFullName());
+        holder.fullName.setText(user.getName()+" "+user.getLastName());
 
         holder.edit.setOnClickListener(v -> goToProfile( user.getId()));
 

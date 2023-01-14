@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 
 import com.example.tocare.BLL.Listener.Callback;
+import com.example.tocare.DAL.Auth;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.BLL.Listener.PhoneCallback;
@@ -35,7 +36,6 @@ import com.example.tocare.R;
 import com.example.tocare.UIL.Fragment.UsersFragment;
 import com.example.tocare.databinding.FragmentPhoneCodeVerificationBinding;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,7 +51,6 @@ import java.util.Objects;
 public class PhoneSignupVerificationFragment extends Fragment implements View.OnClickListener, TextWatcher, PhoneCallback, FirebaseCallback {
 
     private static final String TAG = "SignupVerification";
-    private FragmentPhoneCodeVerificationBinding binding;
     private EditText inputPhoneCode;
     private Button btSubmit;
     private TextView header, sendAgain;
@@ -59,13 +58,14 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
     private ProgressDialog dialog;
     private String mVerificationId;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
+    private Auth auth;
     private Data localData;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        binding = FragmentPhoneCodeVerificationBinding.inflate(inflater, container, false);
+        com.example.tocare.databinding.FragmentPhoneCodeVerificationBinding binding = FragmentPhoneCodeVerificationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         inputPhoneCode = binding.etPhoneCode;
@@ -73,6 +73,7 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
         header = binding.textPhoneCode;
         sendAgain = binding.tvSendAgain;
         imageView = binding.ivPhoneIcon;
+        auth = Auth.getInstance();
         localData = Data.getInstance();
         mVerificationId = requireArguments().getString("verificationId");
 
@@ -145,12 +146,12 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
             case R.id.bt_submit:
                 String code = inputPhoneCode.getText().toString().trim();
                 setDialog("Verify Phone Number With Code");
-                localData.verifyPhoneNumberWithCode(code, mVerificationId, this);
+                auth.verifyPhoneNumberWithCode(code, mVerificationId, this);
                 break;
             case R.id.tv_send_again:
                 String phone = "+" + requireArguments().getString("countryCode") + requireArguments().getString("phone").substring(1);
                 setDialog("Resend Verification Code");
-                localData.resendVerificationCode(phone, mResendToken, getActivity());
+                auth.resendVerificationCode(phone, mResendToken, getActivity());
                 Toast.makeText(getContext(), "re send Verification Code", Toast.LENGTH_LONG).show();
             default:
                 break;
@@ -178,8 +179,8 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
             }.getType();
             Map<String, String> map = gson.fromJson(serializedCredential, type);
 
-            localData.createCredentialSignIn(map.get("zza"), map.get("zzb"));
-            localData.signInWithCredential(new Callback() {
+            auth.createCredentialSignIn(map.get("zza"), map.get("zzb"));
+            auth.signInWithCredential(new Callback() {
                 @Override
                 public void onCallback(boolean success, Exception e, FirebaseUser user) {
 
@@ -188,16 +189,18 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
                 @Override
                 public void onSuccess(boolean success, Exception e) {
                     if (success) {
+                        assert firebaseUser != null;
+                        assert getArguments() != null;
                         UserModel userModel = new User(
                                 firebaseUser.getUid(),
-                                getArguments().getString("userName"),
+                                getArguments().getString("userName").toLowerCase(),
                                 getArguments().getString("name"),
                                 getArguments().getString("lastName"),
                                 getArguments().getString("phone"),
                                 "Welcome ToCare " + getArguments().get("userName"),
                                 "https://firebasestorage.googleapis.com/v0/b/tocare-5b2eb.appspot.com/o/placeHolder.png?alt=media&token=fa1fa6f4-233e-4375-84cd-e7cdd6260c7a",
                                 false,
-                                localData.getCurrentUserId());
+                                auth.getCurrentUserId());
                         localData.createUserData(firebaseUser, userModel, new FirebaseCallback() {
                             @Override
                             public void onCallback(boolean success, Exception e, FirebaseUser user) {
@@ -242,18 +245,13 @@ public class PhoneSignupVerificationFragment extends Fragment implements View.On
     public void onVerificationFailed(FirebaseException e) {
         Log.w(TAG, "onVerificationFailed", e);
         Toast.makeText(getContext(), "Verification Failed", Toast.LENGTH_SHORT).show();
-        if (e instanceof FirebaseAuthInvalidCredentialsException) {
-            // Invalid request
-        } else if (e instanceof FirebaseTooManyRequestsException) {
-            // The SMS quota for the project has been exceeded
-        }
         dialog.dismiss();
     }
 
     @Override
     public void onVerificationCompleted(boolean success, @NonNull PhoneAuthCredential credential) {
         Log.d(TAG, "onVerificationCompleted:" + credential);
-        localData.verifyPhoneNumberWithCode(credential.getSmsCode(), mVerificationId, this);
+        auth.verifyPhoneNumberWithCode(credential.getSmsCode(), mVerificationId, this);
     }
 
     @Override

@@ -22,7 +22,6 @@ public class GoogleLoginActivity extends AppCompatActivity implements FirebaseCa
 
     private static final String TAG = "GoogleLoginActivity";
     private static final int RC_SIGN_IN = 1;
-    private GoogleSignInOptions gso;
     private GoogleSignInClient gsc;
     private Auth login;
     private ProgressDialog dialog;
@@ -37,7 +36,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements FirebaseCa
 
         login = Auth.getInstance();
 
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
@@ -93,11 +92,11 @@ public class GoogleLoginActivity extends AppCompatActivity implements FirebaseCa
     public void onSuccess(boolean success, Exception e) {
         if (success) {
             Log.d(TAG, "DocumentReference::User::success");
-            Toast.makeText(this, "The details have been successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The details have been successfully registered " + e, Toast.LENGTH_SHORT).show();
             reload(MainActivity.class);
         } else {
             Log.d(TAG, "DocumentReference::User::failed");
-            Toast.makeText(this, "The details were not successfully registered " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The details were not successfully registered " + e, Toast.LENGTH_SHORT).show();
             reload(LoginActivity.class);
         }
     }

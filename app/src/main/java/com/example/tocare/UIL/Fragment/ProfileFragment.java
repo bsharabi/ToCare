@@ -102,7 +102,7 @@ public class ProfileFragment extends Fragment implements UserCallback {
             options.setOnClickListener(v -> requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container_manage, new UsersFragment()).commit());
+                    .replace(R.id.fragment_container_manage, UsersFragment.class,null).commit());
         }
 
         localData.getUserById(profileId, this);
@@ -118,15 +118,13 @@ public class ProfileFragment extends Fragment implements UserCallback {
         List<Task> mPost = new ArrayList<>();
         List<Task> mSave = new ArrayList<>();
 
-        List<UserModel> mFollowingUser = new ArrayList<>();
-        List<UserModel> mFollowersUser = new ArrayList<>();
 
         localData.getAllPostsByUserId(profileId, mPost, tasksCount, () -> Objects.requireNonNull(recyclerView_post.getAdapter()).notifyDataSetChanged());
         localData.getAllSavedByUserId(profileId, mSave, () -> Objects.requireNonNull(recyclerView_saved.getAdapter()).notifyDataSetChanged());
         localData.getAllTasksByUserId(profileId, mTask, () -> Objects.requireNonNull(recyclerView_tasks.getAdapter()).notifyDataSetChanged());
 
-        localData.getAllFollowingByUserId(profileId, mFollowingUser, following);
-        localData.getAllFollowersByUserId(profileId, mFollowersUser, followers);
+        localData.getAllFollowingByUserId(profileId, following);
+        localData.getAllFollowersByUserId(profileId, followers);
 
         setRecyclerView(recyclerView_saved, new SavedGalleryAdapter(getContext(), mSave));
         setRecyclerView(recyclerView_tasks, new TasksGalleryAdapter(getContext(), mTask));
@@ -167,7 +165,7 @@ public class ProfileFragment extends Fragment implements UserCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        localData.destroyProfileListener(profileId);
+        localData.destroyListener("");
     }
 
 
@@ -201,6 +199,7 @@ public class ProfileFragment extends Fragment implements UserCallback {
                 } else {
                     bt_follow.setText(R.string.Follow);
                 }
+                plus.setVisibility(View.GONE);
                 image_profile.setEnabled(false);
                 saved.setVisibility(View.GONE);
                 bt_follow.setOnClickListener(v -> {

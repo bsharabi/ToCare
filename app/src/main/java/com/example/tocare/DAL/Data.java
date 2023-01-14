@@ -1,10 +1,11 @@
 package com.example.tocare.DAL;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,35 +13,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.tocare.BLL.Listener.Callback;
-import com.example.tocare.BLL.Listener.FollowingCallback;
 import com.example.tocare.BLL.Listener.OnChangeCallback;
 import com.example.tocare.BLL.Listener.SearchCallback;
 import com.example.tocare.BLL.Listener.UploadCallback;
 import com.example.tocare.BLL.Listener.UserCallback;
 import com.example.tocare.BLL.Model.Comment;
 
+import com.example.tocare.BLL.Model.Comparing;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.BLL.Model.User;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.FirebaseCallback;
 import com.example.tocare.DAL.api.IData;
-import com.example.tocare.BLL.Listener.PhoneCallback;
 import com.example.tocare.R;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,38 +41,34 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public final class Data implements IData {
 
     private static Data single_instance = null;
     private static final String TAG = "DataUser";
-    private static AuthCredential credential;
-    private static PhoneCallback phoneCallback;
 
     private UserModel currentUser;
-
     private Map<String, Object> following;
     private Map<String, Object> followers;
     private Map<String, Object> children;
-    private Map<String, Object> saved;
-    private List<Object> posts;
-    private List<Object> tasks;
-
     private final Map<String, ListenerRegistration> listenerRegistrations;
 
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
     private final FirebaseUser firebaseUser;
-    private final FirebaseAuth mAuth;
     private final CollectionReference userCollectionRef;
     private final CollectionReference commentsCollectionRef;
     private final CollectionReference followingCollectionRef;
@@ -89,39 +78,17 @@ public final class Data implements IData {
     private final CollectionReference savedCollectionRef;
     private final CollectionReference likesCollectionRef;
 
-
-    private final PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        @Override
-        public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
-            phoneCallback.onVerificationCompleted(true, credential);
-        }
-
-        @Override
-        public void onVerificationFailed(@NonNull FirebaseException e) {
-            phoneCallback.onVerificationFailed(e);
-        }
-
-        @Override
-        public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            super.onCodeSent(verificationId, token);
-            phoneCallback.onCodeSent(verificationId, token);
-        }
-    };
-
     private Data() {
         this.following = new HashMap<>();
         this.followers = new HashMap<>();
         this.children = new HashMap<>();
-        this.saved = new HashMap<>();
-        this.posts = new ArrayList<>();
-        this.tasks = new ArrayList<>();
+
 
         this.listenerRegistrations = new HashMap<>();
 
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
 
         userCollectionRef = db.collection("User");
@@ -149,52 +116,12 @@ public final class Data implements IData {
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         callback.onCallback(true, null, firebaseUser);
-
+                        Log.w(TAG, "create new user DocumentReference:success");
                     }
-                }).addOnFailureListener(e -> callback.onCallback(false, e, null));
-    }
-
-    public void startPhoneNumberVerification(String phoneNumber, Activity activity, PhoneCallback callback) {
-        phoneCallback = callback;
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
-                        .setPhoneNumber(phoneNumber)       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(activity)                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
-
-    }
-
-    public void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token, Activity activity) {
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
-                        .setPhoneNumber(phoneNumber)       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(activity)                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .setForceResendingToken(token)     // ForceResendingToken from callbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
-    }
-
-    public void signInWithAuthCredential(PhoneAuthCredential credential, PhoneCallback phoneCallback) {
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(task -> phoneCallback.onCallback(true, null, task))
-                .addOnFailureListener(failure -> phoneCallback.onCallback(false, failure, null));
-    }
-
-    public void verifyPhoneNumberWithCode(String code, String mVerificationId, PhoneCallback callback) {
-
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
-        signInWithAuthCredential(credential, callback);
-    }
-
-    @Override
-    public AuthCredential createCredentialSignIn(String email, String password) {
-        credential = EmailAuthProvider.getCredential(email, password);
-        return credential;
+                }).addOnFailureListener(e -> {
+                    Log.w(TAG, "create new user DocumentReference:failed");
+                    callback.onCallback(false, e, null);
+                });
     }
 
     public void updateUserUI(Callback callback) {
@@ -202,27 +129,220 @@ public final class Data implements IData {
         getAllFollowersSnapShot();
         getAllChildrenIdSnapShot();
         getAllFollowing(callback);
-        ListenerRegistration listener = userCollectionRef
+        ListenerRegistration listener =
+                userCollectionRef
+                        .document(firebaseUser.getUid())
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                callback.onCallback(false, error, null);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                currentUser = value.toObject(UserModel.class);
+                                callback.onCallback(true, null, firebaseUser);
+                                Log.d(TAG, "DocumentReferenceCurrentUser:success");
+                                Log.w(TAG, "document:updateUserUI exists.");
+                                // The document exists
+
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:updateUserUI does not exists.");
+                            }
+                        });
+        listenerRegistrations.put("user:currentUserModelSnapshot", listener);
+    }
+
+    public void getAllFollowers(Callback callback) {
+        followersCollectionRef
+                .document(firebaseUser.getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        if (task.getResult().exists()) {
+                            followers = task.getResult().getData();
+                            callback.onSuccess(true, null);
+                            Log.w(TAG, "document:AllFollowers exists.");
+                            // The document exists
+                        } else {
+                            callback.onSuccess(true, null);
+                            // The document does not exist
+                            Log.w(TAG, "document:AllFollowers does not exists.");
+                        }
+                    }
+                }).addOnFailureListener(error -> {
+                    Log.w(TAG, "Listen failed.", error);
+                    callback.onSuccess(false, error);
+                });
+    }
+
+    public void getAllFollowing(Callback callback) {
+        followingCollectionRef
+                .document(firebaseUser.getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        if (task.getResult().exists()) {
+                            following = task.getResult().getData();
+
+                            getAllFollowers(callback);
+                            Log.w(TAG, "document:AllFollowing exists.");
+                            // The document exists
+
+                        } else {
+                            getAllFollowers(callback);
+                            // The document does not exist
+                            Log.w(TAG, "document:AllFollowing does not exists.");
+                        }
+                        following.put(firebaseUser.getUid(), true);
+                    }
+                }).addOnFailureListener(error -> {
+                    Log.w(TAG, "Listen failed.", error);
+                    callback.onSuccess(false, error);
+                });
+
+
+    }
+
+    public void getAllFollowingByUserId(String userId, final TextView following) {
+        @SuppressLint("SetTextI18n") ListenerRegistration listener =
+                followingCollectionRef
+                        .document(userId)
+                        .addSnapshotListener((value, error) -> {
+
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists() && value.getData() != null) {
+                                following.setText(value.getData().size() + "");
+                                Log.w(TAG, "document:FollowingUser exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:FollowingUser does not exists.");
+                            }
+
+                        });
+        listenerRegistrations.put("Temporary:getAllFollowingByUserId" + userId, listener);
+    }
+
+    public void getAllFollowersByUserId(String userId, final TextView followers) {
+        @SuppressLint("SetTextI18n") ListenerRegistration listener =
+                followersCollectionRef
+                        .document(userId)
+                        .addSnapshotListener((value, error) -> {
+
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists() && value.getData() != null) {
+                                followers.setText(value.getData().size() + "");
+                                Log.w(TAG, "document:FollowersUser exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:FollowersUser does not exists.");
+                            }
+
+                        });
+        listenerRegistrations.put("Temporary:getAllFollowingByUserId" + userId, listener);
+    }
+
+    public void getAllFollowersSnapShot() {
+        ListenerRegistration listener = followersCollectionRef
                 .document(firebaseUser.getUid())
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Listen failed.", error);
-                        callback.onCallback(false, error, null);
                         return;
                     }
                     if (value != null && value.exists()) {
-                        currentUser = value.toObject(UserModel.class);
-                        callback.onCallback(true, null, firebaseUser);
-                        Log.d(TAG, "DocumentReferenceCurrentUser:success");
-                        Log.w(TAG, "document:updateUserUI exists.");
+                        followers = value.getData();
+                        Log.w(TAG, "document:getAllFollowers exists.");
                         // The document exists
-
                     } else {
                         // The document does not exist
-                        Log.w(TAG, "document:updateUserUI does not exists.");
+                        Log.w(TAG, "document:getAllFollowers does not exists.");
+
                     }
                 });
-        listenerRegistrations.put("currentUserSnapshot", listener);
+        listenerRegistrations.put("user:currentFollowersSnapShot", listener);
+    }
+
+    public void getAllFollowingSnapShot() {
+        ListenerRegistration listener =
+                followingCollectionRef
+                        .document(firebaseUser.getUid())
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                following = value.getData();
+                                assert following != null;
+                                following.put(firebaseUser.getUid(), true);
+                                Log.w(TAG, "document:getAllFollowing exists.");
+                                // The document exists
+
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllFollowing does not exists.");
+                            }
+                        });
+        listenerRegistrations.put("user:currentFollowingSnapShot", listener);
+    }
+
+    public void getAllChildrenIdSnapShot() {
+        ListenerRegistration listener =
+                childrenCollectionRef
+                        .document(getCurrentUserId())
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                children = value.getData();
+                                Log.w(TAG, "document:getAllChildren exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllChildren does not exists.");
+                            }
+                        });
+        listenerRegistrations.put("user:currentUserAllChildrenIdSnapShot", listener);
+
+    }
+
+    public void getAllChildren(List<User> mUser, OnChangeCallback callback) {
+
+        ListenerRegistration listener =
+                userCollectionRef
+                        .whereEqualTo("parentId", getCurrentUserId())
+                        .addSnapshotListener((value, error) -> {
+                            mUser.clear();
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && !value.isEmpty()) {
+                                for (DocumentSnapshot doc : value.getDocuments()) {
+                                    mUser.add(doc.toObject(User.class));
+                                }
+                                Log.w(TAG, "document:getAllChildren exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllChildren does not exists.");
+                            }
+                            callback.onChange();
+
+                        });
+        listenerRegistrations.put("Temporary2:currentGetAllChildrenSnapShot", listener);
+
     }
 
     public void updateUserById(String userId, Map<String, Object> user, OnChangeCallback callback) {
@@ -252,51 +372,24 @@ public final class Data implements IData {
         return firebaseUser.getUid();
     }
 
-    public void getFollowingByUserId(String userId, FollowingCallback callback) {
-        followingCollectionRef
-                .document(userId)
-                .collection("following")
-                .get()
-                .addOnCompleteListener(task -> {
-                    List<String> list = new ArrayList<>();
-                    if (task.isSuccessful()) {
-                        for (DocumentSnapshot snap : task.getResult().getDocuments()) {
-                            list.add(snap.getId());
-                        }
-                        callback.result(true, list);
-
-                    }
-                })
-                .addOnFailureListener(e -> callback.result(false, null));
-    }
-
     public void getUserById(String userID, UserCallback callback) {
-        userCollectionRef.document(userID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                UserModel user = task.getResult().toObject(UserModel.class);
-                callback.result(true, user);
-            }
-        }).addOnFailureListener(e -> callback.result(false, null));
+        userCollectionRef.document(userID).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        UserModel user = task.getResult().toObject(UserModel.class);
+                        callback.result(true, user);
+                    }
+                }).addOnFailureListener(e -> callback.result(false, null));
     }
 
     public void addChildren(FirebaseCallback callback, String newUserId) {
-
-        childrenCollectionRef.document(getCurrentUserId())
+        childrenCollectionRef
+                .document(getCurrentUserId())
                 .set(new HashMap<String, Boolean>() {{
                     put(newUserId, true);
                 }}, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> callback.onSuccess(true, null))
                 .addOnFailureListener(e -> callback.onSuccess(false, e));
-    }
-
-    public void signInWithCredential(Callback callback) {
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful())
-                        callback.onSuccess(true, null);
-                }).addOnFailureListener(e ->
-                        callback.onSuccess(true, e)
-                );
     }
 
     @Override
@@ -336,28 +429,9 @@ public final class Data implements IData {
         return db.collection(collectionName).document().getId();
     }
 
-    public void searchUsersAdmin(String search, List<UserModel> list, SearchCallback callback) {
-        Query query = db.collection("User")
-                .whereEqualTo("admin", false)
-                .orderBy("userName")
-                .startAt(search)
-                .endAt(search + "\uf8ff");
-        query.addSnapshotListener((value, error) -> {
-            if (value != null) {
-                for (DocumentSnapshot snap : value.getDocuments()) {
-                    list.add(snap.toObject(UserModel.class));
-                }
-                callback.result();
-            }
-        });
-    }
-
     public void searchUsers(String search, List<UserModel> list, SearchCallback callback) {
-        Query query = db.collection("User")
-                .orderBy("userName")
-                .startAt(search)
-                .endAt(search + "\uf8ff");
-        query.addSnapshotListener((value, error) -> {
+
+        ListenerRegistration listener = userCollectionRef.addSnapshotListener((value, error) -> {
             list.clear();
             if (error != null) {
                 Log.w(TAG, "Listen failed.", error);
@@ -365,7 +439,9 @@ public final class Data implements IData {
             }
             if (value != null && !value.isEmpty()) {
                 for (DocumentSnapshot snap : value.getDocuments()) {
-                    list.add(snap.toObject(UserModel.class));
+                    UserModel user = snap.toObject(UserModel.class);
+                    if (user != null && user.getUserName().regionMatches(true, 0, search, 0, search.length()))
+                        list.add(user);
                 }
                 callback.result();
                 Log.w(TAG, "document:searchUsers exists.");
@@ -378,100 +454,7 @@ public final class Data implements IData {
             }
 
         });
-    }
-
-    public void getAllFollowers(Callback callback) {
-        followersCollectionRef
-                .document(firebaseUser.getUid())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isComplete()) {
-                        if (task.getResult().exists()) {
-                            followers = task.getResult().getData();
-                            callback.onSuccess(true, null);
-                            Log.w(TAG, "document:AllFollowers exists.");
-                            // The document exists
-                        } else {
-                            callback.onSuccess(true, null);
-                            // The document does not exist
-                            Log.w(TAG, "document:AllFollowers does not exists.");
-                        }
-                    }
-                }).addOnFailureListener(error -> {
-                    Log.w(TAG, "Listen failed.", error);
-                    callback.onSuccess(false, error);
-                });
-    }
-
-    public void getAllFollowing(Callback callback) {
-        followingCollectionRef
-                .document(firebaseUser.getUid()).get().addOnCompleteListener(task -> {
-                    if (task.isComplete()) {
-                        if (task.getResult().exists()) {
-                            following = task.getResult().getData();
-
-                            getAllFollowers(callback);
-                            Log.w(TAG, "document:AllFollowing exists.");
-                            // The document exists
-
-                        } else {
-                            getAllFollowers(callback);
-                            // The document does not exist
-                            Log.w(TAG, "document:AllFollowing does not exists.");
-                        }
-                        following.put(firebaseUser.getUid(), true);
-                    }
-                }).addOnFailureListener(error -> {
-                    Log.w(TAG, "Listen failed.", error);
-                    callback.onSuccess(false, error);
-                });
-
-
-    }
-
-    public void getAllFollowersSnapShot() {
-        ListenerRegistration listener = followersCollectionRef
-                .document(firebaseUser.getUid())
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.w(TAG, "Listen failed.", error);
-                        return;
-                    }
-                    if (value != null && value.exists()) {
-                        followers = value.getData();
-                        Log.w(TAG, "document:getAllFollowers exists.");
-                        // The document exists
-                    } else {
-                        // The document does not exist
-                        Log.w(TAG, "document:getAllFollowers does not exists.");
-
-                    }
-                });
-        listenerRegistrations.put("currentFollowersSnapShot", listener);
-    }
-
-    public void getAllFollowingSnapShot() {
-        ListenerRegistration listener =
-                followingCollectionRef
-                        .document(firebaseUser.getUid())
-                        .addSnapshotListener((value, error) -> {
-                            if (error != null) {
-                                Log.w(TAG, "Listen failed.", error);
-                                return;
-                            }
-                            if (value != null && value.exists()) {
-                                following = value.getData();
-                                assert following != null;
-                                following.put(firebaseUser.getUid(), true);
-                                Log.w(TAG, "document:getAllFollowing exists.");
-                                // The document exists
-
-                            } else {
-                                // The document does not exist
-                                Log.w(TAG, "document:getAllFollowing does not exists.");
-                            }
-                        });
-        listenerRegistrations.put("currentFollowingSnapShot", listener);
+        listenerRegistrations.put("Temporary:search", listener);
     }
 
     public void addFollow(String followUser, final TextView textView) {
@@ -510,54 +493,6 @@ public final class Data implements IData {
                 .addOnFailureListener(e -> textView.setText(R.string.Following));
     }
 
-    public void getAllFollowingByUserId(String userId, final List<UserModel> mFollowing, final TextView following) {
-        @SuppressLint("SetTextI18n") ListenerRegistration listener =
-                followingCollectionRef
-                        .document(userId)
-                        .addSnapshotListener((value, error) -> {
-                            mFollowing.clear();
-                            if (error != null) {
-                                Log.w(TAG, "Listen failed.", error);
-                                return;
-                            }
-                            if (value != null && value.exists() && value.getData() != null) {
-                                following.setText(value.getData().size() + "");
-                                Log.w(TAG, "document:FollowingUser exists.");
-                                // The document exists
-                            } else {
-                                // The document does not exist
-                                Log.w(TAG, "document:FollowingUser does not exists.");
-                            }
-
-                        });
-        listenerRegistrations.put("getAllFollowingByUserId" + userId, listener);
-
-
-    }
-
-    public void getAllFollowersByUserId(String userId, final List<UserModel> mFollowers, final TextView followers) {
-        @SuppressLint("SetTextI18n") ListenerRegistration listener =
-                followersCollectionRef
-                        .document(userId)
-                        .addSnapshotListener((value, error) -> {
-                            mFollowers.clear();
-                            if (error != null) {
-                                Log.w(TAG, "Listen failed.", error);
-                                return;
-                            }
-                            if (value != null && value.exists() && value.getData() != null) {
-                                followers.setText(value.getData().size() + "");
-                                Log.w(TAG, "document:FollowersUser exists.");
-                                // The document exists
-                            } else {
-                                // The document does not exist
-                                Log.w(TAG, "document:FollowersUser does not exists.");
-                            }
-
-                        });
-        listenerRegistrations.put("getAllFollowingByUserId" + userId, listener);
-    }
-
     public void getAllPostsByUserId(String userId, final List<Task> mTask, final TextView posts, OnChangeCallback callback) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 postCollectionRef
@@ -584,7 +519,7 @@ public final class Data implements IData {
                             }
                             callback.onChange();
                         });
-        listenerRegistrations.put("AllPostSnapshot" + userId, listener);
+        listenerRegistrations.put("Temporary:AllPostSnapshot" + userId, listener);
     }
 
     public void addSavedItem(String postId) {
@@ -601,7 +536,7 @@ public final class Data implements IData {
     }
 
     public void deleteSavedItem(String postId) {
-        FirebaseFirestore.getInstance().collection("Saved")
+        savedCollectionRef
                 .document(postId)
                 .set(new HashMap<String, Object>() {{
                     put(firebaseUser.getUid(), FieldValue.delete());
@@ -625,7 +560,7 @@ public final class Data implements IData {
                 .addOnFailureListener(e -> Log.w(TAG, "user" + data + " take : " + postId + " Failed."));
     }
 
-    public void addLikeToTask(String postId) {
+    public void addLikeToPost(String postId) {
         likesCollectionRef
                 .document(postId)
                 .set(new HashMap<String, Object>() {{
@@ -651,6 +586,11 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Task deleted : " + postId + " Failed."));
     }
 
+
+    /**
+     * @param likes  this is
+     * @param postId this is
+     */
     public void getLikeByPostId(final TextView likes, String postId) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 likesCollectionRef
@@ -672,9 +612,13 @@ public final class Data implements IData {
 
                             }
                         });
-        listenerRegistrations.put("likeSnapShot" + postId, listener);
+        listenerRegistrations.put("user:likeSnapShot" + postId, listener);
     }
 
+    /**
+     * @param imageView this is
+     * @param postId    this is
+     */
     public void isLiked(final ImageView imageView, String postId) {
         ListenerRegistration listener =
                 likesCollectionRef
@@ -696,39 +640,48 @@ public final class Data implements IData {
                                 // The document exists
 
                             } else {
+                                imageView.setImageResource(R.drawable.ic_like);
+                                imageView.setTag("like");
                                 // The document does not exist
                                 Log.w(TAG, "document:Liked does not exists.");
                             }
                         });
-        listenerRegistrations.put("isLikedSnapShot" + postId, listener);
+        listenerRegistrations.put("user:isLikedSnapShot" + postId, listener);
     }
 
+    /**
+     * @param imageView this is
+     * @param postId    this is
+     */
     public void isSaved(final ImageView imageView, String postId) {
-        ListenerRegistration listener = db.collection("Saved").document(postId)
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.w(TAG, "Listen failed.", error);
-                        return;
-                    }
-                    if (value != null && value.exists()) {
-                        if (Objects.requireNonNull(value.getData()).containsKey(firebaseUser.getUid())) {
-                            imageView.setImageResource(R.drawable.ic_saved);
-                            imageView.setTag("saved");
-                        } else {
-                            imageView.setImageResource(R.drawable.ic_save);
-                            imageView.setTag("save");
-                        }
-                        Log.w(TAG, "document:Save exists.");
-                        // The document exists
+        ListenerRegistration listener =
+                savedCollectionRef.document(postId)
+                        .addSnapshotListener((value, error) -> {
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && value.exists()) {
+                                if (Objects.requireNonNull(value.getData()).containsKey(firebaseUser.getUid())) {
+                                    imageView.setImageResource(R.drawable.ic_saved);
+                                    imageView.setTag("saved");
+                                } else {
+                                    imageView.setImageResource(R.drawable.ic_save);
+                                    imageView.setTag("save");
+                                }
+                                Log.w(TAG, "document:Save exists.");
+                                // The document exists
 
-                    } else {
-                        // The document does not exist
-                        Log.w(TAG, "document:Save does not exists.");
-                    }
+                            } else {
+                                imageView.setImageResource(R.drawable.ic_save);
+                                imageView.setTag("save");
+                                // The document does not exist
+                                Log.w(TAG, "document:Save does not exists.");
+                            }
 
 
-                });
-        listenerRegistrations.put("isSavedSnapShot" + postId, listener);
+                        });
+        listenerRegistrations.put("user:isSavedSnapShot" + postId, listener);
     }
 
     public void addPost(String postId, @NonNull Task task, UploadCallback callback) {
@@ -814,7 +767,8 @@ public final class Data implements IData {
                                 for (DocumentSnapshot doc : value.getDocuments()) {
                                     mTask.add(doc.toObject(Task.class));
                                 }
-                                Collections.sort(mTask, new DateCompare());
+                                Collections.sort(mTask, new Comparing.DateCompare());
+
                                 Log.w(TAG, "document:Post exists.");
                                 // The document exists
                             } else {
@@ -824,7 +778,7 @@ public final class Data implements IData {
                             callback.onChange();
 
                         });
-        listenerRegistrations.put("currentAllPostSnapshot", listener);
+        listenerRegistrations.put("user:currentAllPostSnapshot", listener);
     }
 
     public void getAllComment(List<Comment> mComments, String postId, OnChangeCallback callback) {
@@ -846,9 +800,9 @@ public final class Data implements IData {
                                     String author = (String) ((Map<?, ?>) obj).get("author");
                                     String comment = (String) ((Map<?, ?>) obj).get("comment");
                                     String publish = (String) ((Map<?, ?>) obj).get("publish");
-                                    Comment commentObj = new Comment(commentId, postId, author, comment, publish);
+                                    String create = (String) ((Map<?, ?>) obj).get("create");
+                                    Comment commentObj = new Comment(commentId, postId, author, comment, publish, create);
                                     mComments.add(commentObj);
-
                                 }
                                 Log.w(TAG, "document:AllComment exists.");
                                 // The document exists
@@ -860,7 +814,7 @@ public final class Data implements IData {
                             }
                             callback.onChange();
                         });
-        listenerRegistrations.put("getAllCommentSnapShot" + postId, listener);
+        listenerRegistrations.put("user:getAllCommentSnapShot" + postId, listener);
     }
 
     public void addComment(String postId, @NonNull Comment comment, @NonNull final EditText newComment) {
@@ -900,7 +854,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Task deleted : " + postId + " Failed."));
     }
 
-    public void getCommentByPostId(final TextView likes, String postId) {
+    public void getCommentByPostId(final TextView comments, String postId) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 commentsCollectionRef
                         .document(postId)
@@ -910,69 +864,19 @@ public final class Data implements IData {
                                 return;
                             }
                             if (value != null && value.exists()) {
-                                likes.setText("View All " + Objects.requireNonNull(value.getData()).size() + " Comments");
+                                comments.setVisibility(View.VISIBLE);
+                                comments.setText("View All " + Objects.requireNonNull(value.getData()).size() + " Comments");
                                 Log.w(TAG, "document:CommentByPostId exists.");
                                 // The document exists
 
                             } else {
                                 // The document does not exist
-                                likes.setText("0" + " Comments");
+                                comments.setVisibility(View.GONE);
                                 Log.w(TAG, "document:CommentByPostId does not exists.");
 
                             }
                         });
-        listenerRegistrations.put("commentSnapShot" + postId, listener);
-    }
-
-    public void getAllChildrenIdSnapShot() {
-        ListenerRegistration listener =
-                childrenCollectionRef
-                        .document(getCurrentUserId())
-                        .addSnapshotListener((value, error) -> {
-                            if (error != null) {
-                                Log.w(TAG, "Listen failed.", error);
-                                return;
-                            }
-                            if (value != null && value.exists()) {
-                                children = value.getData();
-                                Log.w(TAG, "document:getAllChildren exists.");
-                                // The document exists
-                            } else {
-                                // The document does not exist
-                                Log.w(TAG, "document:getAllChildren does not exists.");
-                            }
-                        });
-        listenerRegistrations.put("currentAllChildrenIdSnapShot", listener);
-
-    }
-
-    public void getAllChildren(List<UserModel> mUser, OnChangeCallback callback) {
-
-        ListenerRegistration listener =
-                userCollectionRef
-                        .whereEqualTo("parentId", getCurrentUserId())
-//                        .whereIn("id", Arrays.asList( children.keySet().toArray()))
-                        .addSnapshotListener((value, error) -> {
-                            mUser.clear();
-                            if (error != null) {
-                                Log.w(TAG, "Listen failed.", error);
-                                return;
-                            }
-                            if (value != null && !value.isEmpty()) {
-                                for (DocumentSnapshot doc : value.getDocuments()) {
-                                    mUser.add(doc.toObject(User.class));
-                                }
-                                Log.w(TAG, "document:getAllChildren exists.");
-                                // The document exists
-                            } else {
-                                // The document does not exist
-                                Log.w(TAG, "document:getAllChildren does not exists.");
-                            }
-                            callback.onChange();
-
-                        });
-        listenerRegistrations.put("currentGetAllChildrenSnapShot", listener);
-
+        listenerRegistrations.put("user:commentSnapShot" + postId, listener);
     }
 
     //------------------------------- DestroyData ---------------------------------
@@ -988,9 +892,6 @@ public final class Data implements IData {
         this.following.clear();
         this.followers.clear();
         this.children.clear();
-        this.saved.clear();
-        this.posts.clear();
-        this.tasks.clear();
         this.listenerRegistrations.clear();
 
     }
@@ -1001,15 +902,22 @@ public final class Data implements IData {
         single_instance = null;
     }
 
+    public void destroyListener(String str) {
+
+        for (Iterator<Map.Entry<String, ListenerRegistration>> it = listenerRegistrations.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, ListenerRegistration> entry = it.next();
+            if (entry.getKey().split(":")[0].equals("Temporary" + str)) {
+                entry.getValue().remove();
+                it.remove();
+            }
+        }
+
+    }
 
     // ------------------------------ Getters -------------------------------------
 
     public Map<String, Object> getFollowing() {
         return following;
-    }
-
-    public Map<String, Object> getFollowers() {
-        return followers;
     }
 
     public boolean isMyChild(String profileId) {
@@ -1018,7 +926,7 @@ public final class Data implements IData {
 
     public void getAllSavedByUserId(String profileId, List<Task> mSave, OnChangeCallback callback) {
 
-        savedCollectionRef
+        ListenerRegistration mListener = savedCollectionRef
                 .whereEqualTo(profileId, true)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
@@ -1053,7 +961,7 @@ public final class Data implements IData {
                                             }
                                             callback.onChange();
                                         });
-                        listenerRegistrations.put("getAllSavedSnapshot" + profileId, listener);
+                        listenerRegistrations.put("Temporary:getAllSavedSnapshot" + profileId, listener);
 
                         Log.w(TAG, "document:Saved exists.");
                         // The document exists
@@ -1063,6 +971,7 @@ public final class Data implements IData {
                         Log.w(TAG, "document:Saved does not exists.");
                     }
                 });
+        listenerRegistrations.put("Temporary:getAllSavedByUserId" + profileId, mListener);
     }
 
     public void getAllTasksByUserId(String profileId, List<Task> mTasks, OnChangeCallback callback) {
@@ -1090,16 +999,22 @@ public final class Data implements IData {
                             }
                             callback.onChange();
                         });
-        listenerRegistrations.put("getAllTasksSnapshot" + profileId, listener);
+        listenerRegistrations.put("Temporary:getAllTasksSnapshot" + profileId, listener);
 
     }
-}
 
-//Class to compare Movies by name
-class DateCompare implements Comparator<Task> {
+    @NonNull
     @Override
-    public int compare(Task t1, Task t2) {
-        return t1.getCreated().compareTo(t2.getCreated());
+    public String toString() {
+        return "Data{" +
+                "\ncurrentUser=" + currentUser +
+                "\n following=" + following +
+                "\n followers=" + followers +
+                "\n children=" + children +
+                "\n listenerRegistrations=" + listenerRegistrations +
+                '}';
     }
 }
+
+
 

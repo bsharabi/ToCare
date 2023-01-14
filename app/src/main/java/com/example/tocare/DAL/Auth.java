@@ -10,14 +10,19 @@ import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.BLL.Listener.Callback;
 import com.example.tocare.BLL.Listener.FirebaseLoginCallback;
+
 import com.example.tocare.DAL.api.IAuth;
 import com.example.tocare.BLL.Listener.PhoneCallback;
+import com.example.tocare.UIL.phone.PhoneCodeFragment;
+
+import com.example.tocare.UIL.phone.PhoneSignupVerificationFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -29,15 +34,16 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.Task;
 
+
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public final class Auth implements IAuth {
 
     private static Auth single_instance = null;
+    private static AuthCredential credential;
     private static final String TAG = "LoginUser";
     private PhoneCallback phoneCallback;
-
 
     private final FirebaseAuth mAuth;
     private final PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -69,6 +75,19 @@ public final class Auth implements IAuth {
         return single_instance;
     }
 
+    public void createCredentialSignIn(String email, String password) {
+        credential = EmailAuthProvider.getCredential(email, password);
+    }
+
+    public void signInWithCredential(Callback callback) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful())
+                        callback.onSuccess(true, null);
+                }).addOnFailureListener(e ->
+                        callback.onSuccess(true, e)
+                );
+    }
     @Override
     public void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token, Activity activity) {
         PhoneAuthOptions options =
@@ -84,17 +103,24 @@ public final class Auth implements IAuth {
 
     @Override
     public void signInWithAuthCredential(PhoneAuthCredential credential, PhoneCallback phoneCallback) {
-        FirebaseAuth.getInstance().signInWithCredential(credential)
+        mAuth
+                .signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        if (Objects.requireNonNull(task.getResult().getAdditionalUserInfo()).isNewUser()) {
-                            phoneCallback.onCallback(false, new Exception("not registered"), task);
-                            Objects.requireNonNull(task.getResult().getUser()).delete();
-                        } else
+                        if (phoneCallback instanceof PhoneCodeFragment)
+                            if (Objects.requireNonNull(task.getResult().getAdditionalUserInfo()).isNewUser()) {
+                                phoneCallback.onCallback(false, new Exception("not registered"), task);
+                                Objects.requireNonNull(task.getResult().getUser()).delete();
+                            } else
+                                phoneCallback.onCallback(true, null, task);
+
+                        else if (phoneCallback instanceof PhoneSignupVerificationFragment) {
                             phoneCallback.onCallback(true, null, task);
+                        }
                     }
                 })
                 .addOnFailureListener(failure -> phoneCallback.onCallback(false, failure, null));
+
     }
 
     @Override
@@ -109,19 +135,20 @@ public final class Auth implements IAuth {
                 .signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        if(Objects.requireNonNull(task.getResult().getUser()).isEmailVerified())
-                            callback.onSuccess(true, null,task.getResult().getCredential());
-                        else {
+                        if (Objects.requireNonNull(task.getResult().getUser()).isEmailVerified()) {
+                            callback.onSuccess(true, null, EmailAuthProvider.getCredential(email, password));
+                        } else {
                             task.getResult().getUser().sendEmailVerification();
-                            callback.onSuccess(false, new Exception("not confirm"),null);
+                            callback.onSuccess(false, new Exception("not confirm"), null);
                         }
                     }
-                }).addOnFailureListener(e -> callback.onSuccess(false, e,null));
+                }).addOnFailureListener(e -> callback.onSuccess(false, e, null));
     }
 
     @Override
     public void createAccountWithEmail(String email, String password, UserModel userModel, Callback callback) {
-        mAuth.createUserWithEmailAndPassword(email, password)
+        mAuth
+                .createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Objects.requireNonNull(task.getResult().getUser()).sendEmailVerification();
@@ -199,7 +226,7 @@ public final class Auth implements IAuth {
     public void startPhoneNumberVerification(String phoneNumber, Activity activity, PhoneCallback callback) {
         phoneCallback = callback;
         PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
+                PhoneAuthOptions.newBuilder(mAuth)
                         .setPhoneNumber(phoneNumber)       // Phone number to verify
                         .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                         .setActivity(activity)                 // Activity (for callback binding)
@@ -274,5 +301,9 @@ public final class Auth implements IAuth {
                 });
 
 
+    }
+
+    public String getCurrentUserId() {
+        return Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
     }
 }

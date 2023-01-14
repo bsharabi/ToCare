@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.os.Bundle;
+
+import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 import com.example.tocare.UIL.Fragment.UsersFragment;
 
@@ -23,4 +25,10 @@ public class ManageUsersActivity extends AppCompatActivity {
     }
 
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Data.getInstance().destroyListener("2");
+    }
 }

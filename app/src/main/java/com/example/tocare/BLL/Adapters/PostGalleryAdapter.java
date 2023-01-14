@@ -42,7 +42,6 @@ public class PostGalleryAdapter extends RecyclerView.Adapter<PostGalleryAdapter.
         Task task = mPost.get(position);
         Picasso.get().load(task.getImagesUrl().get(0)).into(holder.image_profile);
 
-
     }
 
     @Override

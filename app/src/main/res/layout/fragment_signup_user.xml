@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UIL.signup.SignupUserFragment">
+    android:fitsSystemWindows="true"
+    tools:context=".UIL.signup.SignupChildFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -12,12 +13,12 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         android:padding="4dp"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -50,14 +51,14 @@
         app:layout_constraintHeight_percent="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_bar"
-        app:layout_constraintVertical_bias="0.095"
+        app:layout_constraintVertical_bias="0.015"
         app:layout_constraintWidth_percent="0.3" />
 
     <ImageView
         android:id="@+id/plus"
         android:layout_width="0dp"
-        android:contentDescription="@string/NullImage"
         android:layout_height="0dp"
+        android:contentDescription="@string/NullImage"
         android:src="@drawable/ic_add_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +66,7 @@
         app:layout_constraintHorizontal_bias="0.641"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.277"
+        app:layout_constraintVertical_bias="0.230"
         app:layout_constraintWidth_percent="0.07" />
 
 
@@ -73,12 +74,12 @@
         android:id="@+id/et_user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:autofillHints="username"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/username"
         android:inputType="text"
         android:padding="10dp"
-        android:autofillHints="username"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
@@ -88,18 +89,18 @@
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/im_profile"
-        app:layout_constraintVertical_bias="0.117"
+        app:layout_constraintVertical_bias="0.063"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
         android:id="@+id/et_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:autofillHints="name"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/name"
         android:inputType="text"
-        android:autofillHints="name"
         android:padding="10dp"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
@@ -116,8 +117,8 @@
     <EditText
         android:id="@+id/et_last_name"
         android:layout_width="0dp"
-        android:autofillHints="name"
         android:layout_height="wrap_content"
+        android:autofillHints="name"
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="16dp"
         android:hint="@string/last_name"
@@ -148,17 +149,17 @@
         app:ccp_showNameCode="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintHorizontal_bias="0.138"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.614"
+        app:layout_constraintTop_toBottomOf="@+id/et_name"
+        app:layout_constraintVertical_bias="0.045"
         app:layout_constraintWidth_percent=".295" />
 
     <EditText
         android:id="@+id/et_phone"
         android:layout_width="0dp"
-        android:autofillHints="phone"
         android:layout_height="wrap_content"
+        android:autofillHints="phone"
         android:drawableStart="@drawable/ic_baseline_phone_android_24"
         android:drawablePadding="16dp"
         android:hint="@string/phone"
@@ -170,10 +171,10 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.795"
+        app:layout_constraintHorizontal_bias="0.804"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.614"
+        app:layout_constraintTop_toBottomOf="@+id/et_last_name"
+        app:layout_constraintVertical_bias="0.044"
         app:layout_constraintWidth_percent=".5" />
 
     <Button
@@ -188,8 +189,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.702"
+        app:layout_constraintTop_toBottomOf="@+id/et_phone"
+        app:layout_constraintVertical_bias="0.062"
         app:layout_constraintWidth_percent=".8" />
 
 

@@ -1,9 +1,8 @@
 package com.example.tocare.BLL.Model;
 
-import android.annotation.SuppressLint;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +11,6 @@ public class Task {
 
     private String taskId, type, description;
     private String takenByUserId;
-    private String takenByUserName;
     private String status;
     private int priority;
     private String permission;
@@ -21,29 +19,33 @@ public class Task {
     private String done;
     private String author;
     private List<String> imagesUrl;
-    private Date created;
+    private List<String> imagesUrlFinish;
+    private String created;
+
 //---------------------------- Constructor ----------------------------------
 
-    public Task(String taskId, String type, String description, String status, int priority, String permission, String bid, String start, String done, String author, List<String> imagesUrl, Date created) {
-        this.taskId = taskId;
-        this.type = type;
-        this.description = description;
-        this.takenByUserId = "";
-        this.takenByUserName = "";
-        this.status = status;
-        this.priority = priority;
-        this.permission = permission;
-        this.bid = bid;
-        this.start = start;
-        this.done = done;
-        this.author = author;
-        this.imagesUrl = imagesUrl;
-        this.created = created;
+    public Task(String taskId, String type, String description, String takenByUserId, int priority, String permission, String bid, String start, String done, String author, List<String> imagesUrl, String created) {
+        setTaskId(taskId);
+        setType(type);
+        setDescription(description);
+        setTakenByUserId(takenByUserId);
+        setStatus((permission.equals("Public") || takenByUserId.equals("")) ? "Active" : "In Process");
+        setPriority(priority);
+        setPermission(permission);
+        setBid(bid);
+        setStart(start);
+        setDone(done);
+        setAuthor(author);
+        setImagesUrl(imagesUrl);
+        setCreated(created);
     }
 
     public Task() {
-        this.created = new Date();
-        this.imagesUrl=new ArrayList<>();
+
+        setCreated(new Date().toString());
+        setImagesUrl(new ArrayList<>());
+        setImagesUrlFinish(new ArrayList<>());
+
     }
 //---------------------------- Getter&&Setter -------------------------------
 
@@ -79,21 +81,21 @@ public class Task {
         this.takenByUserId = takenByUserId;
     }
 
-    public String getTakenByUserName() {
-        return takenByUserName;
-    }
-
-    public void setTakenByUserName(String takenByUserName) {
-        this.takenByUserName = takenByUserName;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
-        this.status=status;
+        this.status = status;
 
+    }
+
+    public List<String> getImagesUrlFinish() {
+        return imagesUrlFinish;
+    }
+
+    public void setImagesUrlFinish(List<String> imagesUrlFinish) {
+        this.imagesUrlFinish = imagesUrlFinish;
     }
 
     public int getPriority() {
@@ -152,11 +154,11 @@ public class Task {
         this.imagesUrl = imagesUrl;
     }
 
-    public Date getCreated() {
+    public String getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(String created) {
         this.created = created;
     }
 
@@ -167,6 +169,7 @@ public class Task {
     //---------------------------- Override --------------------------------------
 
 
+    @NonNull
     @Override
     public String toString() {
         return "Task{" +
@@ -174,16 +177,16 @@ public class Task {
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", takenByUserId='" + takenByUserId + '\'' +
-                ", takenByUserName='" + takenByUserName + '\'' +
                 ", status='" + status + '\'' +
-                ", priority=" + priority +
-                ", permission='" + permission + '\'' +
+                ", priority=" + getPriority() +
+                ", permission='" + getPermission() + '\'' +
                 ", bid='" + bid + '\'' +
-                ", start='" + start + '\'' +
-                ", done='" + done + '\'' +
+                ", start='" + getStart() + '\'' +
+                ", done='" + getDone() + '\'' +
                 ", author='" + author + '\'' +
                 ", imagesUrl=" + imagesUrl +
+                ", imagesUrlFinish=" + getImagesUrlFinish() +
                 ", created=" + created +
-                "}\n";
+                '}';
     }
 }

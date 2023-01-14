@@ -1,5 +1,6 @@
 package com.example.tocare.BLL.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -40,18 +41,19 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Vi
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         UserModel user = mUser.get(position);
 
-        if (user.getId().equals(localData.getCurrentUser().getId()))
+        if (user.getId().equals(localData.getCurrentUser().getId()) || localData.isMyChild(user.getId()))
             holder.tv_follow.setVisibility(View.GONE);
         else
             holder.tv_follow.setVisibility(View.VISIBLE);
 
         holder.tv_username.setText(user.getUserName());
-        holder.tv_full_name.setText(user.getFullName());
+        holder.tv_full_name.setText(user.getName()+" "+user.getLastName());
 
         Picasso.get().load(user.getImageUrl()).into(holder.profileImage);
 

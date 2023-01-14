@@ -42,7 +42,6 @@ public class SavedGalleryAdapter extends RecyclerView.Adapter<SavedGalleryAdapte
         Task task = mSaved.get(position);
         Picasso.get().load(task.getImagesUrl().get(0)).into(holder.image_profile);
 
-
     }
 
     @Override

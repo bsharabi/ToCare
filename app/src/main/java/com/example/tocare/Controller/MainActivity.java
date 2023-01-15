@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
             Log.d(TAG, "CurrentUser:null");
             reload(LoginActivity.class);
         }
+
+
+
         Observe myObserver = Observe.getInstance();
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

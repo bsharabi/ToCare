@@ -2,6 +2,7 @@ package com.example.tocare.BLL.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +15,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tocare.BLL.Model.Notification;
-import com.example.tocare.BLL.Model.User;
-import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 import com.example.tocare.UIL.Fragment.ProfileFragment;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.tocare.UIL.TaskDetailsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -34,13 +33,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public NotificationAdapter(Context mContext, List<Notification> mNotification) {
         this.mContext = mContext;
         this.mNotification = mNotification;
-        localData = Data.getInstance();
+        this.localData = Data.getInstance();
+
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.user_item_manage, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.notification_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -49,21 +49,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Notification note = mNotification.get(position);
-        UserModel user = new User();
 
-        String imageURL = user.getImageUrl();
-        Picasso.get().load(imageURL).into(holder.userImage);
+        localData.getUserById(note.getFromUserId(), (success, userModel) -> {
+            holder.username.setText(userModel.getUserName());
+            holder.fullName.setText(userModel.getName() + " " + userModel.getLastName());
+            Picasso.get().load(userModel.getImageUrl()).into(holder.userImage);
+            holder.userImage.setOnClickListener(v -> goToProfile(userModel.getId()));
+        });
 
-        holder.username.setText(user.getUserName());
-        holder.fullName.setText(user.getName() + " " + user.getLastName());
 
-
-        holder.itemView.setOnClickListener(v -> goToProfile(user.getId()));
-
-        holder.fullName.setOnClickListener(v -> goToProfile(user.getId()));
-
-        holder.username.setOnClickListener(v -> goToProfile(user.getId()));
-
+        holder.notificationMsg.setText(note.getMsg());
+        holder.itemView.setOnClickListener(v -> goToPost(note.getPostId()));
         holder.notificationMsg.setOnClickListener(v -> goToPost(note.getPostId()));
 
     }
@@ -76,24 +72,23 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     private void goToProfile(String userId) {
         SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
         editor.putString("profileId", userId);
-        editor.putBoolean("fromManage", true);
+        editor.putBoolean("fromManage", false);
         editor.apply();
-        ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_manage, new ProfileFragment()).commit();
+        ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
     }
 
-    private void goToPost(String userId) {
-        SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();
-        editor.putString("profileId", userId);
-        editor.putBoolean("fromManage", true);
+    private void goToPost(String postId) {
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit();
+        editor.putString("postId", postId);
         editor.apply();
-        ((FragmentActivity) mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_manage, new ProfileFragment()).commit();
+        Intent intent = new Intent(mContext, TaskDetailsActivity.class);
+        mContext.startActivity(intent);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView userImage;
         private final TextView username, fullName, notificationMsg;
-
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -12,14 +12,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.tocare.BLL.Listener.Callback;
+import com.example.tocare.BLL.Listener.CallbackNotification;
 import com.example.tocare.BLL.Listener.OnChangeCallback;
 import com.example.tocare.BLL.Listener.SearchCallback;
 import com.example.tocare.BLL.Listener.TaskCallback;
 import com.example.tocare.BLL.Listener.UploadCallback;
 import com.example.tocare.BLL.Listener.UserCallback;
+import com.example.tocare.BLL.Model.Admin;
 import com.example.tocare.BLL.Model.Comment;
 
 import com.example.tocare.BLL.Model.Comparing;
+import com.example.tocare.BLL.Model.Notification;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.BLL.Model.User;
 import com.example.tocare.BLL.Model.UserModel;
@@ -41,6 +44,8 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +64,7 @@ public final class Data implements IData {
     private Map<String, Object> following;
     private Map<String, Object> followers;
     private Map<String, Object> children;
+    private final List<Notification> notifications;
     private final Map<String, ListenerRegistration> listenerRegistrations;
 
     private final FirebaseFirestore db;
@@ -72,12 +78,13 @@ public final class Data implements IData {
     private final CollectionReference postCollectionRef;
     private final CollectionReference savedCollectionRef;
     private final CollectionReference likesCollectionRef;
+    private final CollectionReference notificationCollectionRef;
 
     private Data() {
         this.following = new HashMap<>();
         this.followers = new HashMap<>();
         this.children = new HashMap<>();
-
+        this.notifications = new ArrayList<>();
 
         this.listenerRegistrations = new HashMap<>();
 
@@ -94,6 +101,7 @@ public final class Data implements IData {
         savedCollectionRef = db.collection("Saved");
         commentsCollectionRef = db.collection("Comments");
         likesCollectionRef = db.collection("Likes");
+        notificationCollectionRef = db.collection("Notification");
 
     }
 
@@ -122,6 +130,7 @@ public final class Data implements IData {
     public void updateUserUI(Callback callback) {
         getAllFollowingSnapShot();
         getAllFollowersSnapShot();
+        getAllNotificationSnapShot();
         getAllChildrenIdSnapShot();
         getAllFollowing(callback);
         ListenerRegistration listener =
@@ -135,6 +144,11 @@ public final class Data implements IData {
                             }
                             if (value != null && value.exists()) {
                                 currentUser = value.toObject(UserModel.class);
+                                if (currentUser != null && currentUser.isAdmin())
+                                    currentUser = value.toObject(Admin.class);
+                                else
+                                    currentUser = value.toObject(User.class);
+
                                 callback.onCallback(true, null, firebaseUser);
                                 Log.d(TAG, "DocumentReferenceCurrentUser:success");
                                 Log.w(TAG, "document:updateUserUI exists.");
@@ -199,6 +213,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void getAllFollowingByUserId(String userId, final TextView following) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 followingCollectionRef
@@ -223,6 +238,7 @@ public final class Data implements IData {
         listenerRegistrations.put("Temporary:getAllFollowingByUserId" + userId, listener);
     }
 
+    @Override
     public void getAllFollowersByUserId(String userId, final TextView followers) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 followersCollectionRef
@@ -313,6 +329,63 @@ public final class Data implements IData {
 
     }
 
+    private void getAllNotificationSnapShot() {
+        ListenerRegistration listener =
+                notificationCollectionRef
+                        .whereEqualTo("toUserId", getCurrentUserId())
+                        .addSnapshotListener((value, error) -> {
+                            notifications.clear();
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                return;
+                            }
+                            if (value != null && !value.isEmpty()) {
+                                for (DocumentSnapshot doc : value.getDocuments()) {
+                                    notifications.add(doc.toObject(Notification.class));
+                                }
+
+                                Log.w(TAG, "document:getAllChildren exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllChildren does not exists.");
+                            }
+                        });
+        listenerRegistrations.put("user:getAllNotificationSnapShot", listener);
+
+    }
+
+    @Override
+    public void getAllNotification(List<Notification> mNotification, CallbackNotification callback) {
+        ListenerRegistration listener =
+                notificationCollectionRef
+                        .whereEqualTo("toUserId", getCurrentUserId())
+                        .addSnapshotListener((value, error) -> {
+                            mNotification.clear();
+                            if (error != null) {
+                                Log.w(TAG, "Listen failed.", error);
+                                callback.onSuccess(false, error);
+                                return;
+                            }
+                            if (value != null && !value.isEmpty()) {
+
+                                for (DocumentSnapshot doc : value.getDocuments()) {
+                                    mNotification.add(doc.toObject(Notification.class));
+                                }
+                                System.out.println(mNotification);
+                                Log.w(TAG, "document:getAllNotification exists.");
+                                // The document exists
+                            } else {
+                                // The document does not exist
+                                Log.w(TAG, "document:getAllNotification does not exists.");
+                            }
+                            callback.onSuccess(true, null);
+                        });
+        listenerRegistrations.put("Temporary2:getAllNotificationSnapShot", listener);
+
+    }
+
+    @Override
     public void getAllChildren(List<User> mUser, OnChangeCallback callback) {
 
         ListenerRegistration listener =
@@ -341,6 +414,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void getAllFollowingUser(List<UserModel> mUser, List<String> mFollowingId, OnChangeCallback callback) {
         System.out.println(mFollowingId);
         if (mFollowingId.isEmpty())
@@ -371,6 +445,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void getAllFollowersUser(List<UserModel> mUser, List<String> mFollowersId, OnChangeCallback callback) {
         System.out.println(mFollowersId);
         if (mFollowersId.isEmpty())
@@ -401,6 +476,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void getAllFollowingIdByUserId(String userId, List<String> mFollowingId, OnChangeCallback callback) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 followingCollectionRef
@@ -427,6 +503,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void getAllFollowersIdByUserId(String userId, List<String> mFollowersId, OnChangeCallback callback) {
 
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
@@ -454,6 +531,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void updateUserById(String userId, Map<String, Object> user, OnChangeCallback callback) {
         userCollectionRef
                 .document(userId)
@@ -471,7 +549,7 @@ public final class Data implements IData {
 
     }
 
-    @Override
+
     public UserModel getCurrentUser() {
         return currentUser;
     }
@@ -481,6 +559,7 @@ public final class Data implements IData {
         return firebaseUser.getUid();
     }
 
+    @Override
     public void getUserById(String userID, UserCallback callback) {
         userCollectionRef.document(userID).get()
                 .addOnCompleteListener(task -> {
@@ -491,6 +570,7 @@ public final class Data implements IData {
                 }).addOnFailureListener(e -> callback.result(false, null));
     }
 
+    @Override
     public void addChildren(FirebaseCallback callback, String newUserId) {
         childrenCollectionRef
                 .document(getCurrentUserId())
@@ -506,6 +586,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void uploadImageProfile(Uri ImageUri, String uriFileExtension, String userId, UploadCallback callback) {
         if (ImageUri != null) {
 
@@ -533,6 +614,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void uploadImage(Uri ImageUri, String uriFileExtension, String postId, UploadCallback callback) {
         if (ImageUri != null) {
 
@@ -565,6 +647,7 @@ public final class Data implements IData {
         return db.collection(collectionName).document().getId();
     }
 
+    @Override
     public void searchUsers(String search, List<UserModel> list, SearchCallback callback) {
 
         ListenerRegistration listener = userCollectionRef.addSnapshotListener((value, error) -> {
@@ -593,6 +676,7 @@ public final class Data implements IData {
         listenerRegistrations.put("Temporary:search", listener);
     }
 
+    @Override
     public void addFollow(String followUser, final TextView textView) {
         followingCollectionRef
                 .document(firebaseUser.getUid())
@@ -611,6 +695,7 @@ public final class Data implements IData {
                 .addOnFailureListener(e -> textView.setText(R.string.Follow));
     }
 
+    @Override
     public void deleteFollow(String followUser, final TextView textView) {
         followingCollectionRef
                 .document(firebaseUser.getUid())
@@ -629,6 +714,7 @@ public final class Data implements IData {
                 .addOnFailureListener(e -> textView.setText(R.string.Following));
     }
 
+    @Override
     public void getAllPostsByUserId(String userId, final List<Task> mTask, final TextView posts, OnChangeCallback callback) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 postCollectionRef
@@ -641,7 +727,11 @@ public final class Data implements IData {
                             }
                             if (value != null && !value.isEmpty()) {
                                 for (DocumentSnapshot doc : value.getDocuments()) {
-                                    mTask.add(doc.toObject(Task.class));
+                                    if (Objects.equals(Objects.requireNonNull(doc.getData()).get("permission"), "Private") &&
+                                            Objects.equals(doc.getData().get("author"), getCurrentUserId()))
+                                        mTask.add(doc.toObject(Task.class));
+                                    else if (Objects.equals(doc.getData().get("permission"), "Public"))
+                                        mTask.add(doc.toObject(Task.class));
                                 }
                                 Collections.reverse(mTask);
                                 posts.setText(value.size() + "");
@@ -658,6 +748,7 @@ public final class Data implements IData {
         listenerRegistrations.put("Temporary:AllPostSnapshot" + userId, listener);
     }
 
+    @Override
     public void addSavedItem(String postId) {
         savedCollectionRef
                 .document(postId)
@@ -671,6 +762,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Save Item : " + postId + " Failed."));
     }
 
+    @Override
     public void deleteSavedItem(String postId) {
         savedCollectionRef
                 .document(postId)
@@ -684,6 +776,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Delete Item : " + postId + " Failed."));
     }
 
+    @Override
     public void takeATaskByUser(String postId, Map<String, Object> data) {
         postCollectionRef
                 .document(postId)
@@ -696,6 +789,7 @@ public final class Data implements IData {
                 .addOnFailureListener(e -> Log.w(TAG, "user" + data + " take : " + postId + " Failed."));
     }
 
+    @Override
     public void addLikeToPost(String postId) {
         likesCollectionRef
                 .document(postId)
@@ -709,6 +803,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Task add : " + postId + " Failed."));
     }
 
+    @Override
     public void deleteLikeFromPost(String postId) {
         likesCollectionRef
                 .document(postId)
@@ -722,11 +817,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Task deleted : " + postId + " Failed."));
     }
 
-
-    /**
-     * @param likes  this is
-     * @param postId this is
-     */
+    @Override
     public void getLikeByPostId(final TextView likes, String postId) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 likesCollectionRef
@@ -751,10 +842,7 @@ public final class Data implements IData {
         listenerRegistrations.put("user:likeSnapShot" + postId, listener);
     }
 
-    /**
-     * @param imageView this is
-     * @param postId    this is
-     */
+    @Override
     public void isLiked(final ImageView imageView, String postId) {
         ListenerRegistration listener =
                 likesCollectionRef
@@ -785,10 +873,7 @@ public final class Data implements IData {
         listenerRegistrations.put("user:isLikedSnapShot" + postId, listener);
     }
 
-    /**
-     * @param imageView this is
-     * @param postId    this is
-     */
+    @Override
     public void isSaved(final ImageView imageView, String postId) {
         ListenerRegistration listener =
                 savedCollectionRef.document(postId)
@@ -820,6 +905,7 @@ public final class Data implements IData {
         listenerRegistrations.put("user:isSavedSnapShot" + postId, listener);
     }
 
+    @Override
     public void addPost(String postId, @NonNull Task task, UploadCallback callback) {
         postCollectionRef
                 .document(postId)
@@ -836,6 +922,20 @@ public final class Data implements IData {
                 });
     }
 
+    @Override
+    public void addNotification(@NonNull Notification notification) {
+        notificationCollectionRef
+                .document(notification.getNotificationId())
+                .set(notification)
+                .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.w(TAG, "Notification added : " + notification.getNotificationId() + " Success.");
+                            }
+                        }
+                ).addOnFailureListener(e -> Log.w(TAG, "Notification add : " + notification.getNotificationId() + " Failed."));
+    }
+
+    @Override
     public void deletePost(String postId) {
         postCollectionRef
                 .document(postId)
@@ -849,6 +949,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
     }
 
+    @Override
     public void deleteAllLike(String postId) {
         likesCollectionRef
                 .document(postId)
@@ -862,6 +963,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
     }
 
+    @Override
     public void deleteAllComment(String postId) {
         commentsCollectionRef
                 .document(postId)
@@ -877,6 +979,7 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void deleteAllSaved(String postId) {
         savedCollectionRef
                 .document(postId)
@@ -889,6 +992,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Delete Post: " + postId + " Failed."));
     }
 
+    @Override
     public void getAllPost(List<Task> mTask, OnChangeCallback callback) {
         ListenerRegistration listener =
                 postCollectionRef
@@ -901,10 +1005,19 @@ public final class Data implements IData {
                             }
                             if (value != null && !value.isEmpty()) {
                                 for (DocumentSnapshot doc : value.getDocuments()) {
-                                    mTask.add(doc.toObject(Task.class));
+                                    Task task = doc.toObject(Task.class);
+                                    if (task != null) {
+                                        if (currentUser.isAdmin()) {
+                                            if (task.getPermission().equals("Public") || task.getAuthor().equals(getCurrentUserId()) || children.containsKey(task.getAuthor()))
+                                                mTask.add(doc.toObject(Task.class));
+                                        } else {
+                                            if (task.getPermission().equals("Public")) {
+                                                mTask.add(doc.toObject(Task.class));
+                                            }
+                                        }
+                                    }
                                 }
                                 Collections.sort(mTask, new Comparing.DateCompare());
-
                                 Log.w(TAG, "document:Post exists.");
                                 // The document exists
                             } else {
@@ -917,6 +1030,7 @@ public final class Data implements IData {
         listenerRegistrations.put("user:currentAllPostSnapshot", listener);
     }
 
+    @Override
     public void getAllComment(List<Comment> mComments, String postId, OnChangeCallback callback) {
 
         ListenerRegistration listener =
@@ -953,6 +1067,7 @@ public final class Data implements IData {
         listenerRegistrations.put("user:getAllCommentSnapShot" + postId, listener);
     }
 
+    @Override
     public void addComment(String postId, @NonNull Comment comment, @NonNull final EditText newComment) {
         String key = commentsCollectionRef.document().getId();
         newComment.setEnabled(false);
@@ -964,9 +1079,9 @@ public final class Data implements IData {
                 }}, SetOptions.merge())
                 .addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
-                                Log.w(TAG, "Comment added : " + postId + " Success.");
                                 newComment.setText("");
                                 newComment.setEnabled(true);
+                                Log.w(TAG, "Comment added : " + postId + " Success.");
                             }
                         }
                 ).addOnFailureListener(e -> {
@@ -975,6 +1090,7 @@ public final class Data implements IData {
                 });
     }
 
+    @Override
     public void deleteComment(String postId, String commentId) {
         commentsCollectionRef
                 .document(postId)
@@ -990,6 +1106,7 @@ public final class Data implements IData {
                 ).addOnFailureListener(e -> Log.w(TAG, "Task deleted : " + postId + " Failed."));
     }
 
+    @Override
     public void getCommentByPostId(final TextView comments, String postId) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 commentsCollectionRef
@@ -1024,6 +1141,7 @@ public final class Data implements IData {
         FirebaseAuth.getInstance().signOut();
     }
 
+    @Override
     public void destroyData() {
         this.following.clear();
         this.followers.clear();
@@ -1032,12 +1150,14 @@ public final class Data implements IData {
 
     }
 
+    @Override
     public void destroy() {
         destroyListenerRegistration();
         destroyData();
         single_instance = null;
     }
 
+    @Override
     public void destroyListener(String str) {
 
         for (Iterator<Map.Entry<String, ListenerRegistration>> it = listenerRegistrations.entrySet().iterator(); it.hasNext(); ) {
@@ -1060,6 +1180,7 @@ public final class Data implements IData {
         return children.containsKey(profileId);
     }
 
+    @Override
     public void getAllSavedByUserId(String profileId, List<Task> mSave, OnChangeCallback callback) {
 
         ListenerRegistration mListener = savedCollectionRef
@@ -1110,6 +1231,7 @@ public final class Data implements IData {
         listenerRegistrations.put("Temporary:getAllSavedByUserId" + profileId, mListener);
     }
 
+    @Override
     public void getAllTasksByUserId(String profileId, List<Task> mTasks, OnChangeCallback callback) {
         @SuppressLint("SetTextI18n") ListenerRegistration listener =
                 postCollectionRef
@@ -1140,18 +1262,20 @@ public final class Data implements IData {
     }
 
     @NonNull
+    @Contract(pure = true)
     @Override
     public String toString() {
         return "Data{" +
-                "\ncurrentUser=" + currentUser +
-                "\n following=" + following +
-                "\n followers=" + followers +
-                "\n children=" + children +
-                "\n listenerRegistrations=" + listenerRegistrations +
+                "currentUser=" + currentUser +
+                ", following=" + following +
+                ", followers=" + followers +
+                ", children=" + children +
+                ", notifications=" + notifications +
+                ", listenerRegistrations=" + listenerRegistrations +
                 '}';
     }
 
-
+    @Override
     public void getPostById(String postId, TaskCallback callback) {
 
         ListenerRegistration listener = postCollectionRef.document(postId)

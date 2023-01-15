@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.example.tocare.BLL.Model.Message;
+import com.example.tocare.BLL.Model.Notification;
 import com.example.tocare.BLL.Model.Task;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
@@ -34,7 +36,7 @@ import java.util.HashMap;
 public class TaskDetailsFragment extends Fragment {
 
     private ImageView image_profile, post_image, like, comment, save, delete, statusLamp, btTask, currentUserImage;
-    private TextView username, count_likes, description, publisher, comments, userTake, statusText, timeAgo, newComment;
+    private TextView username, count_likes, description, publisher, comments, userTake, statusText, timeAgo, newComment, edit, cancel, done;
     private ViewFlipper viewFlipper;
     private Data localData;
 
@@ -84,6 +86,9 @@ public class TaskDetailsFragment extends Fragment {
         statusText = view.findViewById(R.id.status_text);
         timeAgo = view.findViewById(R.id.time_ago);
         newComment = view.findViewById(R.id.add_a_comment);
+        edit = view.findViewById(R.id.bt_Edit);
+        cancel = view.findViewById(R.id.bt_cancel);
+        done = view.findViewById(R.id.bt_done);
 
 
         return view;
@@ -133,6 +138,8 @@ public class TaskDetailsFragment extends Fragment {
         like.setOnClickListener(v -> {
             if (like.getTag().equals("like")) {
                 localData.addLikeToPost(task.getTaskId());
+                addNotification("addLike", task.getTaskId(),
+                        Message.like, task.getAuthor());
             } else {
                 localData.deleteLikeFromPost(task.getTaskId());
             }
@@ -146,8 +153,18 @@ public class TaskDetailsFragment extends Fragment {
         currentUserImage.setOnClickListener(v -> goToProfile(localData.getCurrentUserId()));
 
         timeAgo.setText(task.getCreated());
+        if(task.getTakenByUserId().equals(localData.getCurrentUserId())){
+            cancel.setVisibility(View.VISIBLE);
+            done.setVisibility(View.VISIBLE);
+        }
+
 
         if (task.getAuthor().equals(localData.getCurrentUserId())) {
+
+            cancel.setVisibility(View.VISIBLE);
+            edit.setVisibility(View.VISIBLE);
+            done.setVisibility(View.VISIBLE);
+
             delete.setVisibility(View.VISIBLE);
             btTask.setVisibility(View.GONE);
             save.setVisibility(View.GONE);
@@ -162,6 +179,8 @@ public class TaskDetailsFragment extends Fragment {
             save.setOnClickListener(v -> {
                 if (save.getTag().equals("save")) {
                     localData.addSavedItem(task.getTaskId());
+                    addNotification("addSave", task.getTaskId(),
+                            Message.save, task.getAuthor());
                 } else {
                     localData.deleteSavedItem(task.getTaskId());
                 }
@@ -203,12 +222,15 @@ public class TaskDetailsFragment extends Fragment {
                     new MaterialAlertDialogBuilder(requireContext())
                             .setTitle("Performing a task")
                             .setMessage("Do you want to take the task in exchange for " + task.getBid() + " coins?")
-                            .setPositiveButton("Continue", (dialogInterface, i) ->
-                                    localData.takeATaskByUser(task.getTaskId(), new HashMap<String, Object>() {{
-                                        put("takenByUserName", localData.getCurrentUser().getName() + " " + localData.getCurrentUser().getLastName());
-                                        put("takenByUserId", localData.getCurrentUserId());
-                                        put("status", "In Process");
-                                    }}))
+                            .setPositiveButton("Continue", (dialogInterface, i) -> {
+                                localData.takeATaskByUser(task.getTaskId(), new HashMap<String, Object>() {{
+                                    put("takenByUserName", localData.getCurrentUser().getName() + " " + localData.getCurrentUser().getLastName());
+                                    put("takenByUserId", localData.getCurrentUserId());
+                                    put("status", "In Process");
+                                }});
+                                addNotification("takeTask", task.getTaskId(),
+                                        Message.getTask, task.getAuthor());
+                            })
                             .setNegativeButton("Cancel", (dialogInterface, i) -> {
                             })
                             .show());
@@ -219,6 +241,19 @@ public class TaskDetailsFragment extends Fragment {
         localData.getCommentByPostId(comments, task.getTaskId());
     }
 
+    private void addNotification(String type, String postId, String msg, String author) {
+
+        String notificationId = localData.getRandomIdByCollectionName("Notification");
+        localData.addNotification(new Notification(
+                notificationId,
+                type,
+                postId,
+                msg,
+                false,
+                "",
+                localData.getCurrentUserId(),
+                author));
+    }
 
     private void goToProfile(String userId) {
         SharedPreferences.Editor editor = requireContext().getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit();

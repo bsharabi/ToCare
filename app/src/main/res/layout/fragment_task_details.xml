@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         android:padding="2dp"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintVertical_bias="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_task"
@@ -35,7 +35,6 @@
         android:id="@+id/image_profile"
         android:layout_width="0dp"
         android:layout_height="0sp"
-        app:layout_constraintVertical_bias="0.01"
         android:layout_marginTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,12 +42,12 @@
         app:layout_constraintHorizontal_bias="0.029"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_bar"
+        app:layout_constraintVertical_bias="0.01"
 
         app:layout_constraintWidth_percent="0.1" />
 
     <TextView
         android:id="@+id/username"
-        android:text="@string/barak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -85,7 +84,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="17dp"
         android:tag="Active"
-        android:text="Active"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="14sp"
         android:textStyle="bold"
@@ -250,7 +248,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/publisher"
         app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintWidth_percent="0.8" />
+        app:layout_constraintWidth_percent="0.65" />
 
     <TextView
         android:id="@+id/comments"
@@ -306,5 +304,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/current_image_profile"
         app:layout_constraintVertical_bias="0.236" />
+
+    <TextView
+        android:id="@+id/bt_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/done"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintStart_toEndOf="@+id/description"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_name_take"
+        app:layout_constraintVertical_bias="0.2" />
+
+    <TextView
+        android:id="@+id/bt_Edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.431"
+        app:layout_constraintStart_toEndOf="@+id/description"
+        app:layout_constraintTop_toBottomOf="@+id/bt_cancel"
+        app:layout_constraintVertical_bias="0.179" />
+
+    <TextView
+        android:id="@+id/bt_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.577"
+        app:layout_constraintStart_toEndOf="@+id/description"
+        app:layout_constraintTop_toBottomOf="@+id/bt_done"
+        app:layout_constraintVertical_bias="0.086" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

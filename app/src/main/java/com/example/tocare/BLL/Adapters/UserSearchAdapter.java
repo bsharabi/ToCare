@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tocare.BLL.Model.Message;
+import com.example.tocare.BLL.Model.Notification;
 import com.example.tocare.BLL.Model.UserModel;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
@@ -69,13 +71,27 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Vi
         holder.tv_follow.setOnClickListener(v -> {
             if (holder.tv_follow.getText().toString().equals("Follow")) {
                 localData.addFollow(user.getId(), holder.tv_follow);
+                addNotification(
+                        localData.getCurrentUser().getUserName()+ Message.getFollow, user.getId());
             } else {
                 localData.deleteFollow(user.getId(), holder.tv_follow);
             }
         });
 
     }
+    private void addNotification(String msg, String author) {
 
+        String notificationId = localData.getRandomIdByCollectionName("Notification");
+        localData.addNotification(new Notification(
+                notificationId,
+                "addFollow",
+                "",
+                msg,
+                false,
+                "",
+                localData.getCurrentUserId(),
+                author));
+    }
     @Override
     public int getItemCount() {
         return mUser.size();

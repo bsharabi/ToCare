@@ -1,5 +1,7 @@
 package com.example.tocare.BLL.Model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class UserModel implements Serializable {
@@ -14,14 +16,17 @@ public class UserModel implements Serializable {
     //---------------------------- Constructor ----------------------------------
 
     public UserModel(String id, String userName, String name, String lastName, String phone, String bio, String imageUrl, boolean isAdmin) {
-        this.id = id;
-        this.userName = userName;
-        this.name = name;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.bio = bio;
-        this.imageUrl = imageUrl;
-        this.isAdmin = isAdmin;
+        setId(id);
+        setUserName(userName);
+        setName(name);
+        setLastName(lastName);
+        setPhone(phone);
+        setBio(bio);
+        setImageUrl(imageUrl);
+        setAdmin(isAdmin);
+        setCodePhone("+972");
+        setBirthday("00/00/00");
+        setCountry("Israel");
 
     }
 
@@ -127,6 +132,7 @@ public class UserModel implements Serializable {
     //---------------------------- Override --------------------------------------
 
 
+    @NonNull
     @Override
     public String toString() {
         return "UserModel{" +
@@ -138,9 +144,9 @@ public class UserModel implements Serializable {
                 ", bio='" + bio + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", isAdmin=" + isAdmin +
-                ", birthday='" + birthday + '\'' +
-                ", country='" + country + '\'' +
-                ", codePhone='" + codePhone + '\'' +
+                ", birthday='" + getBirthday() + '\'' +
+                ", country='" + getCountry() + '\'' +
+                ", codePhone='" + getCodePhone() + '\'' +
                 '}';
     }
 }

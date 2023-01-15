@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tocare.BLL.Model.Message;
+import com.example.tocare.BLL.Model.Notification;
 import com.example.tocare.BLL.Model.Task;
 
 import com.example.tocare.DAL.Data;
@@ -88,7 +90,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         holder.details.setOnClickListener(v -> {
-
             SharedPreferences.Editor editor = mContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit();
             editor.putString("postId", task.getTaskId());
             editor.apply();
@@ -107,10 +108,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.username.setOnClickListener(v -> goToProfile(task.getAuthor()));
 
         holder.image_profile.setOnClickListener(v -> goToProfile(task.getAuthor()));
-
         holder.like.setOnClickListener(v -> {
             if (holder.like.getTag().equals("like")) {
                 localData.addLikeToPost(task.getTaskId());
+                addNotification("addLike", task.getTaskId(),
+                        Message.like, task.getAuthor());
             } else {
                 localData.deleteLikeFromPost(task.getTaskId());
             }
@@ -140,6 +142,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             holder.save.setOnClickListener(v -> {
                 if (holder.save.getTag().equals("save")) {
                     localData.addSavedItem(task.getTaskId());
+                    addNotification("addSave", task.getTaskId(),
+                            Message.save, task.getAuthor());
                 } else {
                     localData.deleteSavedItem(task.getTaskId());
                 }
@@ -181,12 +185,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     new MaterialAlertDialogBuilder(mContext)
                             .setTitle("Performing a task")
                             .setMessage("Do you want to take the task in exchange for " + task.getBid() + " coins?")
-                            .setPositiveButton("Continue", (dialogInterface, i) ->
-                                    localData.takeATaskByUser(task.getTaskId(), new HashMap<String, Object>() {{
-                                        put("takenByUserName", localData.getCurrentUser().getName() + " " + localData.getCurrentUser().getLastName());
-                                        put("takenByUserId", localData.getCurrentUserId());
-                                        put("status", "In Process");
-                                    }}))
+                            .setPositiveButton("Continue", (dialogInterface, i) -> {
+                                localData.takeATaskByUser(task.getTaskId(), new HashMap<String, Object>() {{
+                                            put("takenByUserId", localData.getCurrentUserId());
+                                            put("status", "In Process");
+                                        }}
+                                );
+                                addNotification("takeTask", task.getTaskId(),
+                                        Message.getTask, task.getAuthor());
+                            })
                             .setNegativeButton("Cancel", (dialogInterface, i) -> {
                             })
                             .show());
@@ -196,6 +203,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         localData.isSaved(holder.save, task.getTaskId());
         localData.getCommentByPostId(holder.comments, task.getTaskId());
 
+    }
+
+    private void addNotification(String type, String postId, String msg, String author) {
+
+        String notificationId = localData.getRandomIdByCollectionName("Notification");
+        localData.addNotification(new Notification(
+                notificationId,
+                type,
+                postId,
+                msg,
+                false,
+                "",
+                localData.getCurrentUserId(),
+                author));
     }
 
     private void goToProfile(String userId) {
@@ -221,7 +242,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView image_profile, post_image, like, comment, save, delete, statusLamp, btTask, currentUserImage;
-        private final TextView username, count_likes, description, publisher, comments, userTake, statusText, timeAgo, newComment,details;
+        private final TextView username, count_likes, description, publisher, comments, userTake, statusText, timeAgo, newComment, details;
         private final ViewFlipper viewFlipper;
 
 

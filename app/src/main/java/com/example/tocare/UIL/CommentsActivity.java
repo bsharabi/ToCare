@@ -18,6 +18,8 @@ import android.widget.Toast;
 import com.example.tocare.BLL.Adapters.CommentsAdapter;
 
 import com.example.tocare.BLL.Model.Comment;
+import com.example.tocare.BLL.Model.Message;
+import com.example.tocare.BLL.Model.Notification;
 import com.example.tocare.DAL.Data;
 import com.example.tocare.R;
 import com.squareup.picasso.Picasso;
@@ -84,6 +86,8 @@ public class CommentsActivity extends AppCompatActivity {
                         newComment.getText().toString().trim(),
                         publishId);
                 localData.addComment(postId, comments, newComment);
+                addNotification(comments.getPostId(), comments.getPublish());
+
             }
 
         });
@@ -91,4 +95,17 @@ public class CommentsActivity extends AppCompatActivity {
         localData.getAllComment(mComment, postId, () -> adapter.notifyDataSetChanged());
     }
 
+    private void addNotification(String postId, String author) {
+
+        String notificationId = localData.getRandomIdByCollectionName("Notification");
+        localData.addNotification(new Notification(
+                notificationId,
+                "addComment",
+                postId,
+                Message.comments,
+                false,
+                "",
+                localData.getCurrentUserId(),
+                author));
+    }
 }

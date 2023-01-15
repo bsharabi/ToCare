@@ -54,7 +54,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
         holder.comment.setText(comment.getComment());
 
-
         localData.getUserById(comment.getAuthor(), (success, userModel) -> {
             if (success) {
                 holder.username.setText(userModel.getUserName());

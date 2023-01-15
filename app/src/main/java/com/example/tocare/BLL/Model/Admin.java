@@ -1,5 +1,7 @@
 package com.example.tocare.BLL.Model;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 import java.util.List;
@@ -19,6 +21,7 @@ public class Admin extends UserModel {
 //---------------------------- Getter&&Setter -------------------------------
 
 
+    @NonNull
     @Override
     public String toString() {
         return "Admin{" +

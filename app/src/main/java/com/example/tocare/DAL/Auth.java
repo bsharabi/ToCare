@@ -75,10 +75,12 @@ public final class Auth implements IAuth {
         return single_instance;
     }
 
+    @Override
     public void createCredentialSignIn(String email, String password) {
         credential = EmailAuthProvider.getCredential(email, password);
     }
 
+    @Override
     public void signInWithCredential(Callback callback) {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
@@ -88,6 +90,7 @@ public final class Auth implements IAuth {
                         callback.onSuccess(true, e)
                 );
     }
+
     @Override
     public void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token, Activity activity) {
         PhoneAuthOptions options =
@@ -254,6 +257,7 @@ public final class Auth implements IAuth {
         });
     }
 
+    @Override
     public void createUserData(@NonNull FirebaseUser firebaseUser, UserModel userModel, Callback callback) {
         DocumentReference reference = FirebaseFirestore.getInstance().collection("User")
                 .document(firebaseUser.getUid());
@@ -286,6 +290,7 @@ public final class Auth implements IAuth {
         }
     }
 
+    @Override
     public void sendPasswordResetEmail(String email, Callback callback) {
 
         mAuth

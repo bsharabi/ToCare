@@ -212,6 +212,5 @@ public class ProfileFragment extends Fragment implements UserCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
     }
 }

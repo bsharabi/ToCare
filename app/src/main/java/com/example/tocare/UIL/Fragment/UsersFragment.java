@@ -80,6 +80,6 @@ public class UsersFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        localData.destroyListener("");
+//        localData.destroyListener("");
     }
 }

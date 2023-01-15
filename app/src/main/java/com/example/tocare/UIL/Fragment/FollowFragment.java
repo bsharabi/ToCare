@@ -119,6 +119,6 @@ public class FollowFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        localData.destroyListener("2");
+//        localData.destroyListener("2");
     }
 }

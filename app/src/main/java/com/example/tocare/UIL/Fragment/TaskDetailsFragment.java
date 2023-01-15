@@ -15,8 +15,6 @@ import androidx.fragment.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -98,11 +96,6 @@ public class TaskDetailsFragment extends Fragment {
         Picasso.get().load(task.getImagesUrl().get(0)).fit().into(post_image);
         Picasso.get().load(localData.getCurrentUser().getImageUrl()).fit().into(currentUserImage);
 
-        Animation slideInRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
-        Animation slideOutLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_left);
-
-        viewFlipper.setInAnimation(slideInRight);
-        viewFlipper.setOutAnimation(slideOutLeft);
 
         if (task.getImagesUrl().size() > 1)
             viewFlipper.setOnClickListener(new View.OnClickListener() {

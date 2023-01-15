@@ -86,7 +86,7 @@ public class CommentsActivity extends AppCompatActivity {
                         newComment.getText().toString().trim(),
                         publishId);
                 localData.addComment(postId, comments, newComment);
-                addNotification(comments.getPostId(), comments.getPublish());
+                addNotification(comments.getPostId(), publishId);
 
             }
 

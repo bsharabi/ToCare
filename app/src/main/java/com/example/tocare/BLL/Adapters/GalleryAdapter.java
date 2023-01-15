@@ -52,6 +52,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
 
         Uri uri = mImage.get(position);
+        System.out.println(mImage);
         Picasso.get().load(uri).fit().into(holder.imageItem);
         holder.imageItem.setAdjustViewBounds(true);
 

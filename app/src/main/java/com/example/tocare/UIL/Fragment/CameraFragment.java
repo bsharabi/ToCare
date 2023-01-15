@@ -44,7 +44,7 @@ public class CameraFragment extends Fragment {
         preview = view.findViewById(R.id.camera_preview);
 
 
-        if (getArguments() != null) {
+        if (getArguments() != null && !getArguments().getString("gallery").isEmpty()) {
             String firstImage = getArguments().getString("gallery");
             Picasso.get().load(firstImage).fit().into(first);
         } else

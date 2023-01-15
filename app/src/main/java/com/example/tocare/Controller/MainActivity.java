@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
                     break;
                 case R.id.nav_add:
                     selectedFragment = null;
-                    reload(PostActivity.class, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    Intent intent = new Intent(MainActivity.this, PostActivity.class);
+                    startActivity(intent);
                     break;
                 case R.id.nav_profile:
                     SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
@@ -111,11 +112,7 @@ public class MainActivity extends AppCompatActivity implements  FirebaseCallback
         finish();
     }
 
-    public void reload(Class<?> name, int flag) {
-        Intent intent = new Intent(MainActivity.this, name);
-        intent.setFlags(flag);
-        startActivity(intent);
-    }
+
 
     @Override
     public void onCallback(boolean success, Exception e, FirebaseUser user) {

@@ -84,6 +84,7 @@ public class GalleryFragment extends Fragment {
         mImage = new ArrayList<>();
 
         checkPermission();
+
         adapter = new GalleryAdapter(getContext(), mImage, mSelect, imageView, fit);
         fit.setOnClickListener(v -> {
             fit.setTag((fit.getTag().equals("fit")) ? "uFit" : "fit");
@@ -116,7 +117,6 @@ public class GalleryFragment extends Fragment {
         }
     }
 
-    @SuppressLint("Recycle")
     private void getAllImagesUri() {
         Uri uri;
         Cursor cursor;

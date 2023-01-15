@@ -90,9 +90,9 @@ public class LoginCardFragment extends Fragment implements View.OnClickListener,
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(@NonNull View view) {
+        email = inputEmail.getText().toString().trim();
         switch (view.getId()) {
             case R.id.bt_login:
-                email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 if (UserValidation.isValidEmail(email))
                     signInWithEmail(email, password);

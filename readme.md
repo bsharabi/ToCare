@@ -1,3 +1,6 @@
+
+![image](Logo.png)
+
 # ToCare
 An application that helps with household tasks and rewards users
 
@@ -23,3 +26,19 @@ An application that helps with household tasks and rewards users
 10. Task status alerts: the progress rate of the task is taken into account, taking into account the time allotted for the task.
 11. Incentives: You will be given the option to budget a task both in cash and in virtual currencies that the system will provide
 12. Two-step verification: Email verification, two-step verification, social media login and captcha are all implemented as security measures to ensure that the user's email belongs to them, protecting the user's account with an additional layer of security and preventing access attempts by bots
+
+
+![image](images/feed.png)
+![image](images/profile.png)
+![image](images/search.png.png)
+![image](images/manage.png)
+
+
+
+## Running Programm:
+```bash
+# Clone the repository
+$ git clone https://github.com/bsharabi/ToCare.git
+# open with Android Studio
+```
+
